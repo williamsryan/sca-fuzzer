@@ -127,8 +127,8 @@ class Fuzzer:
                     break
 
         LOGGER.fuzzer_finish()
-        # return STAT.violations > 0
-        return None
+        return STAT.violations > 0
+        # return None
     
     def get_single_violation(self, violation):
         measurements : List[Measurement] = violation.measurements

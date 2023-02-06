@@ -236,7 +236,7 @@ def main() -> int:
             args.nonstop,
         )
 
-        if result is None:
+        if result is False:
             print(f"[-] No result tuple from fuzzer.")
         else:
             LOGGER.dbg("[+] Test result output: ", result)
