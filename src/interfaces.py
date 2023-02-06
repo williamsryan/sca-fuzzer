@@ -658,6 +658,40 @@ class TracedInstruction(NamedTuple):
 
 ExecutionTrace = List[TracedInstruction]
 
+# Adding for runs
+class Observation:
+    val: int
+
+    def __init__(self, val) -> None:
+        self.val = val
+
+    def __eq__(self, other):
+        if (isinstance(other, Observation)):
+            return self.val == other.val
+        return False
+
+class ArchState:
+    regs: Dict[int, ByteString]
+    mems: List[int, ByteString]
+    pc: ByteString = None
+
+    def __init__(self) -> None:
+        self.regs = {}
+        self.mems = {}
+
+Observations = List[Observation]
+
+class Run:
+    id: int
+    instructions: List[str]
+    archstates: List[ArchState]
+    observations: List[Observations]
+
+    def __init__(self) -> None:
+        self.instructions = []
+        self.archstates = []
+        self.observations = []
+
 
 # ==================================================================================================
 # Interfaces of Modules

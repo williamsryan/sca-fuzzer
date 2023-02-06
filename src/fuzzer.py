@@ -11,7 +11,7 @@ from typing import Optional, List
 from copy import copy
 
 import factory
-from interfaces import CTrace, HTrace, Input, InputTaint, EquivalenceClass, TestCase, Generator, \
+from interfaces import CTrace, HTrace, Input, InputTaint, EquivalenceClass, Run, TestCase, Generator, \
     InputGenerator, Model, Executor, Analyser, Coverage, InputID, Measurement
 from isa_loader import InstructionSet
 
@@ -71,6 +71,9 @@ class Fuzzer:
         # create all main modules
         self.initialize_modules()
 
+        run1 : Run
+        run2 : Run
+
         for i in range(num_test_cases):
             LOGGER.fuzzer_start_round(i)
             LOGGER.dbg_report_coverage(i, self.coverage.get_brief())
@@ -104,6 +107,14 @@ class Fuzzer:
             if violation:
                 LOGGER.fuzzer_report_violations(violation, self.model)
                 self.store_test_case(test_case, False)
+
+                violate_inputs : List[Input] = self.get_single_violation(violation)
+                runs = self.capture(test_case, violate_inputs)
+                run1 = runs[0]
+                run2 = runs[1]
+                pairs = self.analyser.get_obs_pairs(run1, run2)
+                return run1, run2, pairs
+
                 STAT.violations += 1
                 if not nonstop:
                     break
@@ -116,7 +127,8 @@ class Fuzzer:
                     break
 
         LOGGER.fuzzer_finish()
-        return STAT.violations > 0
+        # return STAT.violations > 0
+        return None
 
     def filter(self, test_case, inputs):
         return False  # implemented by architecture-specific subclasses

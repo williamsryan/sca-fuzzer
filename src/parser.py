@@ -1,4 +1,4 @@
-from pyparsing import Keyword, Word, nums, one_of, Suppress
+from pyparsing import Keyword, Word, nums, oneOf, Suppress
 from dateutil.parser import parse as parse_date
 
 class Node(object):
@@ -68,7 +68,7 @@ IF = Keyword('IF')
 BOOL = Keyword('BOOL')
 REG = Keyword('REG')
 
-boolval = one_of("#t #f")
+boolval = oneOf("#t #f")
 regval = Word(nums)
 bs = LBRACE + REG + regval + RBRACE
 pred = LBRACE + BOOL + boolval + RBRACE

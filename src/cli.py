@@ -235,9 +235,11 @@ def main() -> int:
             args.timeout,
             args.nonstop,
         )
+
         if result is None:
-            LOGGER.dbg("[-] No result tuple from fuzzer.")
+            print(f"[-] No result tuple from fuzzer.")
         else:
+            LOGGER.dbg("[+] Test result output: ", result)
             run1, run2, pairs = result
             timestamp = datetime.today().strftime('%H%M%S-%d-%m-%y')
             theory_fname = "theory" + timestamp + ".rkt"
@@ -274,6 +276,7 @@ def main() -> int:
                 contract.append(parser.parse())
             
             LOGGER.show_contract(contract)
+
         return result
 
     # Reproducing a violation
