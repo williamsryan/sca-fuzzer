@@ -1,0 +1,145 @@
+#lang rosette/safe
+
+; ----------------------------------------- ;
+; <Generated file>
+; @author: Hoang Nguyen
+; @for: Synthesizing hw-sw contract
+; @version: 1.0
+; @date: may 7, 2022
+; ----------------------------------------- ;
+
+; ----------------- CORE ------------------ ;
+; packages
+(require rosette/lib/destruct)
+; destruct package is for ...
+(require rosette/lib/synthax)
+; synthax package is for ...
+
+; General purpose register encoding
+(define RAX  0)  ; A eXtended
+(define RBP  1)  ; Base Pointer
+(define RBX  2)  ; B eXtended
+(define RCX  3)  ; C eXtended
+(define RDI  4)  ; Destination Index
+(define RDX  5)  ; D eXtended
+(define RSI  6)  ; Source Index
+(define RSP  7)  ; Stack Pointer
+(define R8   8)  ; R8
+(define R9   9)  ; R9
+(define R10 10)  ; R10
+(define R11 11)  ; R11
+(define R12 12)  ; R12
+(define R13 13)  ; R13
+(define R14 14)  ; R14
+(define R15 15)  ; R15
+(define PC  16)  ; R16
+
+; struct for our contract language
+(struct IF (pred expr) #:transparent)
+(struct OPCODE ())
+(struct INSTR ())
+(struct SLIDE (i1 i2 bs) #:transparent)
+(struct RS1 ())
+(struct RS2 ())
+(struct NOT (b))
+(struct AND (b1 b2))
+(struct OR (b1 b2))
+(struct EQ (b1 b2))
+(struct BOOL (b))
+(struct BS (bs))
+(struct REG (r) #:transparent)
+
+(define-grammar (cexpr)
+  [expr (IF (pred) (bs))]
+  [pred (choose (BOOL (?? boolean?))
+                (NOT (pred))
+                (AND (pred) (pred))
+                (OR (pred) (pred))
+                (EQ (bs) (bs))
+                )]
+  [bs (choose (BS (?? (bitvector (?? integer?))))
+              (SLIDE (?? integer?) (?? integer?) (bs))
+              (REG (?? integer?))
+              INSTR
+              )]
+  )
+
+(define EMPTY (list '()))
+
+(define (eval e x)
+  (destruct e
+            [(IF pred bs) (if (eval-pred pred x) (list (eval-bs bs x))
+                              EMPTY)]))
+
+(define (eval-pred p x)
+  (destruct p
+            [(BOOL b) b]
+            [(NOT some-p) (not (eval-pred some-p x))]
+            [(AND p1 p2) (and (eval-pred p1 x) (eval-pred p2 x))]
+            [(OR p1 p2) (or (eval-pred p1 x) (eval-pred p2 x))]
+            [(EQ bs1 bs2) (bveq (eval-bs bs1 x) (eval-bs bs2 x))]))
+
+(define (eval-bs bs x)
+  (destruct bs
+     [(BS b) b]
+     [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
+     [(REG reg) (eval-reg reg x)]
+     [INSTR (eval-reg PC x)]
+     ))
+
+(define (eval-reg reg x)
+  (list-ref x reg))
+
+; Auxiliary functions
+; obs() takes an expression and a xstate 
+;       returns its observation
+(define (obs expr state)
+  (eval expr state))
+
+; obs() takes an expression and a xstate 
+;       returns true if there is some observations produced
+;               false otherwise
+(define (empty-obs expr state)
+  (empty? (eval expr state)))
+
+; obs-equal() takes an expression and two xstates
+;             returns true if the two xstates produces same observations
+;                     false otherwise
+(define (obs-equal expr state1 state2)
+  (listbv-equal (obs expr state1)
+                (obs expr state2)))
+
+; listbv-equal() takes two observations
+;                returns true if they are the same
+;                        false otherwise
+(define (listbv-equal bvs1 bvs2)
+  (if (empty? bvs1)
+      (if (empty? bvs2) #t
+          #f)
+      (if (empty? bvs2) #f
+          (and (bveq (first bvs1) (first bvs2))
+               (listbv-equal (rest bvs1) (rest bvs2))))))
+
+; diff() takes the following arguments:
+;              i,j,i_,j_: natural numbers such that i <= j and i_ <= j_
+;              r, r_: two runs
+;              expr: an expression
+;        returns true if the trace produce r[i]->r[j] and r_[i_]->r_[j_] are distinguishable 
+;                false otherwise
+(define (diff i j r i_ j_ r_ expr)
+  (if (equal? i j)
+      (if (equal? i_ j_) #f
+                         (or (not (empty-obs expr (list-ref r_ i_)))
+                             (diff j j r (+ i_ 1) j_ r_ expr)))
+      (if (equal? i_ j_) (or (not (empty-obs expr (list-ref r i)))
+                             (diff (+ i 1) j r j_ j_ r_ expr))
+                         (or (and (empty-obs expr (list-ref r i))
+                                  (diff (+ i 1) j r i_ j_ r_ expr))
+                             (and (empty-obs expr (list-ref r_ i_))
+                                  (diff i j r (+ i_ 1) j_ r_ expr))
+                             (and (not (empty-obs expr (list-ref r i)))
+                                  (not (empty-obs expr (list-ref r_ i_)))
+                                  (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
+
+; ------------- END-CORE ------------------ ;
+
