@@ -355,6 +355,16 @@ class Logger:
                 f"{offset}{(bits >> 64) % MASK_64BIT:064b} [s]"
         s = s.replace("0", "_").replace("1", "^")
         return s
+    
+    # ==============================================================================================
+    # Contract
+    def show_contract(self, contract):
+        if self.info_enabled:
+            print("")  # new line after the progress bar
+            print("Current contract: {")
+            for expr in contract:
+                print("\t" + str(expr))
+            print('}')
 
 
 LOGGER = Logger()

@@ -8,12 +8,19 @@ SPDX-License-Identifier: MIT
 
 import os
 import yaml
+from ast import List
 from typing import Dict
+from datetime import datetime
 from argparse import ArgumentParser
 from factory import get_minimizer, get_fuzzer
 from fuzzer import Fuzzer
 from config import CONF
 from service import LOGGER
+
+from parser import Parser, Expr
+
+# Synthesis parts.
+from rosette import Rosette
 
 
 def main() -> int:
@@ -206,16 +213,68 @@ def main() -> int:
         # Make sure we're ready for fuzzing
         if args.working_directory and not os.path.isdir(args.working_directory):
             SystemExit("The working directory does not exist")
+        
+        contract_str: List[str] = [
+            "(IF (BOOL #t) (REG 0))",
+            "(IF (BOOL #t) (REG 1))",
+            "(IF (BOOL #t) (REG 2))",
+            "(IF (BOOL #t) (REG 4))"
+        ]
+
+        contract: List[Expr] = []
+
+        for s in contract_str:
+            parser = Parser(s)
+            contract.append(parser.parse())
 
         # Normal fuzzing mode
         fuzzer = get_fuzzer(args.instruction_set, args.working_directory, args.testcase, "")
-        exit_code = fuzzer.start(
+        result = fuzzer.start(
             args.num_test_cases,
             args.num_inputs,
             args.timeout,
             args.nonstop,
         )
-        return exit_code
+        if result is None:
+            LOGGER.dbg("[-] No result tuple from fuzzer.")
+        else:
+            run1, run2, pairs = result
+            timestamp = datetime.today().strftime('%H%M%S-%d-%m-%y')
+            theory_fname = "theory" + timestamp + ".rkt"
+            expr_fname = "expr" + timestamp + ".txt"
+            rosette = Rosette(theory_fname, args.working_directory, 1)
+            rosette.map(run1)
+            rosette.map(run2)
+            rosette.generate_constraints(pairs, run1, run2)
+
+            # TODO: run synthesis refinement loop elsewhere.
+            import subprocess
+            import signal
+
+            command = "racket" + args.working_directory + "/" + theory_fname
+            with subprocess.Popen(command, shell=True, stdout=subprocess.PIPE,
+                                start_new_session=True) as process:
+                try:
+                    stdout, stderr = process.communicate(timeout=6000)
+                    return_code = process.poll()
+                    if return_code:
+                        raise subprocess.CalledProcessError(return_code, process.args,
+                                                            output=stdout, stderr=stderr)
+                except subprocess.TimeoutExpired:
+                    os.killpg(process.pid, signal.SIGINT)
+                    raise
+
+            with open(args.working_directory + "/" + expr_fname, "w") as file:
+                file.write(stdout.decode("UTF-8"))
+            with open(args.working_directory + "/" + expr_fname, "r") as file:
+                # file.readline()
+                s = file.readline()
+                s = s[len("(define myexpr "):-1]
+                parser = Parser(s)
+                contract.append(parser.parse())
+            
+            LOGGER.show_contract(contract)
+        return result
 
     # Reproducing a violation
     if args.subparser_name == 'reproduce':
