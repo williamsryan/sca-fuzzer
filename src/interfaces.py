@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 """
 from __future__ import annotations
 
+import shutil
 from typing import List, Dict, Tuple, Optional, NamedTuple
 from collections import defaultdict
 from abc import ABC, abstractmethod
@@ -488,14 +489,24 @@ class TestCase:
     functions: List[Function]
     address_map: Dict[int, Instruction]
     num_prologue_instructions: int = 0
+    faulty_pte: PageTableModifier
 
     def __init__(self):
         self.functions = []
         self.address_map = {}
+        self.faulty_pte = PageTableModifier()
 
     def __iter__(self):
         for func in self.functions:
             yield func
+
+    def save(self, path: str) -> None:
+        shutil.copy2(self.asm_path, path)
+
+
+class PageTableModifier(NamedTuple):
+    mask_set: int = 0x0
+    mask_clear: int = 0xffffffffffffffff
 
 
 # ==================================================================================================
@@ -560,6 +571,15 @@ class Input(np.ndarray):
 
     def __repr__(self):
         return str(self.seed)
+
+    def save(self, path: str) -> None:
+        with open(path, 'wb') as f:
+            f.write(self.tobytes())
+
+    def load(self, path: str) -> None:
+        with open(path, 'rb') as f:
+            contents = np.fromfile(f, dtype=np.uint64)
+            self[:] = contents
 
 
 class InputTaint(np.ndarray):
@@ -681,7 +701,7 @@ class Generator(ABC):
         super().__init__()
 
     @abstractmethod
-    def create_test_case(self, path: str) -> TestCase:
+    def create_test_case(self, path: str, disable_assembler: bool = False) -> TestCase:
         """
         Create a simple test case with a single BB
         Run instrumentation passes and print the result into a file
@@ -689,7 +709,7 @@ class Generator(ABC):
         pass
 
     @abstractmethod
-    def parse_existing_test_case(self, asm_file: str) -> TestCase:
+    def load(self, asm_file: str) -> TestCase:
         """
         Read a test case from a file and create a complete TestCase object based on it.
         Used instead of create_test_case when Revizor works with a user-provided test case.
@@ -699,6 +719,10 @@ class Generator(ABC):
     @staticmethod
     @abstractmethod
     def assemble(asm_file: str, bin_file: str) -> None:
+        pass
+
+    @abstractmethod
+    def create_pte(self, test_case: TestCase) -> None:
         pass
 
 
@@ -711,6 +735,13 @@ class InputGenerator(ABC):
     @abstractmethod
     def extend_equivalence_classes(self, inputs: List[Input],
                                    taints: List[InputTaint]) -> List[Input]:
+        pass
+
+    @abstractmethod
+    def load(self, input_paths: List[str]) -> List[Input]:
+        """
+        Load a sequence of inputs from a directory with binary inputs.
+        """
         pass
 
 
@@ -749,8 +780,19 @@ class Coverage(ABC):
         pass
 
 
+class Tracer(ABC):
+    trace: List
+
+    def get_contract_trace(self) -> CTrace:
+        return hash(tuple(self.trace))
+
+    def get_contract_trace_full(self) -> List[int]:
+        return self.trace
+
+
 class Model(ABC):
     coverage: Optional[Coverage] = None
+    tracer: Tracer
 
     @abstractmethod
     def __init__(self, sandbox_base: int, code_base: int):
@@ -795,7 +837,7 @@ class Executor(ABC):
         self.coverage = coverage
 
     @abstractmethod
-    def get_last_feedback(self):
+    def get_last_feedback(self) -> List:
         pass
 
 

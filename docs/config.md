@@ -2,7 +2,7 @@
 
 Below is a list of the available configuration options for Revizor, which are passed down to Revizor via a config file.
 For an example of how to write the config file, see [src/tests/big-fuzz.yaml](src/tests/big-fuzz.yaml).
- 
+
 Some of the options are omitted from the list as they should not be used in a normal fuzzing campaign.
 For a complete list, see `src/config.py`.
 
@@ -39,6 +39,7 @@ For a complete list, see `src/config.py`.
 
 * `instruction_set`  [str]: Tested ISA.
   Only one option is currently supported - "x86-64" (default).
+* `permitted_faults` [list(str)]: a list of faults that are permitted to happen during testing.
 * `generator` [str]: Test case generator type.
   Only one option is currently supported - "random" (default).
 * `program_generator_seed` [int]: Test case generation seed.
@@ -71,12 +72,8 @@ For a complete list, see `src/config.py`.
 * `executor_warmups` [int]: Number of warmup rounds executed before starting to collect hardware traces.
 * `executor_repetitions` [int]: Number of repetitions while collecting hardware traces.
 * `executor_taskset` [int]: CPU number on which the executor is running test cases.
-* `enable_ssbp_patch` [bool]: Enable a patch against Speculative Store Bypass (Intel-only).
-  Enabled by default.
 * `enable_pre_run_flush` [bool]: If enabled, the executor will do its best to flush the microarchitectural state before running test cases.
   Enabled by default.
-* `enable_faulty_page` [bool]: If enabled, only of the sandbox memory pages will have the accessed bit set to zero, which will cause a microcode assist on the fist load/store to this page.
-  Disabled by default.
 
 # Analyser Configuration
 
@@ -91,3 +88,11 @@ For a complete list, see `src/config.py`.
   Available options:
   'none' - disable coverage tracking;
   'dependent-pairs' - coverage of pairs of dependent instructions.
+
+
+# x86-specific configuration
+
+* `x86_executor_enable_ssbp_patch` [bool]: Enable a patch against Speculative Store Bypass.
+  Enabled by default.
+* `x86_executor_enable_prefetcher` [bool]: Enable all pretechers.
+  Disabled by default.

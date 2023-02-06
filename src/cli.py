@@ -16,7 +16,7 @@ from config import CONF
 from service import LOGGER
 
 
-def main():
+def main() -> int:
     parser = ArgumentParser(description='', add_help=False)
     subparsers = parser.add_subparsers(dest='subparser_name')
 
@@ -53,7 +53,7 @@ def main():
         '-t', '--testcase',
         type=str,
         default=None,
-        help="Use an existing test case"
+        help="Use an existing test case [DEPRECATED - see reproduce]"
     )
     parser_fuzz.add_argument(
         '--timeout',
@@ -82,6 +82,39 @@ def main():
         "-c", "--config",
         type=str,
         required=False
+    )
+
+    parser_reproduce = subparsers.add_parser('reproduce')
+    parser_reproduce.add_argument(
+        "-s", "--instruction-set",
+        type=str,
+        required=True
+    )
+    parser_reproduce.add_argument(
+        "-c", "--config",
+        type=str,
+        required=False
+    )
+    parser_reproduce.add_argument(
+        '-t', '--testcase',
+        type=str,
+        default=None,
+        required=True,
+        help="Path to the test case",
+    )
+    parser_reproduce.add_argument(
+        '-i', '--inputs',
+        type=str,
+        nargs='*',
+        default=None,
+        help="Path to the directory with inputs"
+    )
+    parser_reproduce.add_argument(
+        "-n",
+        "--num-inputs",
+        type=int,
+        default=100,
+        help="Number of inputs per test case. [IGNORED if --input-dir is set]",
     )
 
     parser_mini = subparsers.add_parser('minimize')
@@ -118,6 +151,45 @@ def main():
         required=True
     )
 
+    parser_generator = subparsers.add_parser('generate')
+    parser_generator.add_argument(
+        "-s", "--instruction-set",
+        type=str,
+        required=True
+    )
+    parser_generator.add_argument(
+        "-r", "--seed",
+        type=int,
+        default=0,
+        help="Add seed to generate test case.",
+    )
+    parser_generator.add_argument(
+        "-n", "--num-test-cases",
+        type=int,
+        default=5,
+        help="Number of test cases.",
+    )
+    parser_generator.add_argument(
+        "-i", "--num-inputs",
+        type=int,
+        default=100,
+        help="Number of inputs per test case.",
+    )
+    parser_generator.add_argument(
+        "-c", "--config",
+        type=str,
+        required=False
+    )
+    parser_generator.add_argument(
+        '-w', '--working-directory',
+        type=str,
+        default='',
+    )
+    parser_generator.add_argument(
+        '--permit-overwrite',
+        action='store_true',
+    )
+
     args = parser.parse_args()
 
     # Update configuration
@@ -136,28 +208,46 @@ def main():
             SystemExit("The working directory does not exist")
 
         # Normal fuzzing mode
-        fuzzer = get_fuzzer(args.instruction_set, args.working_directory, args.testcase)
-        fuzzer.start(
+        fuzzer = get_fuzzer(args.instruction_set, args.working_directory, args.testcase, "")
+        exit_code = fuzzer.start(
             args.num_test_cases,
             args.num_inputs,
             args.timeout,
             args.nonstop,
         )
-        return
+        return exit_code
+
+    # Reproducing a violation
+    if args.subparser_name == 'reproduce':
+        fuzzer = get_fuzzer(args.instruction_set, "", args.testcase, args.inputs)
+        exit_code = fuzzer.start(1, args.num_inputs, 0, False)
+        return exit_code
+
+    # Stand-alone generator
+    if args.subparser_name == "generate":
+        fuzzer = get_fuzzer(args.instruction_set, args.working_directory, None, "")
+        fuzzer.generate_test_batch(
+            args.seed,
+            args.num_test_cases,
+            args.num_inputs,
+            args.permit_overwrite
+        )
+        return 0
 
     # Trace analysis
     if args.subparser_name == 'analyse':
         fuzzer = Fuzzer.analyse_traces_from_files(args.ctraces, args.htraces)
-        return
+        return 0
 
     # Test case minimisation
     if args.subparser_name == "minimize":
         minimizer = get_minimizer(args.instruction_set)
         minimizer.minimize(args.infile, args.outfile, args.num_inputs, args.add_fences)
-        return
+        return 0
 
     raise Exception("Unreachable")
 
 
 if __name__ == '__main__':
-    main()
+    exit_code = main()
+    exit(exit_code)

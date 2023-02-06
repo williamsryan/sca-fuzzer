@@ -8,6 +8,7 @@ import x86.x86_model as x86_model
 import x86.x86_executor as x86_executor
 
 import x86.x86_fuzzer as x86_fuzzer
+import fuzzer
 import input_generator
 import analyser
 import coverage
@@ -15,7 +16,6 @@ import postprocessor
 
 import interfaces
 from config import CONF, ConfigException
-
 
 GENERATORS: Dict[str, Type[interfaces.Generator]] = {
     "x86-64-random": x86_generator.X86RandomGenerator
@@ -31,9 +31,26 @@ TRACERS: Dict[str, Type[model.UnicornTracer]] = {
     "pc": model.PCTracer,
     "memory": model.MemoryTracer,
     "ct": model.CTTracer,
+    "loads+stores+pc": model.CTTracer,
     "ct-nonspecstore": model.CTNonSpecStoreTracer,
     "ctr": model.CTRTracer,
     "arch": model.ArchTracer,
+    "gpr": model.GPRTracer,
+}
+
+X86_SIMPLE_EXECUTION_CLAUSES: Dict[str, Type[x86_model.X86UnicornModel]] = {
+    "seq": x86_model.X86UnicornSeq,
+    "no_speculation": x86_model.X86UnicornSeq,
+    "cond": x86_model.X86UnicornCond,
+    "conditional_br_misprediction": x86_model.X86UnicornCond,
+    "bpas": x86_model.X86UnicornBpas,
+    "nullinj": x86_model.X86UnicornNull,
+    "nullinj-term": x86_model.X86UnicornNullTerminating,
+    "ooo": x86_model.X86UnicornOOO,
+    "div-zero": x86_model.X86UnicornDivZero,
+    "div-overflow": x86_model.X86UnicornDivOverflow,
+    "meltdown": x86_model.X86Meltdown,
+    "fault-skip": x86_model.X86FaultSkip,
 }
 
 EXECUTORS = {
@@ -62,10 +79,17 @@ def _get_from_config(options: Dict, key: str, conf_option_name: str, *args):
     raise ConfigException(f"unknown value {key} for `{conf_option_name}` configuration option")
 
 
-def get_fuzzer(instruction_set, working_directory, testcase):
-    if CONF.instruction_set == "x86-64":
-        return x86_fuzzer.X86Fuzzer(instruction_set, working_directory, testcase)
-    raise ConfigException("unknown value of `instruction_set` configuration option")
+def get_fuzzer(instruction_set, working_directory, testcase, inputs):
+    if CONF.fuzzer == "architectural":
+        if CONF.instruction_set == "x86-64":
+            return x86_fuzzer.X86ArchitecturalFuzzer(instruction_set, working_directory, testcase,
+                                                     inputs)
+        raise ConfigException("unknown value of `instruction_set` configuration option")
+    elif CONF.fuzzer == "basic":
+        if CONF.instruction_set == "x86-64":
+            return x86_fuzzer.X86Fuzzer(instruction_set, working_directory, testcase, inputs)
+        raise ConfigException("unknown value of `instruction_set` configuration option")
+    raise ConfigException("unknown value of `fuzzer` configuration option")
 
 
 def get_generator(instruction_set: interfaces.InstructionSetAbstract) -> interfaces.Generator:
@@ -83,14 +107,10 @@ def get_model(bases: Tuple[int, int]) -> interfaces.Model:
     if CONF.instruction_set == 'x86-64':
         if "cond" in CONF.contract_execution_clause and "bpas" in CONF.contract_execution_clause:
             model_instance = x86_model.X86UnicornCondBpas(bases[0], bases[1])
-        elif "cond" in CONF.contract_execution_clause:
-            model_instance = x86_model.X86UnicornCond(bases[0], bases[1])
-        elif "bpas" in CONF.contract_execution_clause:
-            model_instance = x86_model.X86UnicornBpas(bases[0], bases[1])
-        elif "null-injection" in CONF.contract_execution_clause:
-            model_instance = x86_model.X86UnicornNull(bases[0], bases[1])
-        elif "seq" in CONF.contract_execution_clause:
-            model_instance = x86_model.X86UnicornSeq(bases[0], bases[1])
+        elif len(CONF.contract_execution_clause) == 1:
+            model_instance = _get_from_config(X86_SIMPLE_EXECUTION_CLAUSES,
+                                              CONF.contract_execution_clause[0],
+                                              "contract_execution_clause", bases[0], bases[1])
         else:
             raise ConfigException(
                 "unknown value of `contract_execution_clause` configuration option")

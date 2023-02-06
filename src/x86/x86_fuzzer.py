@@ -7,15 +7,34 @@ SPDX-License-Identifier: MIT
 from subprocess import run
 from typing import List
 
-from fuzzer import Fuzzer
+from fuzzer import Fuzzer, ArchitecturalFuzzer
 from interfaces import TestCase, Input
 from service import STAT
 from config import CONF
 from x86.x86_executor import X86IntelExecutor
 
 
+def update_instruction_list():
+    """
+    Remove those instructions that trigger unhandled exceptions.
+    This functionality is implemented as a module-level function
+    to avoid code duplication between X86Fuzzer and X86ArchitecturalFuzzer
+    """
+    if 'DE-overflow' not in CONF.permitted_faults:
+        if "IDIV" not in CONF._default_instruction_blocklist:
+            CONF._default_instruction_blocklist.append("IDIV")
+        if "REX IDIV" not in CONF._default_instruction_blocklist:
+            CONF._default_instruction_blocklist.append("REX IDIV")
+    if 'UD' not in CONF.permitted_faults:
+        CONF._default_instruction_blocklist.extend(["UD", "UD2"])
+
+
 class X86Fuzzer(Fuzzer):
     executor: X86IntelExecutor
+
+    def _adjust_config(self, existing_test_case):
+        super()._adjust_config(existing_test_case)
+        update_instruction_list()
 
     def filter(self, test_case: TestCase, inputs: List[Input]) -> bool:
         """ This function implements a multi-stage algorithm that gradually filters out
@@ -31,7 +50,7 @@ class X86Fuzzer(Fuzzer):
         if CONF.enable_speculation_filter:
             pfc_feedback = self.executor.get_last_feedback()
             for i, pfc_values in enumerate(pfc_feedback):
-                if pfc_values[0] > 0 and pfc_values[2] > pfc_values[1]:
+                if pfc_values[0] > pfc_values[1] or pfc_values[2] > 0:
                     break
             else:
                 return True
@@ -52,10 +71,13 @@ class X86Fuzzer(Fuzzer):
             if fenced_htraces == non_fenced_htraces:
                 return True
 
-            # check for corrupted measurements
-            fenced_htraces2 = self.executor.trace_test_case(inputs, repetitions=1)
-            if fenced_htraces != fenced_htraces2:
-                return True
             STAT.observ_filter += 1
 
         return False
+
+
+class X86ArchitecturalFuzzer(ArchitecturalFuzzer):
+
+    def _adjust_config(self, existing_test_case):
+        super()._adjust_config(existing_test_case)
+        update_instruction_list()

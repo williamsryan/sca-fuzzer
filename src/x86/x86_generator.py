@@ -8,12 +8,13 @@ import abc
 import math
 import re
 import random
-from typing import List, Dict, Set, Optional
+from typing import List, Dict, Set, Optional, Tuple
 from subprocess import run
 
 from isa_loader import InstructionSet
 from interfaces import TestCase, Operand, RegisterOperand, FlagsOperand, MemoryOperand, \
-    ImmediateOperand, AgenOperand, LabelOperand, OT, Instruction, BasicBlock, InstructionSpec
+    ImmediateOperand, AgenOperand, LabelOperand, OT, Instruction, BasicBlock, InstructionSpec, \
+    PageTableModifier
 from generator import ConfigurableGenerator, RandomGenerator, Pass, \
      parser_assert, Printer, GeneratorException, AsmParserException
 from x86.x86_target_desc import X86TargetDesc
@@ -65,18 +66,35 @@ class X86Generator(ConfigurableGenerator, abc.ABC):
         "SETG": "SETNLE",
         "SETPE": "SETP",
         "SETPO": "SETNP",
+        "MOVABS": "MOV",
+        "REPE": "REPZ",
+        "REPNE": "REPNZ",
+        "REPNZ": "REPNE",
+        "REPZ": "REPE",
     }
     memory_sizes = {"BYTE": 8, "WORD": 16, "DWORD": 32, "QWORD": 64}
 
     def __init__(self, instruction_set: InstructionSet):
         super(X86Generator, self).__init__(instruction_set)
+        self.target_desc = X86TargetDesc()
         self.passes = [
-            X86SandboxPass(),
+            X86SandboxPass(self.target_desc),
             X86PatchUndefinedFlagsPass(self.instruction_set, self),
             X86PatchUndefinedResultPass(),
+            X86AddUndefinedOpcodesPass(),
         ]
         self.printer = X86Printer()
-        self.target_desc = X86TargetDesc()
+
+        # select PTE bits that could be set
+        self.pte_bit_choices: List[Tuple[int, bool]] = []
+        if 'assist-accessed' in CONF.permitted_faults:
+            self.pte_bit_choices.append(self.target_desc.pte_bits["ACCESSED"])
+        if 'assist-dirty' in CONF.permitted_faults:
+            self.pte_bit_choices.append(self.target_desc.pte_bits["DIRTY"])
+        if 'PF-present' in CONF.permitted_faults:
+            self.pte_bit_choices.append(self.target_desc.pte_bits["PRESENT"])
+        if 'PF-writable' in CONF.permitted_faults:
+            self.pte_bit_choices.append(self.target_desc.pte_bits["RW"])
 
     def map_addresses(self, test_case: TestCase, bin_file: str) -> None:
         # get a list of relative instruction addresses
@@ -232,6 +250,22 @@ class X86Generator(ConfigurableGenerator, abc.ABC):
 
         return inst
 
+    def create_pte(self, test_case: TestCase):
+        """
+        Pick a random PTE bit (among the permitted ones) and set/reset it
+        """
+        if not self.pte_bit_choices:  # no choices, so PTE should stay intact
+            return
+
+        pte_bit = random.choice(self.pte_bit_choices)
+        if pte_bit[1]:
+            mask_clear = 0xffffffffffffffff ^ (1 << pte_bit[0])
+            mask_set = 0x0
+        else:
+            mask_clear = 0xffffffffffffffff
+            mask_set = 0x0 | (1 << pte_bit[0])
+        test_case.faulty_pte = PageTableModifier(mask_set, mask_clear)
+
 
 class X86LFENCEPass(Pass):
 
@@ -251,11 +285,12 @@ class X86SandboxPass(Pass):
     mask_3bits = "0b111"
     bit_test_names = ["BT", "BTC", "BTR", "BTS", "LOCK BT", "LOCK BTC", "LOCK BTR", "LOCK BTS"]
 
-    def __init__(self):
+    def __init__(self, target_desc: X86TargetDesc):
         super().__init__()
         input_memory_size = CONF.input_main_region_size + CONF.input_faulty_region_size
         mask_size = int(math.log(input_memory_size, 2)) - CONF.memory_access_zeroed_bits
         self.sandbox_address_mask = "0b" + "1" * mask_size + "0" * CONF.memory_access_zeroed_bits
+        self.target_desc = target_desc
 
     def run_on_test_case(self, test_case: TestCase) -> None:
         for func in test_case.functions:
@@ -302,7 +337,8 @@ class X86SandboxPass(Pass):
         mem_operands = instr.get_mem_operands()
         implicit_mem_operands = instr.get_implicit_mem_operands()
         if mem_operands and not implicit_mem_operands:
-            assert len(mem_operands) == 1, f"Unexpected instruction format {instr.name}"
+            assert len(mem_operands) == 1, \
+                f"Instructions with multiple memory accesses are not yet supported: {instr.name}"
             mem_operand: Operand = mem_operands[0]
             address_reg = mem_operand.value
             imm_width = mem_operand.width if mem_operand.width <= 32 else 32
@@ -315,18 +351,25 @@ class X86SandboxPass(Pass):
 
         mem_operands = implicit_mem_operands
         if mem_operands:
-            assert len(mem_operands) == 1, f"Unexpected instruction format {instr.name}"
-            mem_operand = mem_operands[0]
-            address_reg = mem_operand.value
-            imm_width = mem_operand.width if mem_operand.width <= 32 else 32
-            apply_mask = Instruction("AND", True) \
-                .add_op(RegisterOperand(address_reg, mem_operand.width, True, True)) \
-                .add_op(ImmediateOperand(self.sandbox_address_mask, imm_width))
-            add_base = Instruction("ADD", True) \
-                .add_op(RegisterOperand(address_reg, mem_operand.width, True, True)) \
-                .add_op(RegisterOperand("R14", 64, True, False))
-            parent.insert_before(instr, apply_mask)
-            parent.insert_before(instr, add_base)
+            # deduplicate operands
+            uniq_operands: Dict[str, MemoryOperand] = {}
+            for o in mem_operands:
+                if o.value not in uniq_operands:
+                    uniq_operands[o.value] = o
+
+            # instrument each operand to avoid sandbox the memory accesses
+            for address_reg, mem_operand in uniq_operands.items():
+                imm_width = mem_operand.width if mem_operand.width <= 32 else 32
+                assert address_reg in self.target_desc.registers[64], \
+                    f"Unexpected address register {address_reg} used in {instr}"
+                apply_mask = Instruction("AND", True) \
+                    .add_op(RegisterOperand(address_reg, mem_operand.width, True, True)) \
+                    .add_op(ImmediateOperand(self.sandbox_address_mask, imm_width))
+                add_base = Instruction("ADD", True) \
+                    .add_op(RegisterOperand(address_reg, mem_operand.width, True, True)) \
+                    .add_op(RegisterOperand("R14", 64, True, False))
+                parent.insert_before(instr, apply_mask)
+                parent.insert_before(instr, add_base)
             return
 
         raise GeneratorException("Attempt to sandbox an instruction without memory operands")
@@ -348,11 +391,25 @@ class X86SandboxPass(Pass):
         """
         divisor = inst.operands[0]
 
-        # make sure the divisor is not zero
-        instrumentation = Instruction("OR", True).\
-            add_op(divisor).\
-            add_op(ImmediateOperand("1", 8))
-        parent.insert_before(inst, instrumentation)
+        # TODO: remove me - avoids a certain violation
+        if divisor.width == 64 and CONF.x86_disable_div64:
+            parent.delete(inst)
+            return
+
+        if 'DE-zero' not in CONF.permitted_faults:
+            # Prevent div by zero
+            instrumentation = Instruction("OR", True).\
+                add_op(divisor).\
+                add_op(ImmediateOperand("1", 8))
+            parent.insert_before(inst, instrumentation)
+
+        if 'DE-overflow' in CONF.permitted_faults:
+            return
+
+        # divisor in D or in memory with RDX offset? Impossible case, give up
+        if divisor.value in ["RDX", "EDX", "DX", "DH", "DL"] or "RDX" in divisor.value:
+            parent.delete(inst)
+            return
 
         # dividend in AX?
         if divisor.width == 8:
@@ -367,16 +424,6 @@ class X86SandboxPass(Pass):
                 # Too complex (impossible?). Giving up
                 parent.delete(inst)
                 return
-
-        # TODO: remove me - avoids a certain violation
-        if divisor.width == 64 and CONF.x86_disable_div64:
-            parent.delete(inst)
-            return
-
-        # divisor in D or in memory with RDX offset? Impossible case, give up
-        if divisor.value in ["RDX", "EDX", "DX", "DH", "DL"] or "RDX" in divisor.value:
-            parent.delete(inst)
-            return
 
         # Normal case
         # D = (D & divisor) >> 1
@@ -604,6 +651,62 @@ class X86PatchUndefinedResultPass(Pass):
             .add_op(source) \
             .add_op(ImmediateOperand(mask, mask_size))
         parent.insert_before(inst, apply_mask)
+
+
+class X86AddUndefinedOpcodesPass(Pass):
+    """
+    Replaces all UD instructions with actual opcodes undefined under Intel x86 ISA
+    """
+    opcodes: List[str] = [
+        # UD2 instruction
+        "0x0f, 0x0b",
+
+        # invalid in 64-bit mode
+        "0x37",  # AAA
+        "0xd5, 0x0a",  # AAD
+        "0xd4, 0x0a",  # AAM
+        "0x3f",  # AAS
+        "0x62",  # BOUND
+        "0x27",  # DAA
+        "0x2F",  # DAS
+        "0x61",  # POPA
+
+        # invalid in 64-bit + invalid with lock
+        "0xf0, 0x37",  # AAA
+        "0xf0, 0xd5, 0x0a",  # AAD
+        "0xf0, 0xd4, 0x0a",  # AAM
+        "0xf0, 0x3f",  # AAS
+        "0xf0, 0x62",  # BOUND
+        "0xf0, 0x27",  # DAA
+        "0xf0, 0x2F",  # DAS
+        "0xf0, 0x61",  # POPA
+
+        # invalid with lock
+        # "0xf0, 0x48, 0x11, 0xc0",  # LOCK ADC rax, rax
+
+        # invalid when not in VMX operation
+        # "0xf0, 0x01, 0xc1",  # VMCALL
+    ]
+
+    def run_on_test_case(self, test_case: TestCase) -> None:
+        for func in test_case.functions:
+            for bb in func:
+                if bb == func.entry:
+                    continue
+
+                # collect all UD instructions
+                undefined_inst = []
+                for inst in bb:
+                    if inst.name in ["UD", "UD2"]:
+                        undefined_inst.append(inst)
+
+                # patch them
+                for inst in undefined_inst:
+                    self.replace_opcode(inst, bb)
+
+    def replace_opcode(self, inst: Instruction, _: BasicBlock):
+        opcode = random.choice(self.opcodes)
+        inst.name = ".byte " + opcode
 
 
 class X86Printer(Printer):

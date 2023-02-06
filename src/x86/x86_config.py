@@ -8,8 +8,19 @@ from typing import List
 
 # x86_option_values attribute MUST be the first attribute in the file
 x86_option_values = {
-    'executor_mode': ['P+P', 'F+R', 'E+R'],
+    'executor_mode': ['P+P', 'F+R', 'E+R'],  # 'GPR' is intentionally left out
+    'permitted_faults': [
+        'DE-zero', 'DE-overflow', 'UD', 'PF-present', 'PF-writable', 'assist-accessed',
+        'assist-dirty'
+    ],
 }
+
+x86_executor_enable_prefetcher: bool = False
+""" x86_executor_enable_prefetcher: enable all prefetchers"""
+x86_executor_enable_ssbp_patch: bool = True
+""" x86_executor_enable_ssbp_patch: enable a patch against Speculative Store Bypass"""
+x86_disable_div64: bool = True
+
 
 x86_instruction_categories: List[str] = [
     # Base x86
@@ -51,6 +62,7 @@ x86_instruction_categories: List[str] = [
     # "CLFSH-MISC",
     # "BMI1",
 ]
+
 x86_instruction_blocklist: List[str] = [
     # Hard to fix:
     # - STI - enables interrupts, thus corrupting the measurements; CLI - just in case
@@ -58,35 +70,12 @@ x86_instruction_blocklist: List[str] = [
     # - CMPXCHG8B - Unicorn doesn't execute the mem. access hook
     #   bug: https://github.com/unicorn-engine/unicorn/issues/990
     "CMPXCHG8B", "LOCK CMPXCHG8B",
-    # - Undefined instructions are, well, undefined
-    "UD", "UD2",
     # - Incorrect emulation
     "CPUID",
     # - Requires support of segment registers
     "XLAT", "XLATB",
-    # - Requires special instrumentation to avoid #DE faults
-    "IDIV", "REX IDIV",
     # - Requires complex instrumentation
     "ENTERW", "ENTER", "LEAVEW", "LEAVE",
-
-    # Stringops - under construction
-    "LODSB", "LODSD", "LODSW", "LODSQ",
-    "SCASB", "SCASD", "SCASW", "SCASQ",
-    "STOSB", "STOSD", "STOSW", "STOSQ",
-    "CMPSB", "CMPSD", "CMPSW", "CMPSQ",
-    "MOVSB", "MOVSD", "MOVSW", "MOVSQ",
-
-    "REPE LODSB", "REPE LODSD", "REPE LODSW", "REPE LODSQ",
-    "REPE SCASB", "REPE SCASD", "REPE SCASW", "REPE SCASQ",
-    "REPE STOSB", "REPE STOSD", "REPE STOSW", "REPE STOSQ",
-    "REPE CMPSB", "REPE CMPSD", "REPE CMPSW", "REPE CMPSQ",
-    "REPE MOVSB", "REPE MOVSD", "REPE MOVSW", "REPE MOVSQ",
-
-    "REPNE LODSB", "REPNE LODSD", "REPNE LODSW", "REPNE LODSQ",
-    "REPNE SCASB", "REPNE SCASD", "REPNE SCASW", "REPNE SCASQ",
-    "REPNE STOSB", "REPNE STOSD", "REPNE STOSW", "REPNE STOSQ",
-    "REPNE CMPSB", "REPNE CMPSD", "REPNE CMPSW", "REPNE CMPSQ",
-    "REPNE MOVSB", "REPNE MOVSD", "REPNE MOVSW", "REPNE MOVSQ",
 
     # - not supported
     "LFENCE", "MFENCE", "SFENCE", "CLFLUSH", "CLFLUSHOPT",
@@ -105,5 +94,3 @@ x86_register_blocklist: List[str] = [
     'CR0', 'CR2', 'CR3', 'CR4', 'CR8',
     'DR0', 'DR1', 'DR2', 'DR3', 'DR4', 'DR5', 'DR6', 'DR7'
 ]  # yapf: disable
-
-x86_disable_div64: bool = True

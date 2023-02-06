@@ -42,8 +42,8 @@ int (*set_memory_nx)(unsigned long, int) = 0;
 // Global Variables
 long uarch_reset_rounds = UARCH_RESET_ROUNDS_DEFAULT;
 uint64_t ssbp_patch_control = SSBP_PATH_DEFAULT;
+uint64_t prefetcher_control = PREFETCHER_DEFAULT;
 char pre_run_flush = PRE_RUN_FLUSH_DEFAULT;
-char enable_faulty_page = ENABLE_FAULTY_DEFAULT;
 char *measurement_template = (char *)&template_l1d_prime_probe;
 char *measurement_code = NULL;
 
@@ -53,6 +53,10 @@ void *stack_base = NULL;
 char *test_case = NULL;
 uint64_t *inputs = NULL;
 volatile size_t n_inputs = 1;
+
+uint32_t handled_faults = HANDLED_FAULTS_DEFAULT;
+pteval_t faulty_pte_mask_set = 0x0;
+pteval_t faulty_pte_mask_clear = 0xffffffffffffffff;
 
 measurement_t *measurements;
 
@@ -132,12 +136,12 @@ static ssize_t enable_ssbp_patch_store(struct kobject *kobj, struct kobj_attribu
 static struct kobj_attribute enable_ssbp_patch_attribute =
     __ATTR(enable_ssbp_patch, 0666, NULL, enable_ssbp_patch_store);
 
-/// Control the faulty page
+/// Control prefetchers
 ///
-static ssize_t enable_mds_store(struct kobject *kobj, struct kobj_attribute *attr, const char *buf,
-                                size_t count);
-static struct kobj_attribute enable_mds_attribute =
-    __ATTR(enable_mds, 0666, NULL, enable_mds_store);
+static ssize_t enable_prefetcher_store(struct kobject *kobj, struct kobj_attribute *attr,
+                                       const char *buf, size_t count);
+static struct kobj_attribute enable_prefetcher_attribute =
+    __ATTR(enable_prefetcher, 0666, NULL, enable_prefetcher_store);
 
 /// Control flushing
 ///
@@ -145,6 +149,13 @@ static ssize_t enable_pre_run_flush_store(struct kobject *kobj, struct kobj_attr
                                           const char *buf, size_t count);
 static struct kobj_attribute enable_pre_run_flush_attribute =
     __ATTR(enable_pre_run_flush, 0666, NULL, enable_pre_run_flush_store);
+
+/// Bitmask that control which pte bits to flip
+//
+static ssize_t faulty_pte_mask_store(struct kobject *kobj, struct kobj_attribute *attr,
+                                     const char *buf, size_t count);
+static struct kobj_attribute pte_mask_attribute =
+    __ATTR(faulty_pte_mask, 0666, NULL, faulty_pte_mask_store);
 
 /// Measurement template selector
 ///
@@ -162,9 +173,10 @@ static struct attribute *sysfs_attributes[] = {
     &print_sandbox_base_attribute.attr,
     &print_code_base_attribute.attr,
     &enable_ssbp_patch_attribute.attr,
-    &enable_mds_attribute.attr,
+    &enable_prefetcher_attribute.attr,
     &enable_pre_run_flush_attribute.attr,
     &measurement_mode_attribute.attr,
+    &pte_mask_attribute.attr,
     NULL, /* need to NULL terminate the list of attributes */
 };
 
@@ -206,17 +218,24 @@ static ssize_t trace_show(struct kobject *kobj, struct kobj_attribute *attr, cha
     for (; next_measurement_id >= 0; next_measurement_id--)
     {
         // check if the output buffer still has space
-        if (count >= (4096 - 84))
+        if (count >= (4096 - 128))
             return count; // we will continue in the next call of this function
 
         measurement_t m = measurements[next_measurement_id];
-        retval = sprintf(&buf[count], "%llu,%llu,%llu,%llu\n", m.htrace[0], m.pfc[0], m.pfc[1],
-                         m.pfc[2]);
+        retval = sprintf(&buf[count], "%llu,%llu,%llu,%llu,%llu,%llu\n", m.htrace[0], m.pfc[0],
+                         m.pfc[1], m.pfc[2], m.pfc[3], m.pfc[4]);
         if (!retval)
             return -1;
         count += retval;
     }
     count += sprintf(&buf[count], "done\n");
+    return count;
+}
+
+static ssize_t faulty_pte_mask_store(struct kobject *kobj, struct kobj_attribute *attr,
+                                     const char *buf, size_t count)
+{
+    sscanf(buf, "%lu %lu", &faulty_pte_mask_set, &faulty_pte_mask_clear);
     return count;
 }
 
@@ -368,16 +387,16 @@ static ssize_t enable_ssbp_patch_store(struct kobject *kobj, struct kobj_attribu
 {
     unsigned value = 0;
     sscanf(buf, "%u", &value);
-    ssbp_patch_control = (value == 0) ? 0b011 : 0b111;
+    ssbp_patch_control = (value == 0) ? SSBP_PATCH_OFF : SSBP_PATCH_ON;
     return count;
 }
 
-static ssize_t enable_mds_store(struct kobject *kobj, struct kobj_attribute *attr, const char *buf,
-                                size_t count)
+static ssize_t enable_prefetcher_store(struct kobject *kobj, struct kobj_attribute *attr,
+                                       const char *buf, size_t count)
 {
     unsigned value = 0;
     sscanf(buf, "%u", &value);
-    enable_faulty_page = (value == 0) ? 0 : 1;
+    prefetcher_control = (value == 0) ? PREFETCHER_OFF : PREFETCHER_ON;
     return count;
 }
 
@@ -404,6 +423,10 @@ static ssize_t measurement_mode_store(struct kobject *kobj, struct kobj_attribut
     else if (buf[0] == 'E')
     {
         measurement_template = (char *)&template_l1d_evict_reload;
+    }
+    else if (buf[0] == 'G')
+    {
+        measurement_template = (char *)&template_gpr;
     }
 
     return count;
@@ -506,6 +529,14 @@ static int __init executor_init(void)
         printk(KERN_ERR "x86_executor: Failed to create a sysfs group\n");
         kobject_put(kobj_interface);
         return err;
+    }
+
+    // Allocate memory for new IDT
+    curr_idt_table = kmalloc(sizeof(gate_desc) * 256, GFP_KERNEL);
+    if (!curr_idt_table)
+    {
+        printk(KERN_ERR "x86_executor: Could not allocate memory for IDT\n");
+        return -ENOMEM;
     }
 
     return 0;

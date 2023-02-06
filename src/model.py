@@ -6,16 +6,16 @@ SPDX-License-Identifier: MIT
 """
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from typing import List, Tuple, Type, Optional, Set
+from typing import List, Tuple, Type, Optional, Set, Dict
 
 import copy
 import re
 
 from unicorn import Uc, UcError, UC_MEM_WRITE, UC_MEM_READ, UC_SECOND_SCALE, UC_HOOK_MEM_READ, \
-    UC_HOOK_MEM_WRITE, UC_HOOK_CODE
+    UC_HOOK_MEM_WRITE, UC_HOOK_CODE, UC_PROT_NONE, UC_PROT_READ
 
 from interfaces import CTrace, TestCase, Model, InputTaint, Instruction, ExecutionTrace, \
-     TracedInstruction, TracedMemAccess, Input, Dict, \
+     TracedInstruction, TracedMemAccess, Input, Tracer, \
      RegisterOperand, FlagsOperand, MemoryOperand, TaintTrackerInterface, TargetDesc
 from config import CONF
 from service import LOGGER, NotSupportedException
@@ -31,7 +31,7 @@ class UnicornTargetDesc(ABC):
     reg_decode: Dict[str, int]
 
 
-class UnicornTracer(ABC):
+class UnicornTracer(Tracer):
     """
     A simple tracer.
     Collect instructions as they are emulated. See :class:`TracedInstruction`
@@ -129,6 +129,13 @@ class UnicornModel(Model, ABC):
     tainting_enabled: bool = False
     execution_tracing_enabled: bool = False
 
+    # fault handling
+    handled_faults: List[int]
+    pending_fault_id: int = 0
+    previous_context = None
+    rw_protect: bool = False
+    write_protect: bool = False
+
     # set by subclasses
     architecture: Tuple[int, int]
 
@@ -146,6 +153,7 @@ class UnicornModel(Model, ABC):
 
         self.overflow_region_values = bytes(self.OVERFLOW_REGION_SIZE)
 
+        # taint tracking
         if CONF.contract_observation_clause == 'ctr' or CONF.contract_observation_clause == 'arch':
             self.initial_taints = [
                 "A", "B", "C", "D", "SI", "DI", "RSP", "CF", "PF", "AF", "ZF", "SF", "TF", "IF",
@@ -153,6 +161,34 @@ class UnicornModel(Model, ABC):
             ]
         else:
             self.initial_taints = []
+
+        # fault handling
+        self.pending_fault_id = 0
+        self.handled_faults = []
+
+        # update a list of handled faults based on the config
+        if 'DE-zero' in CONF.permitted_faults or 'DE-overflow' in CONF.permitted_faults:
+            self.handled_faults.append(21)
+        if 'UD' in CONF.permitted_faults:
+            self.handled_faults.append(10)
+        if 'PF-present' in CONF.permitted_faults:
+            self.handled_faults.extend([12, 13])
+        if 'PF-writable' in CONF.permitted_faults:
+            self.handled_faults.append(12)
+        if 'assist-dirty' in CONF.permitted_faults:
+            self.handled_faults.extend([12, 13])
+        if 'assist-accessed' in CONF.permitted_faults:
+            self.handled_faults.extend([12, 13])
+
+        # check if the fault page needs to be protected
+        if 'PF-present' in CONF.permitted_faults:
+            self.rw_protect = True
+        if 'PF-writable' in CONF.permitted_faults:
+            self.write_protect = True
+        if 'assist-dirty' in CONF.permitted_faults:
+            self.write_protect = True
+        if 'assist-accessed' in CONF.permitted_faults:
+            self.rw_protect = True
 
     def load_test_case(self, test_case: TestCase) -> None:
         """
@@ -175,6 +211,13 @@ class UnicornModel(Model, ABC):
                 self.OVERFLOW_REGION_SIZE * 2 + self.MAIN_REGION_SIZE + self.FAULTY_REGION_SIZE
             emulator.mem_map(self.sandbox_base - self.OVERFLOW_REGION_SIZE, sandbox_size)
 
+            if self.rw_protect:
+                emulator.mem_protect(self.sandbox_base + self.MAIN_REGION_SIZE,
+                                     self.FAULTY_REGION_SIZE, UC_PROT_NONE)
+            elif self.write_protect:
+                emulator.mem_protect(self.sandbox_base + self.MAIN_REGION_SIZE,
+                                     self.FAULTY_REGION_SIZE, UC_PROT_READ)
+
             # write machine code to be emulated to memory
             emulator.mem_write(self.code_start, code)
 
@@ -194,7 +237,7 @@ class UnicornModel(Model, ABC):
         """
         pass
 
-    def _execute_test_case(self, inputs, nesting):
+    def _execute_test_case(self, inputs: List[Input], nesting: int):
         """
         Architecture independent code - it starts the emulator
         """
@@ -203,25 +246,46 @@ class UnicornModel(Model, ABC):
         contract_traces: List[CTrace] = []
         execution_traces: List[ExecutionTrace] = []
         taints = []
-        for input_ in inputs:
+
+        for index, input_ in enumerate(inputs):
+            LOGGER.dbg_model_header(index)
+
             self._load_input(input_)
             self.reset_model()
-            try:
-                self.emulator.emu_start(
-                    self.code_start, self.code_end, timeout=10 * UC_SECOND_SCALE)
-            except UcError as e:
-                if not self.in_speculation:
-                    self.print_state()
-                    LOGGER.error("[UnicornModel:trace_test_case] %s" % e)
+            start_address = self.code_start
+            while True:
+                self.pending_fault_id = 0
 
-            # if we use one of the SPEC contracts, we might have some residual simulations
-            # that did not reach the spec. window by the end of simulation. Those need
-            # to be rolled back
-            while self.in_speculation:
+                # execute the test case
                 try:
-                    self.rollback()
-                except UcError:
+                    self.emulator.emu_start(
+                        start_address, self.code_end, timeout=10 * UC_SECOND_SCALE)
+                except UcError as e:
+                    # the type annotation below is ignored because some
+                    # of the packaged versions of Unicorn do not have
+                    # complete type annotations
+                    self.pending_fault_id = e.errno  # type: ignore
+
+                # handle faults
+                if self.pending_fault_id:
+                    # workaround for a Unicorn bug: after catching an exception
+                    # we need to restore some pre-exception context. otherwise,
+                    # the emulator becomes corrupted
+                    self.emulator.context_restore(self.previous_context)
+                    start_address = self.handle_fault(self.pending_fault_id)
+                    self.pending_fault_id = 0
+                    if start_address:
+                        continue
+
+                # if we use one of the speculative contracts, we might have some residual simulation
+                # that did not reach the spec. window by the end of simulation. Those need
+                # to be rolled back
+                if self.in_speculation:
+                    start_address = self.rollback()
                     continue
+
+                # otherwise, we're done with this execution
+                break
 
             # store the results
             assert self.tracer
@@ -271,6 +335,7 @@ class UnicornModel(Model, ABC):
             self.taint_tracker = self.taint_tracker_cls(self.initial_taints, self.sandbox_base)
         else:
             self.taint_tracker = DummyTaintTracker([])
+        self.pending_fault_id = 0
 
     @abstractmethod
     def print_state(self, oneline: bool = False):
@@ -282,8 +347,26 @@ class UnicornModel(Model, ABC):
         Invoked when an instruction is executed.
         it records instruction
         """
+        model.previous_context = model.emulator.context_save()
         model.current_instruction = model.test_case.address_map[address - model.code_start]
         model.trace_instruction(emulator, address, size, model)
+
+    def handle_fault(self, errno: int) -> int:
+        next_addr = self.speculate_fault(errno)
+        if next_addr:
+            return next_addr
+
+        # if we're speculating, rollback regardless of the fault type
+        if self.in_speculation:
+            return 0
+
+        # an expected fault - terminate execution
+        if errno in self.handled_faults:
+            return self.code_end
+
+        # unexpected fault - throw an error
+        self.print_state()
+        LOGGER.error("[UnicornModel:trace_test_case] %s" % errno)
 
     @staticmethod
     @abstractmethod
@@ -304,11 +387,18 @@ class UnicornModel(Model, ABC):
     def speculate_instruction(emulator: Uc, address, size, model: UnicornModel) -> None:
         pass
 
+    def speculate_fault(self, errno: int) -> int:
+        """
+        return the address of the first speculative instruction
+        return 0 if not speculation is triggered
+        """
+        return 0
+
     def checkpoint(self, emulator: Uc, next_instruction: int):
         pass
 
-    def rollback(self):
-        pass
+    def rollback(self) -> int:
+        return 0
 
 
 # ==================================================================================================
@@ -403,6 +493,23 @@ class ArchTracer(CTRTracer):
         super(ArchTracer, self).observe_mem_access(access, address, size, value, model)
 
 
+class GPRTracer(UnicornTracer):
+    """
+    This is a special type of tracer, primarily used for debugging the model.
+    It returns the values of all GPRs after the test case finished its execution.
+    """
+
+    def init_trace(self, emulator: Uc, target_desc: UnicornTargetDesc) -> None:
+        self.emulator = emulator
+        self.target_desc = target_desc
+        return super().init_trace(emulator, target_desc)
+
+    def get_contract_trace(self) -> CTrace:
+        self.trace = [self.emulator.reg_read(reg) for reg in self.target_desc.registers]
+        self.trace = self.trace[:-1]  # exclude flags
+        return self.trace[0]
+
+
 # ==================================================================================================
 # Implementation of Execution Clauses
 # ==================================================================================================
@@ -471,7 +578,7 @@ class UnicornSpec(UnicornModel):
         self.in_speculation = True
         self.taint_tracker.checkpoint()
 
-    def rollback(self):
+    def rollback(self) -> int:
         # restore register values
         state, next_instr, flags, spec_window = self.checkpoints.pop()
         if not self.checkpoints:
@@ -500,7 +607,7 @@ class UnicornSpec(UnicornModel):
         self.taint_tracker.rollback()
 
         # restart without misprediction
-        self.emulator.emu_start(next_instr, self.code_end, timeout=10 * UC_SECOND_SCALE)
+        return next_instr
 
     def reset_model(self):
         super().reset_model()

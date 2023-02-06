@@ -24,6 +24,11 @@ class ConfCls:
     enable_observation_filter: bool = False
 
     # ==============================================================================================
+    # Execution Environment
+    permitted_faults: List[str] = []
+    """ permitted_faults: a list of faults that are permitted to happen during testing """
+
+    # ==============================================================================================
     # Program Generator
     generator: str = "random"
     """ generator: type of the program generator """
@@ -99,14 +104,9 @@ class ConfCls:
     """ executor_max_outliers: """
     executor_taskset: int = 0
     """ executor_taskset: id of the CPU core on which the executor is running test cases """
-    enable_ssbp_patch: bool = True
-    """ enable_ssbp_patch: enable a patch against Speculative Store Bypass (Intel-only) """
     enable_pre_run_flush: bool = True
     """ enable_pre_run_flush: ff enabled, the executor will do its best to flush
     the microarchitectural state before running test cases """
-    enable_faulty_page: bool = False
-    """ enable_faulty_page: If enabled, only of the sandbox memory pages will have the accessed
-    bit set to zero, which will cause a microcode assist on the fist load/store to this page. """
 
     # ==============================================================================================
     # Analyser
