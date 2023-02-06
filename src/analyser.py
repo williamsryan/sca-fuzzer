@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 from collections import defaultdict
 from typing import List, Dict
 
-from interfaces import HTrace, CTrace, Input, EquivalenceClass, Analyser, Measurement
+from interfaces import HTrace, CTrace, Input, EquivalenceClass, Analyser, Measurement, Run
 from config import CONF
 from service import STAT, TWOS_COMPLEMENT_MASK_64, bit_count
 
@@ -32,6 +32,26 @@ class EquivalenceAnalyser(Analyser):
     :return A list of input IDs where ctraces disagree with htraces and a list of inputs that
         require retries
     """
+
+    def get_obs_pairs(self, run1: Run, run2: Run):
+        pairs = []
+        i1 = i2 = 0
+        obs1 = run1.observations
+        obs2 = run2.observations
+        while True:
+            print("i1: {0}, i2: {1}".format(str(i1), str(i2)))
+            if i1 == len(obs1) and i2 == len(obs2):
+                break
+            if len(obs1[i1]) + len(obs2[i2]) > 0:
+                pairs.append((i1, i2))
+                i1 += 1
+                i2 += 1
+                continue
+            if len(obs1[i1]) == 0:
+                i1 += 1
+            if len(obs2[i2]) == 0:
+                i2 += 1
+        return pairs
 
     def filter_violations(self,
                           inputs: List[Input],
@@ -83,11 +103,13 @@ class EquivalenceAnalyser(Analyser):
         """
 
         # build eq. classes
-        eq_class_map: Dict[CTrace, EquivalenceClass] = defaultdict(lambda: EquivalenceClass())
+        eq_class_map: Dict[CTrace, EquivalenceClass] = defaultdict(
+            lambda: EquivalenceClass())
         for i, ctrace in enumerate(ctraces):
             eq_cls = eq_class_map[ctrace]
             eq_cls.ctrace = ctrace
-            eq_cls.measurements.append(Measurement(i, inputs[i], ctrace, htraces[i]))
+            eq_cls.measurements.append(Measurement(
+                i, inputs[i], ctrace, htraces[i]))
 
         # fine effective classes
         effective_classes: List[EquivalenceClass] = []
@@ -98,7 +120,8 @@ class EquivalenceAnalyser(Analyser):
 
         if stats:
             STAT.eff_classes += len(effective_classes)
-            STAT.single_entry_classes += len(eq_class_map) - len(effective_classes)
+            STAT.single_entry_classes += len(eq_class_map) - \
+                len(effective_classes)
             STAT.analysed_test_cases += 1
 
         # build maps of htraces

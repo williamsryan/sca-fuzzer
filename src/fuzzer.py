@@ -129,6 +129,28 @@ class Fuzzer:
         LOGGER.fuzzer_finish()
         # return STAT.violations > 0
         return None
+    
+    def get_single_violation(self, violation):
+        measurements : List[Measurement] = violation.measurements
+        i1 : Input = measurements[0].input_
+        i2 : Input = measurements[1].input_
+        return [i1, i2]
+    
+    def capture(self, test_case, inputs):
+        runs = {}
+
+        self.model.load_test_case(test_case)
+        self.executor.load_test_case(test_case)
+        self.coverage.load_test_case(test_case)
+        self.model.set_tracable()
+        
+        for id, input in enumerate(inputs):
+            run = self.model.execute(input)
+            run.id = id
+            # self.store_run(run)
+            runs[id] = run
+
+        return runs
 
     def filter(self, test_case, inputs):
         return False  # implemented by architecture-specific subclasses
