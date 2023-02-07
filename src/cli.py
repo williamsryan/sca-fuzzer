@@ -213,7 +213,7 @@ def main() -> int:
         # Make sure we're ready for fuzzing
         if args.working_directory and not os.path.isdir(args.working_directory):
             SystemExit("The working directory does not exist")
-        
+
         contract_str: List[str] = [
             "(IF (BOOL #t) (REG 0))",
             "(IF (BOOL #t) (REG 1))",
@@ -228,7 +228,8 @@ def main() -> int:
             contract.append(parser.parse())
 
         # Normal fuzzing mode
-        fuzzer = get_fuzzer(args.instruction_set, args.working_directory, args.testcase, "")
+        fuzzer = get_fuzzer(args.instruction_set,
+                            args.working_directory, args.testcase, "")
         result = fuzzer.start(
             args.num_test_cases,
             args.num_inputs,
@@ -253,9 +254,9 @@ def main() -> int:
             import subprocess
             import signal
 
-            command = "racket" + args.working_directory + "/" + theory_fname
+            command = "racket " + args.working_directory + "/" + theory_fname
             with subprocess.Popen(command, shell=True, stdout=subprocess.PIPE,
-                                start_new_session=True) as process:
+                                  start_new_session=True) as process:
                 try:
                     stdout, stderr = process.communicate(timeout=6000)
                     return_code = process.poll()
@@ -274,20 +275,22 @@ def main() -> int:
                 s = s[len("(define myexpr "):-1]
                 parser = Parser(s)
                 contract.append(parser.parse())
-            
+
             LOGGER.show_contract(contract)
 
         return result
 
     # Reproducing a violation
     if args.subparser_name == 'reproduce':
-        fuzzer = get_fuzzer(args.instruction_set, "", args.testcase, args.inputs)
+        fuzzer = get_fuzzer(args.instruction_set, "",
+                            args.testcase, args.inputs)
         exit_code = fuzzer.start(1, args.num_inputs, 0, False)
         return exit_code
 
     # Stand-alone generator
     if args.subparser_name == "generate":
-        fuzzer = get_fuzzer(args.instruction_set, args.working_directory, None, "")
+        fuzzer = get_fuzzer(args.instruction_set,
+                            args.working_directory, None, "")
         fuzzer.generate_test_batch(
             args.seed,
             args.num_test_cases,
@@ -304,7 +307,8 @@ def main() -> int:
     # Test case minimisation
     if args.subparser_name == "minimize":
         minimizer = get_minimizer(args.instruction_set)
-        minimizer.minimize(args.infile, args.outfile, args.num_inputs, args.add_fences)
+        minimizer.minimize(args.infile, args.outfile,
+                           args.num_inputs, args.add_fences)
         return 0
 
     raise Exception("Unreachable")

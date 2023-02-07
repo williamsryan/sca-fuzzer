@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import shutil
-from typing import List, Dict, Tuple, Optional, NamedTuple
+from typing import List, Dict, Tuple, Optional, NamedTuple, ByteString
 from collections import defaultdict
 from abc import ABC, abstractmethod
 import numpy as np

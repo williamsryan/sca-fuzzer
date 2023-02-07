@@ -40,7 +40,8 @@ class Fuzzer:
         self.existing_test_case = existing_test_case
         self.input_paths = inputs
 
-        self.instruction_set = InstructionSet(instruction_set_spec, CONF.instruction_categories)
+        self.instruction_set = InstructionSet(
+            instruction_set_spec, CONF.instruction_categories)
         self.work_dir = work_dir
 
     def _adjust_config(self, existing_test_case):
@@ -71,8 +72,8 @@ class Fuzzer:
         # create all main modules
         self.initialize_modules()
 
-        run1 : Run
-        run2 : Run
+        run1: Run
+        run2: Run
 
         for i in range(num_test_cases):
             LOGGER.fuzzer_start_round(i)
@@ -94,7 +95,8 @@ class Fuzzer:
             if self.input_paths:
                 inputs = self.input_gen.load(self.input_paths)
             else:
-                inputs = self.input_gen.generate(CONF.input_gen_seed, num_inputs)
+                inputs = self.input_gen.generate(
+                    CONF.input_gen_seed, num_inputs)
             STAT.num_inputs += len(inputs) * CONF.inputs_per_class
 
             # Check if the test case is useful
@@ -108,7 +110,8 @@ class Fuzzer:
                 LOGGER.fuzzer_report_violations(violation, self.model)
                 self.store_test_case(test_case, False)
 
-                violate_inputs : List[Input] = self.get_single_violation(violation)
+                violate_inputs: List[Input] = self.get_single_violation(
+                    violation)
                 runs = self.capture(test_case, violate_inputs)
                 run1 = runs[0]
                 run2 = runs[1]
@@ -129,13 +132,13 @@ class Fuzzer:
         LOGGER.fuzzer_finish()
         return STAT.violations > 0
         # return None
-    
+
     def get_single_violation(self, violation):
-        measurements : List[Measurement] = violation.measurements
-        i1 : Input = measurements[0].input_
-        i2 : Input = measurements[1].input_
+        measurements: List[Measurement] = violation.measurements
+        i1: Input = measurements[0].input_
+        i2: Input = measurements[1].input_
         return [i1, i2]
-    
+
     def capture(self, test_case, inputs):
         runs = {}
 
@@ -143,7 +146,7 @@ class Fuzzer:
         self.executor.load_test_case(test_case)
         self.coverage.load_test_case(test_case)
         self.model.set_tracable()
-        
+
         for id, input in enumerate(inputs):
             run = self.model.execute(input)
             run.id = id
@@ -171,10 +174,12 @@ class Fuzzer:
 
         # check for violations
         ctraces = self.model.trace_test_case(boosted_inputs, 1)
-        htraces = self.executor.trace_test_case(boosted_inputs, CONF.executor_repetitions)
+        htraces = self.executor.trace_test_case(
+            boosted_inputs, CONF.executor_repetitions)
         LOGGER.trc_fuzzer_dump_traces(self.model, boosted_inputs, htraces, ctraces,
                                       self.executor.get_last_feedback())
-        violations = self.analyser.filter_violations(boosted_inputs, ctraces, htraces, True)
+        violations = self.analyser.filter_violations(
+            boosted_inputs, ctraces, htraces, True)
         if not violations:  # nothing detected? -> we are done here, move to next test case
             return None
 
@@ -182,9 +187,12 @@ class Fuzzer:
         if 'seq' not in CONF.contract_execution_clause:
             LOGGER.fuzzer_nesting_increased()
             boosted_inputs = self.boost_inputs(inputs, CONF.model_max_nesting)
-            ctraces = self.model.trace_test_case(boosted_inputs, CONF.model_max_nesting)
-            htraces = self.executor.trace_test_case(boosted_inputs, CONF.executor_repetitions)
-            violations = self.analyser.filter_violations(boosted_inputs, ctraces, htraces, True)
+            ctraces = self.model.trace_test_case(
+                boosted_inputs, CONF.model_max_nesting)
+            htraces = self.executor.trace_test_case(
+                boosted_inputs, CONF.executor_repetitions)
+            violations = self.analyser.filter_violations(
+                boosted_inputs, ctraces, htraces, True)
             if not violations:
                 return None
 
@@ -220,7 +228,8 @@ class Fuzzer:
         # ensure that we have many inputs in each input classes
         boosted_inputs: List[Input] = list(inputs)  # make a copy
         for _ in range(CONF.inputs_per_class - 1):
-            boosted_inputs += self.input_gen.extend_equivalence_classes(inputs, taints)
+            boosted_inputs += self.input_gen.extend_equivalence_classes(
+                inputs, taints)
         return boosted_inputs
 
     def store_test_case(self, test_case: TestCase, require_retires: bool):
@@ -258,7 +267,8 @@ class Fuzzer:
                 LOGGER.error(f"Directory '{test_case_dir}' already exists\n"
                              "       Use --permit-overwrite to overwrite the test case")
 
-            program_gen.create_test_case(test_case_dir + "/" + "program.asm", True)
+            program_gen.create_test_case(
+                test_case_dir + "/" + "program.asm", True)
             inputs = input_gen.generate(CONF.input_gen_seed, num_inputs)
             for j, input_ in enumerate(inputs):
                 input_.save(f"{test_case_dir}/input{j}.bin")
@@ -289,7 +299,8 @@ class Fuzzer:
 
         # check for violations
         analyser = factory.get_analyser()
-        violations = analyser.filter_violations(dummy_inputs, ctraces, htraces, True)
+        violations = analyser.filter_violations(
+            dummy_inputs, ctraces, htraces, True)
 
         # print results
         if violations:
@@ -307,7 +318,8 @@ class Fuzzer:
                 violating_input_ids.append(measurement.input_id)
 
         # re-collect htraces
-        htraces: List[HTrace] = self.executor.trace_test_case(inputs, CONF.executor_repetitions)
+        htraces: List[HTrace] = self.executor.trace_test_case(
+            inputs, CONF.executor_repetitions)
 
         # check if all htraces that had a violation match
         for i in violating_input_ids:
@@ -377,7 +389,8 @@ class ArchitecturalFuzzer(Fuzzer):
         self.coverage.load_test_case(test_case)
 
         # collect architectural hardware traces
-        htraces: List[List[int]] = [[t] for t in self.executor.trace_test_case(inputs, 1)]
+        htraces: List[List[int]] = [[t]
+                                    for t in self.executor.trace_test_case(inputs, 1)]
         for i, trace in enumerate(self.executor.get_last_feedback()):
             htraces[i].extend(trace)
 
@@ -397,7 +410,8 @@ class ArchitecturalFuzzer(Fuzzer):
 
                 eq_cls = EquivalenceClass()
                 eq_cls.ctrace = ctraces[i][0]
-                eq_cls.measurements = [Measurement(i, inputs[i], ctraces[i][0], htraces[i][0])]
+                eq_cls.measurements = [Measurement(
+                    i, inputs[i], ctraces[i][0], htraces[i][0])]
                 eq_cls.build_htrace_map()
                 return eq_cls
 

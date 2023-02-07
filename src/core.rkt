@@ -2,10 +2,6 @@
 
 ; ----------------------------------------- ;
 ; <Generated file>
-; @author: Hoang Nguyen
-; @for: Synthesizing hw-sw contract
-; @version: 1.0
-; @date: may 7, 2022
 ; ----------------------------------------- ;
 
 ; ----------------- CORE ------------------ ;

@@ -11,14 +11,18 @@ from typing import List, Tuple, Type, Optional, Set, Dict
 import copy
 import re
 
+import unicorn as uni
+
 from unicorn import Uc, UcError, UC_MEM_WRITE, UC_MEM_READ, UC_SECOND_SCALE, UC_HOOK_MEM_READ, \
     UC_HOOK_MEM_WRITE, UC_HOOK_CODE, UC_PROT_NONE, UC_PROT_READ
 
-from interfaces import CTrace, TestCase, Model, InputTaint, Instruction, ExecutionTrace, \
-     TracedInstruction, TracedMemAccess, Input, Tracer, \
-     RegisterOperand, FlagsOperand, MemoryOperand, TaintTrackerInterface, TargetDesc
+from interfaces import ArchState, CTrace, Run, TestCase, Model, InputTaint, Instruction, ExecutionTrace, \
+    TracedInstruction, TracedMemAccess, Input, Tracer, \
+    RegisterOperand, FlagsOperand, MemoryOperand, TaintTrackerInterface, TargetDesc
 from config import CONF
 from service import LOGGER, NotSupportedException
+
+from parser import Expr
 
 
 # ==================================================================================================
@@ -40,9 +44,13 @@ class UnicornTracer(Tracer):
     execution_trace: ExecutionTrace
     instruction_id: int
 
+    # Our run.
+    run: Run
+
     def __init__(self):
         super().__init__()
         self.trace = []
+        self.run = Run()
 
     def init_trace(self, emulator, target_desc: UnicornTargetDesc) -> None:
         self.trace = []
@@ -69,7 +77,8 @@ class UnicornTracer(Tracer):
                            model: UnicornModel) -> None:
         normalized_address = address - model.sandbox_base
         is_store = (access != UC_MEM_READ)
-        LOGGER.dbg_model_mem_access(normalized_address, value, address, size, is_store, model)
+        LOGGER.dbg_model_mem_access(
+            normalized_address, value, address, size, is_store, model)
 
         if model.in_speculation:
             return
@@ -78,7 +87,8 @@ class UnicornTracer(Tracer):
             val = value if is_store else int.from_bytes(
                 model.emulator.mem_read(address, size), byteorder='little')
             traced_instruction = self.execution_trace[self.instruction_id]
-            traced_instruction.accesses.append(TracedMemAccess(normalized_address, val, is_store))
+            traced_instruction.accesses.append(
+                TracedMemAccess(normalized_address, val, is_store))
 
     def observe_instruction(self, address: int, size: int, model) -> None:
         normalized_address = address - model.code_start
@@ -89,7 +99,8 @@ class UnicornTracer(Tracer):
             return
 
         if model.execution_tracing_enabled:
-            self.execution_trace.append(TracedInstruction(normalized_address, []))
+            self.execution_trace.append(
+                TracedInstruction(normalized_address, []))
             self.instruction_id = len(self.execution_trace) - 1
 
 
@@ -138,6 +149,14 @@ class UnicornModel(Model, ABC):
 
     # set by subclasses
     architecture: Tuple[int, int]
+
+    tracable: bool = False
+    input_size: int
+
+    contact: List[Expr]
+
+    def set_tracable(self):
+        self.tracable = True
 
     def __init__(self, sandbox_base, code_start):
         super().__init__(sandbox_base, code_start)
@@ -209,7 +228,8 @@ class UnicornModel(Model, ABC):
             emulator.mem_map(self.code_start, self.CODE_SIZE)
             sandbox_size = \
                 self.OVERFLOW_REGION_SIZE * 2 + self.MAIN_REGION_SIZE + self.FAULTY_REGION_SIZE
-            emulator.mem_map(self.sandbox_base - self.OVERFLOW_REGION_SIZE, sandbox_size)
+            emulator.mem_map(self.sandbox_base -
+                             self.OVERFLOW_REGION_SIZE, sandbox_size)
 
             if self.rw_protect:
                 emulator.mem_protect(self.sandbox_base + self.MAIN_REGION_SIZE,
@@ -222,7 +242,8 @@ class UnicornModel(Model, ABC):
             emulator.mem_write(self.code_start, code)
 
             # set up callbacks
-            emulator.hook_add(UC_HOOK_MEM_READ | UC_HOOK_MEM_WRITE, self.trace_mem_access, self)
+            emulator.hook_add(UC_HOOK_MEM_READ |
+                              UC_HOOK_MEM_WRITE, self.trace_mem_access, self)
             emulator.hook_add(UC_HOOK_CODE, self.instruction_hook, self)
 
             self.emulator = emulator
@@ -332,10 +353,41 @@ class UnicornModel(Model, ABC):
         self.speculation_window = 0
         self.tracer.init_trace(self.emulator, self.target_desc)
         if self.tainting_enabled:
-            self.taint_tracker = self.taint_tracker_cls(self.initial_taints, self.sandbox_base)
+            self.taint_tracker = self.taint_tracker_cls(
+                self.initial_taints, self.sandbox_base)
         else:
             self.taint_tracker = DummyTaintTracker([])
         self.pending_fault_id = 0
+
+    def capture_state(self):
+        archstate = ArchState()
+        # registers = CONF.registers.keys()
+        # for reg in registers:
+        #     archstate.regs[reg] = self.emulator.reg_read(reg)
+        mem_address_start = self.sandbox_base
+        mem_address_end = mem_address_start + 20
+        mem_ = self.emulator.mem_read(mem_address_start, 20)
+        for i in range(mem_address_start, mem_address_end, 8):
+            i_ = i - mem_address_start
+            archstate.mems[i] = (mem_[i_:i_+8]).hex()
+        return archstate
+
+    def execute(self, input):
+        self.execution_tracing_enabled = True
+        self.reset_model()
+        try:
+            self._load_input(input)
+            self.emulator.emu_start(
+                self.code_start, self.code_end, timeout=10 * uni.UC_SECOND_SCALE)
+            if self.tracable:
+                archstate = self.capture_state()
+                self.tracer.run.archstates.append(archstate)
+        except UcError as e:
+            if not self.in_speculation:
+                self.print_state()
+                # LOGGER.error("[X86UnicornModel:trace_test_case] %s" % e)
+        self.execution_tracing_enabled = False
+        return self.tracer.run
 
     @abstractmethod
     def print_state(self, oneline: bool = False):
@@ -422,7 +474,8 @@ class L1DTracer(UnicornTracer):
 
     def observe_mem_access(self, access, address, size, value, model):
         self.add_mem_address_to_trace(address, model)
-        super(L1DTracer, self).observe_mem_access(access, address, size, value, model)
+        super(L1DTracer, self).observe_mem_access(
+            access, address, size, value, model)
 
     def observe_instruction(self, address: int, size: int, model):
         super(L1DTracer, self).observe_instruction(address, size, model)
@@ -445,7 +498,8 @@ class MemoryTracer(UnicornTracer):
 
     def observe_mem_access(self, access, address, size, value, model):
         self.add_mem_address_to_trace(address, model)
-        super(MemoryTracer, self).observe_mem_access(access, address, size, value, model)
+        super(MemoryTracer, self).observe_mem_access(
+            access, address, size, value, model)
 
 
 class CTTracer(PCTracer):
@@ -455,7 +509,8 @@ class CTTracer(PCTracer):
 
     def observe_mem_access(self, access, address, size, value, model):
         self.add_mem_address_to_trace(address, model)
-        super(CTTracer, self).observe_mem_access(access, address, size, value, model)
+        super(CTTracer, self).observe_mem_access(
+            access, address, size, value, model)
 
 
 class CTNonSpecStoreTracer(PCTracer):
@@ -467,7 +522,8 @@ class CTNonSpecStoreTracer(PCTracer):
         # trace all non-spec mem accesses and speculative loads
         if not model.in_speculation or access == UC_MEM_READ:
             self.add_mem_address_to_trace(address, model)
-        super(CTNonSpecStoreTracer, self).observe_mem_access(access, address, size, value, model)
+        super(CTNonSpecStoreTracer, self).observe_mem_access(
+            access, address, size, value, model)
 
 
 class CTRTracer(CTTracer):
@@ -487,10 +543,12 @@ class ArchTracer(CTRTracer):
 
     def observe_mem_access(self, access, address, size, value, model: UnicornModel):
         if access == UC_MEM_READ:
-            val = int.from_bytes(model.emulator.mem_read(address, size), byteorder='little')
+            val = int.from_bytes(model.emulator.mem_read(
+                address, size), byteorder='little')
             self.trace.append(val)
             model.taint_tracker.taint_memory_load()
-        super(ArchTracer, self).observe_mem_access(access, address, size, value, model)
+        super(ArchTracer, self).observe_mem_access(
+            access, address, size, value, model)
 
 
 class GPRTracer(UnicornTracer):
@@ -505,7 +563,8 @@ class GPRTracer(UnicornTracer):
         return super().init_trace(emulator, target_desc)
 
     def get_contract_trace(self) -> CTrace:
-        self.trace = [self.emulator.reg_read(reg) for reg in self.target_desc.registers]
+        self.trace = [self.emulator.reg_read(
+            reg) for reg in self.target_desc.registers]
         self.trace = self.trace[:-1]  # exclude flags
         return self.trace[0]
 
@@ -529,7 +588,8 @@ class UnicornSeq(UnicornModel):
 
     @staticmethod
     def trace_mem_access(_, access, address: int, size, value, model):
-        model.taint_tracker.track_memory_access(address, size, access == UC_MEM_WRITE)
+        model.taint_tracker.track_memory_access(
+            address, size, access == UC_MEM_WRITE)
         model.tracer.observe_mem_access(access, address, size, value, model)
 
 
@@ -549,10 +609,13 @@ class UnicornSpec(UnicornModel):
     def trace_mem_access(emulator, access, address, size, value, model) -> None:
         # when in speculation, log all changes to memory
         if access == UC_MEM_WRITE and model.store_logs:
-            model.store_logs[-1].append((address, emulator.mem_read(address, 8)))
+            model.store_logs[-1].append((address,
+                                        emulator.mem_read(address, 8)))
 
-        UnicornSeq.trace_mem_access(emulator, access, address, size, value, model)
-        model.speculate_mem_access(emulator, access, address, size, value, model)
+        UnicornSeq.trace_mem_access(
+            emulator, access, address, size, value, model)
+        model.speculate_mem_access(
+            emulator, access, address, size, value, model)
 
     @staticmethod
     def trace_instruction(emulator, address, size, model: UnicornModel) -> None:
@@ -573,7 +636,8 @@ class UnicornSpec(UnicornModel):
         flags = emulator.reg_read(self.target_desc.flags_register)
         context = emulator.context_save()
         spec_window = self.speculation_window
-        self.checkpoints.append((context, next_instruction, flags, spec_window))
+        self.checkpoints.append(
+            (context, next_instruction, flags, spec_window))
         self.store_logs.append([])
         self.in_speculation = True
         self.taint_tracker.checkpoint()
@@ -631,8 +695,10 @@ class UnicornBpas(UnicornSpec):
                 prev_addr, prev_size = model.previous_store[0:2]
                 if address >= prev_addr and end_addr <= (prev_addr + prev_size):
                     prev_val = model.previous_store[3].\
-                        to_bytes(prev_size, byteorder='little', signed=model.previous_store[3] < 0)
-                    sliced = prev_val[address - prev_addr:end_addr - prev_addr][0]
+                        to_bytes(prev_size, byteorder='little',
+                                 signed=model.previous_store[3] < 0)
+                    sliced = prev_val[address -
+                                      prev_addr:end_addr - prev_addr][0]
                     if sliced == value:
                         return
                     else:
@@ -643,13 +709,15 @@ class UnicornBpas(UnicornSpec):
                     raise NotSupportedException()
 
             # it's not a duplicate - initiate speculation
-            model.previous_store = (address, size, emulator.mem_read(address, size), value)
+            model.previous_store = (
+                address, size, emulator.mem_read(address, size), value)
 
     @staticmethod
     def speculate_instruction(emulator: Uc, address, _, model) -> None:
         # reached max spec. window? skip
         if len(model.checkpoints) >= model.nesting:
-            model.previous_store = (0, 0, 0, 0)  # clear pending speculation requests
+            # clear pending speculation requests
+            model.previous_store = (0, 0, 0, 0)
             return
 
         if model.previous_store[0]:
@@ -657,7 +725,8 @@ class UnicornBpas(UnicornSpec):
             old_value = bytes(model.previous_store[2])
             new_is_signed = model.previous_store[3] < 0
             new_value = (model.previous_store[3]). \
-                to_bytes(model.previous_store[1], byteorder='little', signed=new_is_signed)
+                to_bytes(
+                    model.previous_store[1], byteorder='little', signed=new_is_signed)
 
             # store a checkpoint
             model.checkpoint(emulator, address)
@@ -744,7 +813,8 @@ class BaseTaintTracker(TaintTrackerInterface):
             elif isinstance(op, MemoryOperand):
                 for sub_op in re.split(r'\+|-|\*| ', op.value):
                     if sub_op and sub_op in self.target_desc.gpr_normalized:
-                        self.mem_address_regs.append(self.target_desc.gpr_normalized[sub_op])
+                        self.mem_address_regs.append(
+                            self.target_desc.gpr_normalized[sub_op])
 
     def _finalize_instruction(self):
         """Propagate dependencies from source operands to destinations """
@@ -786,9 +856,11 @@ class BaseTaintTracker(TaintTrackerInterface):
         # Update taints
         for label in self.pending_taint:
             if label.startswith("0x"):
-                self.tainted_labels.update(self.mem_dependencies.get(label, {label}))
+                self.tainted_labels.update(
+                    self.mem_dependencies.get(label, {label}))
             else:
-                self.tainted_labels.update(self.reg_dependencies.get(label, {label}))
+                self.tainted_labels.update(
+                    self.reg_dependencies.get(label, {label}))
 
         self._instruction = None
 
@@ -855,7 +927,8 @@ class BaseTaintTracker(TaintTrackerInterface):
                 reg = self.unicorn_target_desc.reg_decode[label]
                 if reg in self._registers:
                     input_offset = register_start + \
-                          self._registers.index(self.unicorn_target_desc.reg_decode[label])
+                        self._registers.index(
+                            self.unicorn_target_desc.reg_decode[label])
             if input_offset >= 0:
                 tainted_positions.append(input_offset)
 
