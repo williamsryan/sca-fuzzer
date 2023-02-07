@@ -16,7 +16,7 @@ import unicorn as uni
 from unicorn import Uc, UcError, UC_MEM_WRITE, UC_MEM_READ, UC_SECOND_SCALE, UC_HOOK_MEM_READ, \
     UC_HOOK_MEM_WRITE, UC_HOOK_CODE, UC_PROT_NONE, UC_PROT_READ
 
-from interfaces import ArchState, CTrace, Run, TestCase, Model, InputTaint, Instruction, ExecutionTrace, \
+from interfaces import ArchState, CTrace, Run, TestCase, Observation, Model, InputTaint, Instruction, ExecutionTrace, \
     TracedInstruction, TracedMemAccess, Input, Tracer, \
     RegisterOperand, FlagsOperand, MemoryOperand, TaintTrackerInterface, TargetDesc
 from config import CONF
@@ -51,6 +51,7 @@ class UnicornTracer(Tracer):
         super().__init__()
         self.trace = []
         self.run = Run()
+        self.run.observations.append([])
 
     def init_trace(self, emulator, target_desc: UnicornTargetDesc) -> None:
         self.trace = []
@@ -67,10 +68,12 @@ class UnicornTracer(Tracer):
 
     def add_mem_address_to_trace(self, address: int, model):
         self.trace.append(address)
+        self.run.observations[-1].append(Observation(address))
         model.taint_tracker.taint_memory_access_address()
 
     def add_pc_to_trace(self, address, model):
         self.trace.append(address)
+        self.run.observations[-1].append(Observation(address))
         model.taint_tracker.taint_pc()
 
     def observe_mem_access(self, access, address: int, size: int, value: int,
@@ -361,18 +364,21 @@ class UnicornModel(Model, ABC):
 
     def capture_state(self):
         archstate = ArchState()
+        # TODO: reimplement this later.
         # registers = CONF.registers.keys()
         # for reg in registers:
         #     archstate.regs[reg] = self.emulator.reg_read(reg)
         mem_address_start = self.sandbox_base
-        mem_address_end = mem_address_start + 20
-        mem_ = self.emulator.mem_read(mem_address_start, 20)
+        mem_address_end = mem_address_start + 20 # TODO: replace 20 with self.input_size
+        mem_ = self.emulator.mem_read(mem_address_start, 20) # TODO: replace 20 with self.input_size
         for i in range(mem_address_start, mem_address_end, 8):
             i_ = i - mem_address_start
             archstate.mems[i] = (mem_[i_:i_+8]).hex()
+        # print(f"[+] archstate: {archstate}")
         return archstate
 
     def execute(self, input):
+        # print(f"[+] Executing on input: {input}")
         self.execution_tracing_enabled = True
         self.reset_model()
         try:
@@ -387,6 +393,7 @@ class UnicornModel(Model, ABC):
                 self.print_state()
                 # LOGGER.error("[X86UnicornModel:trace_test_case] %s" % e)
         self.execution_tracing_enabled = False
+        # print(f"[+] Execution finished with obj: {self.tracer.run}")
         return self.tracer.run
 
     @abstractmethod
@@ -402,6 +409,10 @@ class UnicornModel(Model, ABC):
         model.previous_context = model.emulator.context_save()
         model.current_instruction = model.test_case.address_map[address - model.code_start]
         model.trace_instruction(emulator, address, size, model)
+
+        # Testing for now - RPW.
+        # if model.tracable:
+        #     model.tracer.run.observations.append([])
 
     def handle_fault(self, errno: int) -> int:
         next_addr = self.speculate_fault(errno)

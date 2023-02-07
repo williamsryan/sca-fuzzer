@@ -240,11 +240,12 @@ def main() -> int:
         if result is False:
             print(f"[-] No result tuple from fuzzer.")
         else:
-            LOGGER.dbg("[+] Test result output: ", result)
+            print(f"[+] Violation result: {result}")
             run1, run2, pairs = result
             timestamp = datetime.today().strftime('%H%M%S-%d-%m-%y')
-            theory_fname = "theory" + timestamp + ".rkt"
-            expr_fname = "expr" + timestamp + ".txt"
+            theory_fname = "theory-" + timestamp + ".rkt"
+            expr_fname = "expr-" + timestamp + ".txt"
+
             rosette = Rosette(theory_fname, args.working_directory, 1)
             rosette.map(run1)
             rosette.map(run2)

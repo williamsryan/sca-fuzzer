@@ -18,6 +18,8 @@ from isa_loader import InstructionSet
 from config import CONF
 from service import STAT, LOGGER, TWOS_COMPLEMENT_MASK_64, bit_count
 
+from parser import Expr
+
 
 class Fuzzer:
     instruction_set: InstructionSet
@@ -31,10 +33,13 @@ class Fuzzer:
     analyser: Analyser
     coverage: Coverage
 
+    contract: List[Expr]
+
     def __init__(self,
                  instruction_set_spec: str,
                  work_dir: str,
                  existing_test_case: str = "",
+                 contract: List[Expr] = [],
                  inputs: List[str] = []):
         self._adjust_config(existing_test_case)
         self.existing_test_case = existing_test_case
@@ -43,6 +48,7 @@ class Fuzzer:
         self.instruction_set = InstructionSet(
             instruction_set_spec, CONF.instruction_categories)
         self.work_dir = work_dir
+        self.contract = contract
 
     def _adjust_config(self, existing_test_case):
         if existing_test_case:
@@ -108,21 +114,22 @@ class Fuzzer:
 
             if violation:
                 LOGGER.fuzzer_report_violations(violation, self.model)
-                self.store_test_case(test_case, False)
+                # self.store_test_case(test_case, False) # Don't need this right now.
 
-                violate_inputs: List[Input] = self.get_single_violation(
-                    violation)
+                violate_inputs: List[Input] = self.get_single_violation(violation)
+                # print(f"[+] Violating inputs: {violate_inputs}")
                 runs = self.capture(test_case, violate_inputs)
                 run1 = runs[0]
                 run2 = runs[1]
                 pairs = self.analyser.get_obs_pairs(run1, run2)
+
                 return run1, run2, pairs
 
-                STAT.violations += 1
-                if not nonstop:
-                    break
+                # STAT.violations += 1
+                # if not nonstop:
+                #     break
 
-            # stop fuzzing after a timeout
+            # Stop fuzzing after a timeout
             if timeout:
                 now = datetime.today()
                 if (now - start_time).total_seconds() > timeout:
@@ -149,6 +156,7 @@ class Fuzzer:
 
         for id, input in enumerate(inputs):
             run = self.model.execute(input)
+            # print(f"[+] Run obj: {run}")
             run.id = id
             # self.store_run(run)
             runs[id] = run

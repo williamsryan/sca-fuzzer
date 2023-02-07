@@ -10,7 +10,7 @@ from pathlib import Path
 class Rosette:
     filename: str
     work_dir: str
-    depth : int
+    depth: int
 
     def __init__(self, filename, work_dir, depth):
         self.filename = filename
@@ -34,7 +34,7 @@ class Rosette:
             xstate_name = self.get_xstate_name(rid, xid)
             header = len('(define {0} (list '.format(xstate_name))
             indentation = ''
-            for i in range (0,header):
+            for i in range(0, header):
                 indentation += ' '
             regs = ''
             for reg in xstate.regs.values():
@@ -42,29 +42,31 @@ class Rosette:
                     regs += indentation
                 regs += "(bv {0} (bitvector 64))\n".format(str(reg))
             if xstate.pc is not None:
-                regs += indentation + "(bv {0} (bitvector 64))".format(str(xstate.pc))
+                regs += indentation + \
+                    "(bv {0} (bitvector 64))".format(str(xstate.pc))
             else:
                 # meaning this is the final state
                 regs += indentation + "(bv {0} (bitvector 64))".format(str(-1))
             return "(define {0} (list {1}))\n\n".format(xstate_name, regs)
 
-        with open(self.work_dir + "/" + self.filename, "a") as f:   
+        with open(self.work_dir + "/" + self.filename, "a") as f:
             xstates = ''
-            for i, xstate in enumerate(run.archstates):  
+            for i, xstate in enumerate(run.archstates):
                 f.write(model(run.id, i, xstate))
                 if xstates == '':
                     xstates += self.get_xstate_name(run.id, i)
                 else:
-                    xstates += ' ' + self.get_xstate_name(run.id, i) 
-            f.write("(define {0} (list {1}))\n\n".format(self.get_run_name(run.id), xstates))
+                    xstates += ' ' + self.get_xstate_name(run.id, i)
+            f.write("(define {0} (list {1}))\n\n".format(
+                self.get_run_name(run.id), xstates))
 
     def generate_constraints(self, pairs, run1, run2):
-        with open(self.work_dir + "/" + self.filename, "a") as f:   
-            f.write("(define myexpr (cexpr #:depth {0}))\n\n".format(str(self.depth)))
-            # f.write("(define myexpr (cexpr))\n\n")
+        with open(self.work_dir + "/" + self.filename, "a") as f:
+            f.write("(define myexpr (cexpr #:depth {0}))\n\n".format(
+                str(self.depth)))
             header = len('(define sol (solve (assert (or ')
             indentation = ''
-            for i in range(0,header):
+            for i in range(0, header):
                 indentation += ' '
             i = i_ = 0
             pairs.append((len(run1.archstates)-1, len(run2.archstates)-1))
@@ -87,10 +89,11 @@ class Rosette:
                 constraints += indentation + "(diff {0} {1} {2} {3} {4} {5} myexpr)\n".format(
                     str(i+1), str(j), self.get_run_name(rid1),
                     str(i_+1), str(j_), self.get_run_name(rid2)
-                )        
+                )
                 i, i_ = j, j_
                 k += 1
-            f.write("(define sol (solve (assert (or {0}))))\n\n".format(constraints))
+            f.write(
+                "(define sol (solve (assert (or {0}))))\n\n".format(constraints))
             f.write("(print-forms sol)")
 
 # (define myexpr (cexpr #:depth 1))
