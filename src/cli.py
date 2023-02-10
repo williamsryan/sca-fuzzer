@@ -249,6 +249,9 @@ def main() -> int:
             rosette = Rosette(theory_fname, args.working_directory, 1)
             rosette.map(run1)
             rosette.map(run2)
+
+            # TODO: run1 and run2 are the same, so constraints are duplicated.
+            # What happened?
             rosette.generate_constraints(pairs, run1, run2)
 
             # TODO: run synthesis refinement loop elsewhere.
