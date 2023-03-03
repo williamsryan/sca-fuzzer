@@ -153,14 +153,14 @@ If a few (up to 3) "Detection" tests fail, it's fine, you might just have a slig
 
 1. Fuzz in a violation-free configuration:
 ```bash
-./cli.py fuzz -s x86/isa_spec/base.json -i 50 -n 100 -c tests/test-nondetection.yaml
+./cli.py fuzz -s x86/isa_spec/base.json -i 50 -n 100 -c tests/test-nondetection.yaml -w .
 ```
 
 No violations should be detected.
 
 2. Fuzz in a configuration with a known contract violation (Spectre V1):
 ```bash
-./cli.py fuzz -s x86/isa_spec/base.json -i 20 -n 1000 -c tests/test-detection.yaml
+./cli.py fuzz -s x86/isa_spec/base.json -i 20 -n 1000 -c tests/test-detection.yaml -w .
 ```
 
 A violation should be detected within a few minutes, with a message similar to this:
