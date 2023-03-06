@@ -139,17 +139,15 @@
 
 ; ------------- END-CORE ------------------ ;
 
+; Run 1.
 (define r1_0 (list                    (bv -1 (bitvector 64))))
-
 (define r1_1 (list                    (bv -1 (bitvector 64))))
-
 (define r1 (list r1_0 r1_1))
 
-(define r1_0 (list                    (bv -1 (bitvector 64))))
-
-(define r1_1 (list                    (bv -1 (bitvector 64))))
-
-(define r1 (list r1_0 r1_1))
+; Run 2.
+; (define r1_0 (list                    (bv -1 (bitvector 64))))
+; (define r1_1 (list                    (bv -1 (bitvector 64))))
+; (define r1 (list r1_0 r1_1))
 
 (define myexpr (cexpr #:depth 1))
 
