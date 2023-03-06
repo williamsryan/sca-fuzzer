@@ -152,7 +152,7 @@
 (define myexpr (cexpr #:depth 1))
 
 ; Just testing - RPW.
-(diff 0 1 r1_0 0 0 r1_1 myexpr)
+; (diff 0 1 r1_0 0 0 r1_1 myexpr)
 (define sol (solve (assert (diff 0 1 r1_0 0 0 r1_1 myexpr))))
 
 (print-forms sol)
