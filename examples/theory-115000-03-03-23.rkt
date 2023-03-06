@@ -151,9 +151,16 @@
 
 (define myexpr (cexpr #:depth 1))
 
-(define sol (solve (assert (or (diff 0 0 r1 0 0 r1 myexpr)
-                               (diff 0 1 r1 0 1 r1 myexpr)
-                               (diff 1 1 r1 1 1 r1 myexpr)
-))))
+; Just testing - RPW.
+(diff 0 1 r1_0 0 0 r1_1 myexpr)
+(define sol (solve (assert (diff 0 1 r1_0 0 0 r1_1 myexpr))))
 
 (print-forms sol)
+; Returns: '(define myexpr (IF (BOOL #f) INSTR))'
+
+; (define sol (solve (assert (or (diff 0 0 r1 0 0 r1 myexpr)
+;                                (diff 0 1 r1 0 1 r1 myexpr)
+;                                (diff 1 1 r1 1 1 r1 myexpr)
+; ))))
+
+; (print-forms sol)
