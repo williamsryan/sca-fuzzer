@@ -5,13 +5,11 @@
 ; ----------------------------------------- ;
 
 ; ----------------- CORE ------------------ ;
-; packages
-(require rosette/lib/destruct)
-; destruct package is for ...
-(require rosette/lib/synthax)
-; synthax package is for ...
+(require rosette/lib/destruct) ; Value destructuring library.
+(require rosette/lib/synthax)  ; Synthesis library.
 
-; General purpose register encoding
+; General purpose register encoding.
+; These aren't used?
 (define RAX  0)  ; A eXtended
 (define RBP  1)  ; Base Pointer
 (define RBX  2)  ; B eXtended
@@ -45,6 +43,8 @@
 (struct BS (bs))
 (struct REG (r) #:transparent)
 
+; Grammar for the actual contract.
+; (IF (BOOL #f) (REG 12))
 (define-grammar (cexpr)
   [expr (IF (pred) (bs))]
   [pred (choose (BOOL (?? boolean?))
@@ -138,4 +138,3 @@
                                   (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
 
 ; ------------- END-CORE ------------------ ;
-

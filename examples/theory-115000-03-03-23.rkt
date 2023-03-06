@@ -6,12 +6,11 @@
 
 ; ----------------- CORE ------------------ ;
 ; packages
-(require rosette/lib/destruct)
-; destruct package is for ...
-(require rosette/lib/synthax)
-; synthax package is for ...
+(require rosette/lib/destruct) ; Value destructuring library.
+(require rosette/lib/synthax)  ; Synthesis library.
 
-; General purpose register encoding
+; General purpose register encoding.
+; These aren't used?
 (define RAX  0)  ; A eXtended
 (define RBP  1)  ; Base Pointer
 (define RBX  2)  ; B eXtended
@@ -45,6 +44,8 @@
 (struct BS (bs))
 (struct REG (r) #:transparent)
 
+; Grammar for the actual contract.
+; (IF (BOOL #f) (REG 12))
 (define-grammar (cexpr)
   [expr (IF (pred) (bs))]
   [pred (choose (BOOL (?? boolean?))
@@ -151,11 +152,19 @@
 
 (define myexpr (cexpr #:depth 1))
 
-; Just testing - RPW.
-; (diff 0 1 r1_0 0 0 r1_1 myexpr)
-(define sol (solve (assert (diff 0 1 r1_0 0 0 r1_1 myexpr))))
+; Synthesis mode.
+(define sol 
+  (synthesize
+    #:forall (list r1_0 r1_1)
+    #:guarantee (assert (diff 0 1 r1_0 0 0 r1_1 myexpr))))
 
 (print-forms sol)
+
+; Angelic execution example.
+; (diff 0 1 r1_0 0 0 r1_1 myexpr)
+; (define sol (solve (assert (diff 0 1 r1_0 0 0 r1_1 myexpr))))
+
+; (print-forms sol)
 ; Returns: '(define myexpr (IF (BOOL #f) INSTR))'
 
 ; (define sol (solve (assert (or (diff 0 0 r1 0 0 r1 myexpr)
