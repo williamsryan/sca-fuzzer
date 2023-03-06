@@ -7,6 +7,9 @@ SPDX-License-Identifier: MIT
 import x86.x86_config as x86_config
 from typing import List, Dict
 
+# For registers?
+from unicorn.x86_const import *
+
 
 class ConfigException(SystemExit):
     pass
@@ -140,6 +143,27 @@ class ConfCls:
     _option_values: Dict[str, List] = {}  # set by ISA-specific config.py
     _default_instruction_blocklist: List[str] = []
 
+    # ==============================================================================================
+    # Registers (WIP).
+    registers = {
+        UC_X86_REG_RAX: 'rax',  # 64b a extended: General purpose reg
+        UC_X86_REG_RBP: 'rbp',  # 64b base pointer: General purpose reg
+        UC_X86_REG_RBX: 'rbx',  # 64b b extended: General purpose reg
+        UC_X86_REG_RCX: 'rcx',  # 64b c extended: General purpose reg
+        UC_X86_REG_RDI: 'rdi',  # 64b destination index: General purpose reg
+        UC_X86_REG_RDX: 'rdx',  # 64b d extended: General purpose reg
+        UC_X86_REG_RSI: 'rsi',  # 64b source index: General purpose reg
+        UC_X86_REG_RSP: 'rsp',  # 64b stack pointer: General purpose reg
+        UC_X86_REG_R8: 'r8',  # 64b general purpose reg 8
+        UC_X86_REG_R9: 'r9',  # 64b general purpose reg 9
+        UC_X86_REG_R10: 'r10',  # 64b general purpose reg 10
+        UC_X86_REG_R11: 'r11',  # 64b general purpose reg 11
+        UC_X86_REG_R12: 'r12',  # 64b general purpose reg 12
+        UC_X86_REG_R13: 'r13',  # 64b general purpose reg 13
+        UC_X86_REG_R14: 'r14',  # 64b general purpose reg 14
+        UC_X86_REG_R15: 'r15',  # 64b general purpose reg 15
+    }
+
     # Implementation of singleton
     def __new__(cls, *args, **kwargs):
         if not isinstance(cls._instance, cls):
@@ -151,7 +175,8 @@ class ConfCls:
 
         # Sanity checks
         if name[0] == "_":
-            raise ConfigException(f"Attempting to set an internal configuration variable {name}.")
+            raise ConfigException(
+                f"Attempting to set an internal configuration variable {name}.")
         if getattr(self, name, None) is None:
             raise ConfigException(f"Unknown configuration variable {name}.\n"
                                   f"It's likely a typo in the configuration file.")
@@ -202,7 +227,8 @@ class ConfCls:
             config = x86_config
             prefix = "x86_"
         else:
-            raise ConfigException(f"Unknown architecture {self.instruction_set}")
+            raise ConfigException(
+                f"Unknown architecture {self.instruction_set}")
         options = [i for i in dir(config) if i.startswith(prefix)]
 
         for option in options:

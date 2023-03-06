@@ -156,7 +156,7 @@ class UnicornModel(Model, ABC):
     tracable: bool = False
     input_size: int
 
-    contact: List[Expr]
+    contract: List[Expr]
 
     def set_tracable(self):
         self.tracable = True
@@ -362,15 +362,18 @@ class UnicornModel(Model, ABC):
             self.taint_tracker = DummyTaintTracker([])
         self.pending_fault_id = 0
 
+    # TODO: fix this next.
     def capture_state(self):
         archstate = ArchState()
         # TODO: reimplement this later.
-        # registers = CONF.registers.keys()
-        # for reg in registers:
-        #     archstate.regs[reg] = self.emulator.reg_read(reg)
+        registers = CONF.registers.keys()
+        for reg in registers:
+            archstate.regs[reg] = self.emulator.reg_read(reg)
+
         mem_address_start = self.sandbox_base
-        mem_address_end = mem_address_start + 20 # TODO: replace 20 with self.input_size
-        mem_ = self.emulator.mem_read(mem_address_start, 20) # TODO: replace 20 with self.input_size
+        mem_address_end = mem_address_start + 20 # TODO: replace 20 with self.input_size.
+        mem_ = self.emulator.mem_read(mem_address_start, 20) # TODO: replace 20 with self.input_size.
+        
         for i in range(mem_address_start, mem_address_end, 8):
             i_ = i - mem_address_start
             archstate.mems[i] = (mem_[i_:i_+8]).hex()
