@@ -371,7 +371,9 @@ class UnicornModel(Model, ABC):
     def capture_state(self):
         archstate = ArchState()
         # TODO: reimplement this later.
-        registers = CONF.registers.keys()
+        # registers = CONF.registers.keys()
+        # TODO: different way to get registers now?
+        registers = self.target_desc.registers
         for reg in registers:
             archstate.regs[reg] = self.emulator.reg_read(reg)
 
