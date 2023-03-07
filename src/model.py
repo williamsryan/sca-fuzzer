@@ -15,6 +15,11 @@ import unicorn as uni
 
 from unicorn import Uc, UcError, UC_MEM_WRITE, UC_MEM_READ, UC_SECOND_SCALE, UC_HOOK_MEM_READ, \
     UC_HOOK_MEM_WRITE, UC_HOOK_CODE, UC_PROT_NONE, UC_PROT_READ
+from unicorn.x86_const import UC_X86_REG_RSP, UC_X86_REG_RBP, \
+    UC_X86_REG_RIP, \
+    UC_X86_REG_EFLAGS, UC_X86_REG_RAX, UC_X86_REG_RBX, UC_X86_REG_RCX, UC_X86_REG_RDX, \
+    UC_X86_REG_RSI, UC_X86_REG_RDI, UC_X86_REG_R8, UC_X86_REG_R9, UC_X86_REG_R10, UC_X86_REG_R11, \
+    UC_X86_REG_R12, UC_X86_REG_R13, UC_X86_REG_R14, UC_X86_REG_R15
 
 from interfaces import ArchState, CTrace, Run, TestCase, Observation, Model, InputTaint, Instruction, ExecutionTrace, \
     TracedInstruction, TracedMemAccess, Input, Tracer, \
@@ -787,6 +792,42 @@ class BaseTaintTracker(TaintTrackerInterface):
     unicorn_target_desc: UnicornTargetDesc
     target_desc: TargetDesc
     _registers: List[int]
+
+    # _reg_decode = {
+    #     "A": UC_X86_REG_RAX,
+    #     "B": UC_X86_REG_RBX,
+    #     "C": UC_X86_REG_RCX,
+    #     "D": UC_X86_REG_RDX,
+    #     "DI": UC_X86_REG_RDI,
+    #     "SI": UC_X86_REG_RSI,
+    #     "SP": UC_X86_REG_RSP,
+    #     "BP": UC_X86_REG_RBP,
+    #     "8": UC_X86_REG_R8,
+    #     "9": UC_X86_REG_R9,
+    #     "10": UC_X86_REG_R10,
+    #     "11": UC_X86_REG_R11,
+    #     "12": UC_X86_REG_R12,
+    #     "13": UC_X86_REG_R13,
+    #     "14": UC_X86_REG_R14,
+    #     "15": UC_X86_REG_R15,
+    #     "FLAGS": UC_X86_REG_EFLAGS,
+    #     "CF": UC_X86_REG_EFLAGS,
+    #     "PF": UC_X86_REG_EFLAGS,
+    #     "AF": UC_X86_REG_EFLAGS,
+    #     "ZF": UC_X86_REG_EFLAGS,
+    #     "SF": UC_X86_REG_EFLAGS,
+    #     "TF": UC_X86_REG_EFLAGS,
+    #     "IF": UC_X86_REG_EFLAGS,
+    #     "DF": UC_X86_REG_EFLAGS,
+    #     "OF": UC_X86_REG_EFLAGS,
+    #     "AC": UC_X86_REG_EFLAGS,
+    #     "RIP": -1,
+    #     "RSP": -1,
+    # }
+    # _registers = [
+    #     UC_X86_REG_RAX, UC_X86_REG_RBX, UC_X86_REG_RCX, UC_X86_REG_RDX, UC_X86_REG_RSI,
+    #     UC_X86_REG_RDI, UC_X86_REG_EFLAGS
+    # ]
 
     def __init__(self, initial_observations, sandbox_base=0):
         self.initial_observations = initial_observations
