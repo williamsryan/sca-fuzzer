@@ -87,6 +87,7 @@ def get_fuzzer(instruction_set, working_directory, testcase, inputs):
         raise ConfigException("unknown value of `instruction_set` configuration option")
     elif CONF.fuzzer == "basic":
         if CONF.instruction_set == "x86-64":
+            # This is where the fuzzer is actually started with parameters.
             return x86_fuzzer.X86Fuzzer(instruction_set, working_directory, testcase, inputs)
         raise ConfigException("unknown value of `instruction_set` configuration option")
     raise ConfigException("unknown value of `fuzzer` configuration option")
