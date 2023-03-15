@@ -13,7 +13,7 @@ import signal
 import sys, os
 
 def main():
-    theory_fname = "theory-115000-03-03-23.rkt"
+    theory_fname = "theory-old.rkt"
     command = "racket " + "./" + theory_fname
 
     expr_fname = "expr-" + "001" + ".txt"

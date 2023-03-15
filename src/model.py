@@ -983,7 +983,7 @@ class BaseTaintTracker(TaintTrackerInterface):
             else:
                 reg = self.unicorn_target_desc.reg_decode[label]
                 # TODO: test this later.
-                print(f"[+] Register test: {reg}")
+                # print(f"[+] Register test: {reg}") # Prints value in register from current test?
                 if reg in self._registers:
                     input_offset = register_start + \
                         self._registers.index(
