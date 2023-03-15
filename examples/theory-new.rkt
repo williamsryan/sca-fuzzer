@@ -158,31 +158,11 @@
 
 (define r1 (list r1_0 r1_1))
 
-(define r1_0 (list (bv 880468295885 (bitvector 64))
-                   (bv 167503724583 (bitvector 64))
-                   (bv 0 (bitvector 64))
-                   (bv 468151435373 (bitvector 64))
-                   (bv 1726576853249 (bitvector 64))
-                   (bv 167503724583 (bitvector 64))
-                   (bv 6 (bitvector 64))
-                   (bv -1 (bitvector 64))))
-
-(define r1_1 (list (bv 1065151889656 (bitvector 64))
-                   (bv 103079215128 (bitvector 64))
-                   (bv 0 (bitvector 64))
-                   (bv 1567663063405 (bitvector 64))
-                   (bv 1103806595440 (bitvector 64))
-                   (bv 103079215128 (bitvector 64))
-                   (bv 2 (bitvector 64))
-                   (bv -1 (bitvector 64))))
-
-(define r1 (list r1_0 r1_1))
-
 (define myexpr (cexpr #:depth 1))
 
-(define sol (solve (assert (or (diff 0 0 r1 0 0 r1 myexpr)
-                               (diff 0 1 r1 0 1 r1 myexpr)
-                               (diff 1 1 r1 1 1 r1 myexpr)
-))))
+(define sol 
+  (synthesize
+    #:forall (list r1_0 r1_1)
+    #:guarantee (assert (diff 0 1 r1_0 0 0 r1_1 myexpr))))
 
 (print-forms sol)
