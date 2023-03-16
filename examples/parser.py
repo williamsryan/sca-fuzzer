@@ -69,7 +69,9 @@ BOOL = Keyword('BOOL')
 REG = Keyword('REG')
 
 boolval = oneOf("#t #f")
-regval = Word(nums)
+regval = Word(nums) # TODO: looks like this parser fails on negative values. Update later if this is a use case.
+                    # I did find a result that showed a negative value, then this failed. Not sure if the issue is here
+                    # or with the value that was synthesized.
 bs = LBRACE + REG + regval + RBRACE
 pred = LBRACE + BOOL + boolval + RBRACE
 expr = LBRACE + IF + pred + bs + RBRACE
