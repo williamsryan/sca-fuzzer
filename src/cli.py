@@ -242,7 +242,6 @@ def main() -> int:
         else:
             # print(f"[+] Violation result: {result}")
             run1, run2, pairs = result
-            print(run1.observations)
             timestamp = datetime.today().strftime('%H%M%S-%d-%m-%y')
             theory_fname = "theory-" + timestamp + ".rkt"
             expr_fname = "expr-" + timestamp + ".txt"
@@ -251,8 +250,7 @@ def main() -> int:
             rosette.map(run1)
             rosette.map(run2)
 
-            # TODO: run1 and run2 are the same, so constraints are duplicated.
-            # What happened?
+            # TODO: should run1 and run2 be the same? Re-check definition of a valuable test case/trace.
             rosette.generate_constraints(pairs, run1, run2)
 
             # TODO: run synthesis refinement loop elsewhere.
