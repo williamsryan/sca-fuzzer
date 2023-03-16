@@ -161,7 +161,7 @@ class Fuzzer:
         self.model.load_test_case(test_case)
         self.executor.load_test_case(test_case)
         self.coverage.load_test_case(test_case)
-        # self.model.set_tracable()
+        self.model.set_tracable()
 
         for id, input in enumerate(inputs):
             run = self.model.execute(input)
