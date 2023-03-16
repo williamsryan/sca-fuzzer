@@ -119,15 +119,12 @@ class Fuzzer:
                 self.store_test_case(test_case, violation) # Don't need this right now.
 
                 violate_inputs: List[Input] = self.get_single_violation(violation)
-                # print(f"[+] Violating inputs: {violate_inputs}")
+                print(f"[+] Violating inputs: {violate_inputs}")
                 runs = self.capture(test_case, violate_inputs)
                 run1 = runs[0]
                 run2 = runs[1]
                 # Debug info to show raw run data before synthesis step.
                 print(f"[+] Debug run1: {run1} run2: {run2}")
-                pairs = self.analyser.get_obs_pairs(run1, run2)
-                # Debug info to show observation pairs too.
-                # print(f"[+] Debug pairs: {pairs}")
 
                 # STAT.violations += 1
                 # if not nonstop:
