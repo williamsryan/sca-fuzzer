@@ -442,3 +442,4 @@ class ArchitecturalFuzzer(Fuzzer):
                 return eq_cls
 
         return None
+
