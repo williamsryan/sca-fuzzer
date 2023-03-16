@@ -242,6 +242,7 @@ def main() -> int:
         else:
             # print(f"[+] Violation result: {result}")
             run1, run2, pairs = result
+            print(run1.observations)
             timestamp = datetime.today().strftime('%H%M%S-%d-%m-%y')
             theory_fname = "theory-" + timestamp + ".rkt"
             expr_fname = "expr-" + timestamp + ".txt"

@@ -39,10 +39,7 @@ class EquivalenceAnalyser(Analyser):
         obs1 = run1.observations
         obs2 = run2.observations
 
-        print(f"[+] Obs-test: {obs1}, and {obs2}")
-
         while True:
-            # print("i1: {0}, i2: {1}".format(str(i1), str(i2)))
             if i1 == len(obs1) and i2 == len(obs2):
                 break
             if len(obs1[i1]) + len(obs2[i2]) > 0:
