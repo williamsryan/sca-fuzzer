@@ -240,7 +240,7 @@ def main() -> int:
         if result is False:
             print(f"[-] No result tuple from fuzzer.")
         else:
-            print(f"[+] Violation result: {result}")
+            # print(f"[+] Violation result: {result}")
             run1, run2, pairs = result
             timestamp = datetime.today().strftime('%H%M%S-%d-%m-%y')
             theory_fname = "theory-" + timestamp + ".rkt"

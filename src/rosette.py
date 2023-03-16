@@ -51,7 +51,6 @@ class Rosette:
             return "(define {0} (list {1}))\n\n".format(xstate_name, regs)
 
         with open(self.work_dir + "/" + self.filename, "a") as f:
-            print(f"[+] Mapping: {run}")
             xstates = ''
             for i, xstate in enumerate(run.archstates):
                 print(f"[+] Writing states: {model(run.id, i, xstate)}")

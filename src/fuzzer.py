@@ -127,9 +127,7 @@ class Fuzzer:
                 print(f"[+] Debug run1: {run1} run2: {run2}")
                 pairs = self.analyser.get_obs_pairs(run1, run2)
                 # Debug info to show observation pairs too.
-                print(f"[+] Debug pairs: {pairs}")
-
-                return run1, run2, pairs
+                # print(f"[+] Debug pairs: {pairs}")
 
                 # STAT.violations += 1
                 # if not nonstop:
@@ -143,13 +141,16 @@ class Fuzzer:
                     break
 
         LOGGER.fuzzer_finish()
-        return STAT.violations > 0
-        # return None
+        if run1 is not None and run2 is not None:
+            pairs = self.analser.get_obs_pairs(run1, run2)
+            return run1, run2, pairs
+        # return STAT.violations > 0
 
     def get_single_violation(self, violation):
         measurements: List[Measurement] = violation.measurements
         i1: Input = measurements[0].input_
         i2: Input = measurements[1].input_
+        print(f"[+] i1: {i1}, i2: {i2}")
         return [i1, i2]
 
     def capture(self, test_case, inputs):
@@ -158,7 +159,7 @@ class Fuzzer:
         self.model.load_test_case(test_case)
         self.executor.load_test_case(test_case)
         self.coverage.load_test_case(test_case)
-        self.model.set_tracable()
+        # self.model.set_tracable()
 
         for id, input in enumerate(inputs):
             run = self.model.execute(input)
