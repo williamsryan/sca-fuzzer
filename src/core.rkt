@@ -8,6 +8,8 @@
 (require rosette/lib/destruct) ; Value destructuring library.
 (require rosette/lib/synthax)  ; Synthesis library.
 
+(require unstable/error)  ; Error handling.
+
 ; General purpose register encoding.
 ; These aren't used?
 (define RAX  0)  ; A eXtended

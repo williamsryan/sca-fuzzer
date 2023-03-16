@@ -8,6 +8,8 @@
 (require rosette/lib/destruct) ; Value destructuring library.
 (require rosette/lib/synthax)  ; Synthesis library.
 
+(require unstable/error)  ; Error handling.
+
 ; General purpose register encoding.
 ; These aren't used?
 (define RAX  0)  ; A eXtended
@@ -197,9 +199,18 @@
 
 (define myexpr (cexpr #:depth 1))
 
-(define sol (solve (assert (or (diff 0 0 r1 0 0 r1 myexpr)
-                               (diff 0 1 r1 0 1 r1 myexpr)
-                               (diff 1 5 r1 1 5 r1 myexpr)
-))))
+; (define sol2 (solve (assert (or (diff 0 0 r1 0 0 r1 myexpr)
+;                                (diff 0 1 r1 0 1 r1 myexpr)
+;                                (diff 1 5 r1 1 5 r1 myexpr)
+; ))))
 
-(print-forms sol)
+(define sol 
+  (synthesize
+    #:forall (list r1)
+    #:guarantee (assert (diff 0 0 r1 0 0 r1 myexpr))))
+
+; (print-forms sol)
+; (generate-forms sol)
+; Test: check if this is sat/unsat to determine if we should print
+; out data. Otherwise continue. Right now we get crashing errors.
+(if (sat? sol) (print-forms sol) (print "(unsat) continuing..."))

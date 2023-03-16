@@ -162,7 +162,7 @@
 
 (define sol 
   (synthesize
-    #:forall (list r1_0 r1_1)
-    #:guarantee (assert (diff 0 1 r1_0 0 0 r1_1 myexpr))))
+    #:forall (list r1)
+    #:guarantee (assert (diff 0 1 r1 0 0 r1 myexpr))))
 
 (print-forms sol)
