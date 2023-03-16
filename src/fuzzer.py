@@ -124,12 +124,12 @@ class Fuzzer:
                 run1 = runs[0]
                 run2 = runs[1]
                 # Debug info to show raw run data before synthesis step.
-                print(f"[+] Debug run1: {run1} run2: {run2}")
-                pairs = self.analyser.get_obs_pairs(run1, run2)
-                # Debug info to show observation pairs too.
-                print(f"[+] Debug pairs: {pairs}")
+                # print(f"[+] Debug run1: {run1} run2: {run2}")
+                # pairs = self.analyser.get_obs_pairs(run1, run2)
+                # # Debug info to show observation pairs too.
+                # print(f"[+] Debug pairs: {pairs}")
 
-                return run1, run2, pairs
+                # return run1, run2, pairs
 
                 # STAT.violations += 1
                 # if not nonstop:
@@ -143,6 +143,9 @@ class Fuzzer:
                     break
 
         LOGGER.fuzzer_finish()
+        if run1 is not None and run2 is not None:
+            pairs = self.analyser.get_obs_pairs(run1, run2)
+            return run1, run2, pairs
         return STAT.violations > 0
         # return None
 
@@ -439,3 +442,4 @@ class ArchitecturalFuzzer(Fuzzer):
                 return eq_cls
 
         return None
+
