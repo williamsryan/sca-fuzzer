@@ -146,7 +146,7 @@ class Fuzzer:
         if run1 is not None and run2 is not None:
             pairs = self.analyser.get_obs_pairs(run1, run2)
             return run1, run2, pairs
-        # return STAT.violations > 0
+        return STAT.violations > 0
         # return None
 
     def get_single_violation(self, violation):
@@ -442,3 +442,4 @@ class ArchitecturalFuzzer(Fuzzer):
                 return eq_cls
 
         return None
+
