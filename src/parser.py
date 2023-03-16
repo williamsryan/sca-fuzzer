@@ -83,11 +83,11 @@ expr = LBRACE + IF + pred + bs + RBRACE
 # This expects the form:
 # (IF (BOOL #f) (REG 12))
 
-boolval.add_parse_action(Bool)
-regval.add_parse_action(Reg)
-bs.add_parse_action(Bs)
-pred.add_parse_action(Pred)
-expr.add_parse_action(Expr)
+boolval.addParseAction(Bool)
+regval.addParseAction(Reg)
+bs.addParseAction(Bs)
+pred.addParseAction(Pred)
+expr.addParseAction(Expr)
 
 
 class Parser:
@@ -98,5 +98,5 @@ class Parser:
 
     def parse(self):
         cexpr = self.expr_str
-        e = expr.parse_string(cexpr)
+        e = expr.parseString(cexpr)
         return e[0]
