@@ -359,7 +359,7 @@ class Logger:
     # ==============================================================================================
     # Contract
     def show_contract(self, contract):
-        if self.info_enabled:
+        if self.info:
             print("")  # new line after the progress bar
             print("Current contract: {")
             for expr in contract:
