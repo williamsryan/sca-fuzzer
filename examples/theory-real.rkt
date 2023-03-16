@@ -207,7 +207,9 @@
 (define sol 
   (synthesize
     #:forall (list r1)
-    #:guarantee (assert (diff 0 0 r1 0 0 r1 myexpr))))
+    #:guarantee (assert (or (diff 0 0 r1 0 0 r1 myexpr)
+                            (diff 0 1 r1 0 1 r1 myexpr)
+                            (diff 1 5 r1 1 5 r1 myexpr)))))
 
 ; (print-forms sol)
 ; (generate-forms sol)
