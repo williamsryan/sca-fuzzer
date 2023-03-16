@@ -1,21 +1,23 @@
 from pyparsing import Keyword, Word, nums, oneOf, Suppress
 from dateutil.parser import parse as parse_date
 
+
 class Node(object):
     def __init__(self, tokens):
         self._tokens = tokens
 
-class Bool(Node): 
+
+class Bool(Node):
     val: bool
 
     def __init__(self, tokens):
-        self.val = (tokens[0]=='#t')
+        self.val = (tokens[0] == '#t')
 
     def __str__(self) -> str:
         return '#t' if self.val else '#f'
 
 
-class Reg(Node): 
+class Reg(Node):
     val: int
 
     def __init__(self, tokens):
@@ -24,7 +26,8 @@ class Reg(Node):
     def __str__(self) -> str:
         return str(self.val)
 
-class Bs(Node): 
+
+class Bs(Node):
     keyword: str
     val: Reg
 
@@ -48,7 +51,7 @@ class Pred(Node):
         return "({0} {1})".format(self.keyword, self.val)
 
 
-class Expr(Node): 
+class Expr(Node):
     keyword: str
     pred: Pred
     bs: Bs
@@ -62,16 +65,17 @@ class Expr(Node):
         return "({0} {1} {2})".format(self.keyword, self.pred, self.bs)
 
 
-LBRACE,RBRACE = map(Suppress, "()")
+LBRACE, RBRACE = map(Suppress, "()")
 
 IF = Keyword('IF')
 BOOL = Keyword('BOOL')
 REG = Keyword('REG')
 
 boolval = oneOf("#t #f")
-regval = Word(nums) # TODO: looks like this parser fails on negative values. Update later if this is a use case.
-                    # I did find a result that showed a negative value, then this failed. Not sure if the issue is here
-                    # or with the value that was synthesized.
+# TODO: looks like this parser fails on negative values. Update later if this is a use case.
+# I did find a result that showed a negative value, then this failed. Not sure if the issue is here
+# or with the value that was synthesized.
+regval = Word(nums)
 bs = LBRACE + REG + regval + RBRACE
 pred = LBRACE + BOOL + boolval + RBRACE
 expr = LBRACE + IF + pred + bs + RBRACE
@@ -79,19 +83,20 @@ expr = LBRACE + IF + pred + bs + RBRACE
 # This expects the form:
 # (IF (BOOL #f) (REG 12))
 
-boolval.addParseAction(Bool)
-regval.addParseAction(Reg)
-bs.addParseAction(Bs)
-pred.addParseAction(Pred)
-expr.addParseAction(Expr)
+boolval.add_parse_action(Bool)
+regval.add_parse_action(Reg)
+bs.add_parse_action(Bs)
+pred.add_parse_action(Pred)
+expr.add_parse_action(Expr)
+
 
 class Parser:
     expr_str: str
 
     def __init__(self, expr):
         self.expr_str = expr
-    
+
     def parse(self):
         cexpr = self.expr_str
-        e = expr.parseString(cexpr)
+        e = expr.parse_string(cexpr)
         return e[0]
