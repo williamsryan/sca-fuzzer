@@ -240,7 +240,7 @@ def main() -> int:
         if result is False:
             print(f"[-] No result tuple from fuzzer.")
         else:
-            # print(f"[+] Violation result: {result}")
+            print(f"[+] Violation result: {result}")
             run1, run2, pairs = result
             timestamp = datetime.today().strftime('%H%M%S-%d-%m-%y')
             theory_fname = "theory-" + timestamp + ".rkt"
@@ -254,30 +254,30 @@ def main() -> int:
             rosette.generate_constraints(pairs, run1, run2)
 
             # TODO: run synthesis refinement loop elsewhere.
-            # import subprocess
-            # import signal
+            import subprocess
+            import signal
 
-            # command = "racket " + args.working_directory + "/" + theory_fname
-            # with subprocess.Popen(command, shell=True, stdout=subprocess.PIPE,
-            #                       start_new_session=True) as process:
-            #     try:
-            #         stdout, stderr = process.communicate(timeout=6000)
-            #         return_code = process.poll()
-            #         if return_code:
-            #             raise subprocess.CalledProcessError(return_code, process.args,
-            #                                                 output=stdout, stderr=stderr)
-            #     except subprocess.TimeoutExpired:
-            #         os.killpg(process.pid, signal.SIGINT)
-            #         raise
+            command = "racket " + args.working_directory + "/" + theory_fname
+            with subprocess.Popen(command, shell=True, stdout=subprocess.PIPE,
+                                  start_new_session=True) as process:
+                try:
+                    stdout, stderr = process.communicate(timeout=6000)
+                    return_code = process.poll()
+                    if return_code:
+                        raise subprocess.CalledProcessError(return_code, process.args,
+                                                            output=stdout, stderr=stderr)
+                except subprocess.TimeoutExpired:
+                    os.killpg(process.pid, signal.SIGINT)
+                    raise
 
-            # with open(args.working_directory + "/" + expr_fname, "w") as file:
-            #     file.write(stdout.decode("UTF-8"))
-            # with open(args.working_directory + "/" + expr_fname, "r") as file:
-            #     # file.readline()
-            #     s = file.readline()
-            #     s = s[len("(define myexpr "):-1]
-            #     parser = Parser(s)
-            #     contract.append(parser.parse())
+            with open(args.working_directory + "/" + expr_fname, "w") as file:
+                file.write(stdout.decode("UTF-8"))
+            with open(args.working_directory + "/" + expr_fname, "r") as file:
+                # file.readline()
+                s = file.readline()
+                s = s[len("(define myexpr "):-1]
+                parser = Parser(s)
+                contract.append(parser.parse())
 
             LOGGER.show_contract(contract)
 
