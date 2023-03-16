@@ -31,8 +31,8 @@ class Rosette:
         return"r{0}".format(str(rid))
 
     def map(self, run):
-        print("[+] Mapping...")
         def model(rid, xid, xstate):
+            print("in model...")
             xstate_name = self.get_xstate_name(rid, xid)
             header = len('(define {0} (list '.format(xstate_name))
             indentation = ''
@@ -52,6 +52,7 @@ class Rosette:
             return "(define {0} (list {1}))\n\n".format(xstate_name, regs)
 
         with open(self.work_dir + "/" + self.filename, "a") as f:
+            print("in open...")
             xstates = ''
             for i, xstate in enumerate(run.archstates):
                 print(f"[+] Writing states: {model(run.id, i, xstate)}")
