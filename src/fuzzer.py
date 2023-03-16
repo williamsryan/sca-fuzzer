@@ -116,7 +116,7 @@ class Fuzzer:
 
             if violation:
                 LOGGER.fuzzer_report_violations(violation, self.model)
-                # self.store_test_case(test_case, violation) # Don't need this right now.
+                self.store_test_case(test_case, violation) # Don't need this, just debugging.
 
                 violate_inputs: List[Input] = self.get_single_violation(violation)
                 # print(f"[+] Violating inputs: {violate_inputs}")
