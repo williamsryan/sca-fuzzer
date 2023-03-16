@@ -119,7 +119,7 @@ class Fuzzer:
                 self.store_test_case(test_case, violation) # Don't need this right now.
 
                 violate_inputs: List[Input] = self.get_single_violation(violation)
-                print(f"[+] Violating inputs: {violate_inputs}")
+                # print(f"[+] Violating inputs: {violate_inputs}")
                 runs = self.capture(test_case, violate_inputs)
                 run1 = runs[0]
                 run2 = runs[1]
@@ -139,7 +139,7 @@ class Fuzzer:
 
         LOGGER.fuzzer_finish()
         if run1 is not None and run2 is not None:
-            pairs = self.analser.get_obs_pairs(run1, run2)
+            pairs = self.analyser.get_obs_pairs(run1, run2)
             return run1, run2, pairs
         # return STAT.violations > 0
 
@@ -147,7 +147,6 @@ class Fuzzer:
         measurements: List[Measurement] = violation.measurements
         i1: Input = measurements[0].input_
         i2: Input = measurements[1].input_
-        print(f"[+] i1: {i1}, i2: {i2}")
         return [i1, i2]
 
     def capture(self, test_case, inputs):
