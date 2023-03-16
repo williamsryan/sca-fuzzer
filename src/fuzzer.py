@@ -165,6 +165,7 @@ class Fuzzer:
 
         for id, input in enumerate(inputs):
             run = self.model.execute(input)
+            print(f"[+] Run debug: {run}")
             # print(f"[+] Run obj: {run}")
             run.id = id
             # self.store_run(run)
