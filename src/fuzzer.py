@@ -12,7 +12,7 @@ from copy import copy
 
 import factory
 from interfaces import CTrace, HTrace, Input, InputTaint, EquivalenceClass, Run, TestCase, Generator, \
-    InputGenerator, Model, Executor, Analyser, Coverage, InputID, Measurement
+    InputGenerator, Model, Executor, Analyser, Coverage, InputID, Measurement, DbgRun
 from isa_loader import InstructionSet
 
 from config import CONF
@@ -80,10 +80,8 @@ class Fuzzer:
         # create all main modules
         self.initialize_modules()
 
-        # run1: Run
-        # run2: Run
-        run1 = Run()
-        run2 = Run()
+        run1: Run
+        run2: DbgRun
 
         for i in range(num_test_cases):
             LOGGER.fuzzer_start_round(i)
@@ -170,11 +168,11 @@ class Fuzzer:
 
         for id, input in enumerate(inputs):
             run = self.model.execute(input) # Why are run0 and run1 always the same with different inputs? Doesn't this mean it's _not_ an interesting test case?
-            print(f"[+] Running ID {id} on input {input}")
+            # print(f"[+] Running ID {id} on input {input}")
             run.id = id
             # self.store_run(run)
             runs[id] = run
-            # print(f"[+] Run[{id}] : {run.archstates}")
+
         print(f"[+] Run obj: {runs}")
         return runs
 
