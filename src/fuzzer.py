@@ -126,11 +126,11 @@ class Fuzzer:
                 # print(f"[+] Equiv test: {run1.__dict__ == run2.__dict__}")
                 # Debug info to show raw run data before synthesis step.
                 # print(f"[+] Debug run1: {run1} run2: {run2}")
-                pairs = self.analyser.get_obs_pairs(run1, run2)
+                # pairs = self.analyser.get_obs_pairs(run1, run2)
                 # # Debug info to show observation pairs too.
                 # print(f"[+] Debug pairs: {pairs}")
 
-                return run1, run2, pairs
+                # return run1, run2, pairs
 
                 # STAT.violations += 1
                 # if not nonstop:
@@ -144,9 +144,9 @@ class Fuzzer:
                     break
 
         LOGGER.fuzzer_finish()
-        # if run1 is not None and run2 is not None:
-        #     pairs = self.analyser.get_obs_pairs(run1, run2)
-        #     return run1, run2, pairs
+        if run1 is not None and run2 is not None:
+            pairs = self.analyser.get_obs_pairs(run1, run2)
+            return run1, run2, pairs
         return STAT.violations > 0
         # return None
 
@@ -159,7 +159,7 @@ class Fuzzer:
     def capture(self, test_case, inputs):
         runs = {}
 
-        # print(f"[+] Capturing run data: {test_case} -> {inputs}")
+        print(f"[+] Capturing run data: {test_case} -> {inputs}")
 
         self.model.load_test_case(test_case)
         self.executor.load_test_case(test_case)
@@ -167,13 +167,12 @@ class Fuzzer:
         self.model.set_tracable()
 
         for id, input in enumerate(inputs):
-            run = self.model.execute(input) # Why are run0 and run1 always the same with different inputs? Doesn't this mean it's _not_ an interesting test case?
-            # print(f"[+] Running ID {id} on input {input}")
+            run = self.model.execute(input) # Equivalent contract traces with different inputs. That should be correct.
             run.id = id
             # self.store_run(run)
             runs[id] = run
 
-        print(f"[+] Run obj: {runs}")
+        # print(f"[+] Run obj: {runs}")
         return runs
 
     def filter(self, test_case, inputs):

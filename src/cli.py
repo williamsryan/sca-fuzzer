@@ -248,36 +248,36 @@ def main() -> int:
 
             rosette = Rosette(theory_fname, args.working_directory, 1)
             rosette.map(run1)
-            rosette.map(run2)
+            # rosette.map(run2)
 
             # TODO: should run1 and run2 be the same? Re-check definition of a valuable test case/trace.
             rosette.generate_constraints(pairs, run1, run2)
 
             # TODO: run synthesis refinement loop elsewhere.
-            import subprocess
-            import signal
+            # import subprocess
+            # import signal
 
-            command = "racket " + args.working_directory + "/" + theory_fname
-            with subprocess.Popen(command, shell=True, stdout=subprocess.PIPE,
-                                  start_new_session=True) as process:
-                try:
-                    stdout, stderr = process.communicate(timeout=6000)
-                    return_code = process.poll()
-                    if return_code:
-                        raise subprocess.CalledProcessError(return_code, process.args,
-                                                            output=stdout, stderr=stderr)
-                except subprocess.TimeoutExpired:
-                    os.killpg(process.pid, signal.SIGINT)
-                    raise
+            # command = "racket " + args.working_directory + "/" + theory_fname
+            # with subprocess.Popen(command, shell=True, stdout=subprocess.PIPE,
+            #                       start_new_session=True) as process:
+            #     try:
+            #         stdout, stderr = process.communicate(timeout=6000)
+            #         return_code = process.poll()
+            #         if return_code:
+            #             raise subprocess.CalledProcessError(return_code, process.args,
+            #                                                 output=stdout, stderr=stderr)
+            #     except subprocess.TimeoutExpired:
+            #         os.killpg(process.pid, signal.SIGINT)
+            #         raise
 
-            with open(args.working_directory + "/" + expr_fname, "w") as file:
-                file.write(stdout.decode("UTF-8"))
-            with open(args.working_directory + "/" + expr_fname, "r") as file:
-                # file.readline()
-                s = file.readline()
-                s = s[len("(define myexpr "):-1]
-                parser = Parser(s)
-                contract.append(parser.parse())
+            # with open(args.working_directory + "/" + expr_fname, "w") as file:
+            #     file.write(stdout.decode("UTF-8"))
+            # with open(args.working_directory + "/" + expr_fname, "r") as file:
+            #     # file.readline()
+            #     s = file.readline()
+            #     s = s[len("(define myexpr "):-1]
+            #     parser = Parser(s)
+            #     contract.append(parser.parse())
 
             LOGGER.show_contract(contract)
 
