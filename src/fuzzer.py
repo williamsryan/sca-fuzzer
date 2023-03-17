@@ -80,8 +80,10 @@ class Fuzzer:
         # create all main modules
         self.initialize_modules()
 
-        run1: Run.__init__
-        run2: Run.__init__
+        # run1: Run
+        # run2: Run
+        run1 = Run()
+        run2 = Run()
 
         for i in range(num_test_cases):
             LOGGER.fuzzer_start_round(i)
