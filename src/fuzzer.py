@@ -113,7 +113,6 @@ class Fuzzer:
 
             # Fuzz the test case
             violation = self.fuzzing_round(test_case, inputs)
-            print(f"[+] Violation: {violation}")
 
             if violation:
                 LOGGER.fuzzer_report_violations(violation, self.model)
@@ -121,6 +120,7 @@ class Fuzzer:
 
                 violate_inputs: List[Input] = self.get_single_violation(violation)
                 # print(f"[+] Violating inputs: {violate_inputs}")
+                print(f"[+] Violation: {violation}")
                 runs = self.capture(test_case, violate_inputs)
                 run1 = runs[0]
                 run2 = runs[1]
