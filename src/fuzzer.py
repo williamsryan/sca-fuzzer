@@ -113,6 +113,7 @@ class Fuzzer:
 
             # Fuzz the test case
             violation = self.fuzzing_round(test_case, inputs)
+            print(f"[+] Violation: {violation}")
 
             if violation:
                 LOGGER.fuzzer_report_violations(violation, self.model)
