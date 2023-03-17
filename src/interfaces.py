@@ -688,6 +688,7 @@ class Run:
     observations: List[Observations]
 
     def __init__(self) -> None:
+        print(f"[+] Run class init()")
         self.instructions = []
         self.archstates = []
         self.observations = []

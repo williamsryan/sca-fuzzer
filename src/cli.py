@@ -247,8 +247,10 @@ def main() -> int:
             expr_fname = "expr-" + timestamp + ".txt"
 
             rosette = Rosette(theory_fname, args.working_directory, 1)
-            rosette.map(run1)
-            rosette.map(run2)
+            map1 = rosette.map(run1)
+            print(f"[+] run1 map: {map1}")
+            map2 = rosette.map(run2)
+            print(f"[+] run2 map: {map2}")
 
             # TODO: should run1 and run2 be the same? Re-check definition of a valuable test case/trace.
             rosette.generate_constraints(pairs, run1, run2)
