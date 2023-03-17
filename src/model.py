@@ -18,7 +18,7 @@ from unicorn import Uc, UcError, UC_MEM_WRITE, UC_MEM_READ, UC_SECOND_SCALE, UC_
 
 from interfaces import ArchState, CTrace, Run, TestCase, Observation, Model, InputTaint, Instruction, ExecutionTrace, \
     TracedInstruction, TracedMemAccess, Input, Tracer, \
-    RegisterOperand, FlagsOperand, MemoryOperand, TaintTrackerInterface, TargetDesc
+    RegisterOperand, FlagsOperand, MemoryOperand, TaintTrackerInterface, TargetDesc, DbgRun
 from config import CONF
 from service import LOGGER, NotSupportedException
 
@@ -46,11 +46,13 @@ class UnicornTracer(Tracer):
 
     # Our run.
     run: Run
+    dbgRun: DbgRun
 
     def __init__(self):
         super().__init__()
         self.trace = []
         self.run = Run()    # Is Run only initialized once, or do we need 2 instances for comparison?
+        self.dbgRun = DbgRun()
         self.run.observations.append([])
 
     def init_trace(self, emulator, target_desc: UnicornTargetDesc) -> None:
