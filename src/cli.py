@@ -283,7 +283,7 @@ def main() -> int:
 
             LOGGER.show_contract(contract)
 
-        print(f"[+] Final result: {result}") # (<interfaces.Run object at 0x7f11bd72ffa0>, <interfaces.Run object at 0x7f11bd72ffa0>, [(0, 0), (11, 11)])
+        # print(f"[+] Final result: {result}") # (<interfaces.Run object at 0x7f11bd72ffa0>, <interfaces.Run object at 0x7f11bd72ffa0>, [(0, 0), (11, 11)])
         return result
 
     # Reproducing a violation
