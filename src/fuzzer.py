@@ -445,3 +445,4 @@ class ArchitecturalFuzzer(Fuzzer):
 
         return None
 
+
