@@ -291,17 +291,17 @@ def main():
     args = parser.parse_args()
 
     subprocess.run("wget "
-                   "https://uops.info/instructions_Jan2022.xml", shell=True, check=True)
+                   "https://uops.info/instructions.xml", shell=True, check=True)
 
     try:
         transformer = X86Transformer()
-        transformer.load_files("instructions_Jan2022.xml")
+        transformer.load_files("instructions.xml")
         transformer.parse_tree(args.extensions)
         transformer.add_missing(args.extensions)
         print(f"Produced base.json with {len(transformer.instructions)} instructions")
         transformer.save("base.json")
     finally:
-        subprocess.run("rm instructions_Jan2022.xml", shell=True, check=True)
+        subprocess.run("rm instructions.xml", shell=True, check=True)
 
 
 if __name__ == "__main__":
