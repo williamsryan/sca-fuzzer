@@ -119,7 +119,7 @@ class Fuzzer:
                 self.store_test_case(test_case, violation) # Don't need this, just debugging.
 
                 violate_inputs: List[Input] = self.get_single_violation(violation)
-                # print(f"[+] Violating inputs: {violate_inputs}")
+                print(f"[+] Violating inputs: {violate_inputs}")
                 runs = self.capture(test_case, violate_inputs)
                 run1 = runs[0]
                 run2 = runs[1]

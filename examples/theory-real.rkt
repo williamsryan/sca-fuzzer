@@ -8,8 +8,6 @@
 (require rosette/lib/destruct) ; Value destructuring library.
 (require rosette/lib/synthax)  ; Synthesis library.
 
-(require unstable/error)  ; Error handling.
-
 ; General purpose register encoding.
 ; These aren't used?
 (define RAX  0)  ; A eXtended
@@ -216,4 +214,4 @@
 ; Test: check if this is sat/unsat to determine if we should print
 ; out data. Otherwise continue. Right now we get crashing errors.
 ; TODO: move this to Rosette class to append to generated theory file automatically.
-(if (sat? sol) (print-forms sol) (print "(unsat) continuing..."))
+(if (sat? sol) (print-forms sol) (println "(unsat) continuing..."))
