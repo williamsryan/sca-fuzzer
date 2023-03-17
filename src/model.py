@@ -15,11 +15,6 @@ import unicorn as uni
 
 from unicorn import Uc, UcError, UC_MEM_WRITE, UC_MEM_READ, UC_SECOND_SCALE, UC_HOOK_MEM_READ, \
     UC_HOOK_MEM_WRITE, UC_HOOK_CODE, UC_PROT_NONE, UC_PROT_READ
-from unicorn.x86_const import UC_X86_REG_RSP, UC_X86_REG_RBP, \
-    UC_X86_REG_RIP, \
-    UC_X86_REG_EFLAGS, UC_X86_REG_RAX, UC_X86_REG_RBX, UC_X86_REG_RCX, UC_X86_REG_RDX, \
-    UC_X86_REG_RSI, UC_X86_REG_RDI, UC_X86_REG_R8, UC_X86_REG_R9, UC_X86_REG_R10, UC_X86_REG_R11, \
-    UC_X86_REG_R12, UC_X86_REG_R13, UC_X86_REG_R14, UC_X86_REG_R15
 
 from interfaces import ArchState, CTrace, Run, TestCase, Observation, Model, InputTaint, Instruction, ExecutionTrace, \
     TracedInstruction, TracedMemAccess, Input, Tracer, \
@@ -55,7 +50,7 @@ class UnicornTracer(Tracer):
     def __init__(self):
         super().__init__()
         self.trace = []
-        self.run = Run()
+        self.run = Run()    # Is Run only initialized once, or do we need 2 instances for comparison?
         self.run.observations.append([])
 
     def init_trace(self, emulator, target_desc: UnicornTargetDesc) -> None:
