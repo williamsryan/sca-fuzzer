@@ -119,7 +119,7 @@ class Fuzzer:
                 self.store_test_case(test_case, violation) # Don't need this, just debugging.
 
                 violate_inputs: List[Input] = self.get_single_violation(violation)
-                print(f"[+] Violating inputs: {violate_inputs}")
+                # print(f"[+] Violating inputs: {violate_inputs}")
                 runs = self.capture(test_case, violate_inputs)
                 run1 = runs[0]
                 run2 = runs[1]
@@ -158,6 +158,8 @@ class Fuzzer:
     def capture(self, test_case, inputs):
         runs = {}
 
+        # print(f"[+] Capturing run data: {test_case} -> {inputs}")
+
         self.model.load_test_case(test_case)
         self.executor.load_test_case(test_case)
         self.coverage.load_test_case(test_case)
@@ -165,11 +167,11 @@ class Fuzzer:
 
         for id, input in enumerate(inputs):
             run = self.model.execute(input)
-            print(f"[+] Run debug: {run}")
+            print(f"[+] Running ID {id} on input {input}")
             run.id = id
             # self.store_run(run)
             runs[id] = run
-
+            print(f"[+] Run[{id}] : {run.archstates}")
         return runs
 
     def filter(self, test_case, inputs):
