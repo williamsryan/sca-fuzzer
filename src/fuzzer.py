@@ -80,8 +80,8 @@ class Fuzzer:
         # create all main modules
         self.initialize_modules()
 
-        run1: Run
-        run2: Run
+        run1: Run.__init__
+        run2: Run.__init__
 
         for i in range(num_test_cases):
             LOGGER.fuzzer_start_round(i)
@@ -167,7 +167,7 @@ class Fuzzer:
         self.model.set_tracable()
 
         for id, input in enumerate(inputs):
-            run = self.model.execute(input)
+            run = self.model.execute(input) # Why are run0 and run1 always the same with different inputs? Doesn't this mean it's _not_ an interesting test case?
             print(f"[+] Running ID {id} on input {input}")
             run.id = id
             # self.store_run(run)
