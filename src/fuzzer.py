@@ -145,6 +145,7 @@ class Fuzzer:
 
         LOGGER.fuzzer_finish()
         if run1 is not None and run2 is not None:
+            # TODO: confirm the output of 'pairs' here. Is it always number of "runs"? [(0,0), (5,5)] implies each run has 5 elements (e.g., r1_0 -> r1_5).
             pairs = self.analyser.get_obs_pairs(run1, run2)
             return run1, run2, pairs
         return STAT.violations > 0

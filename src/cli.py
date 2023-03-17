@@ -247,8 +247,10 @@ def main() -> int:
             expr_fname = "expr-" + timestamp + ".txt"
 
             rosette = Rosette(theory_fname, args.working_directory, 1)
+            # Do the below two run maps correspond to contract traces?
+            # If so, they should always be the same since we want equivalent ctraces with different inputs, producing different hardware traces.
             rosette.map(run1)
-            # rosette.map(run2)
+            rosette.map(run2)
 
             # TODO: should run1 and run2 be the same? Re-check definition of a valuable test case/trace.
             rosette.generate_constraints(pairs, run1, run2)
@@ -281,6 +283,7 @@ def main() -> int:
 
             LOGGER.show_contract(contract)
 
+        print(f"[+] Final result: {result}") # (<interfaces.Run object at 0x7f11bd72ffa0>, <interfaces.Run object at 0x7f11bd72ffa0>, [(0, 0), (11, 11)])
         return result
 
     # Reproducing a violation
