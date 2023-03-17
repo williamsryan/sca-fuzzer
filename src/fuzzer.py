@@ -12,7 +12,7 @@ from copy import copy
 
 import factory
 from interfaces import CTrace, HTrace, Input, InputTaint, EquivalenceClass, Run, TestCase, Generator, \
-    InputGenerator, Model, Executor, Analyser, Coverage, InputID, Measurement, DbgRun
+    InputGenerator, Model, Executor, Analyser, Coverage, InputID, Measurement
 from isa_loader import InstructionSet
 
 from config import CONF
@@ -81,7 +81,7 @@ class Fuzzer:
         self.initialize_modules()
 
         run1: Run
-        run2: DbgRun
+        run2: Run
 
         for i in range(num_test_cases):
             LOGGER.fuzzer_start_round(i)
@@ -123,14 +123,14 @@ class Fuzzer:
                 runs = self.capture(test_case, violate_inputs)
                 run1 = runs[0]
                 run2 = runs[1]
-                print(f"[+] Equiv test: {run1.__dict__ == run2.__dict__}")
+                # print(f"[+] Equiv test: {run1.__dict__ == run2.__dict__}")
                 # Debug info to show raw run data before synthesis step.
                 # print(f"[+] Debug run1: {run1} run2: {run2}")
-                # pairs = self.analyser.get_obs_pairs(run1, run2)
+                pairs = self.analyser.get_obs_pairs(run1, run2)
                 # # Debug info to show observation pairs too.
                 # print(f"[+] Debug pairs: {pairs}")
 
-                # return run1, run2, pairs
+                return run1, run2, pairs
 
                 # STAT.violations += 1
                 # if not nonstop:
@@ -144,9 +144,9 @@ class Fuzzer:
                     break
 
         LOGGER.fuzzer_finish()
-        if run1 is not None and run2 is not None:
-            pairs = self.analyser.get_obs_pairs(run1, run2)
-            return run1, run2, pairs
+        # if run1 is not None and run2 is not None:
+        #     pairs = self.analyser.get_obs_pairs(run1, run2)
+        #     return run1, run2, pairs
         return STAT.violations > 0
         # return None
 

@@ -694,18 +694,6 @@ class Run:
         self.archstates = []
         self.observations = []
 
-class DbgRun:
-    id: int
-    instructions: List[str]
-    archstates: List[ArchState]
-    observations: List[Observations]
-
-    def __init__(self) -> None:
-        print(f"[+] DbgRun class init()")
-        self.instructions = []
-        self.archstates = []
-        self.observations = []
-
 # ==================================================================================================
 # Interfaces of Modules
 # ==================================================================================================

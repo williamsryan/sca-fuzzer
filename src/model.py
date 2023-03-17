@@ -18,7 +18,7 @@ from unicorn import Uc, UcError, UC_MEM_WRITE, UC_MEM_READ, UC_SECOND_SCALE, UC_
 
 from interfaces import ArchState, CTrace, Run, TestCase, Observation, Model, InputTaint, Instruction, ExecutionTrace, \
     TracedInstruction, TracedMemAccess, Input, Tracer, \
-    RegisterOperand, FlagsOperand, MemoryOperand, TaintTrackerInterface, TargetDesc, DbgRun
+    RegisterOperand, FlagsOperand, MemoryOperand, TaintTrackerInterface, TargetDesc
 from config import CONF
 from service import LOGGER, NotSupportedException
 
@@ -46,13 +46,11 @@ class UnicornTracer(Tracer):
 
     # Our run.
     run: Run
-    dbgRun: DbgRun
 
     def __init__(self):
         super().__init__()
         self.trace = []
         self.run = Run()    # Is Run only initialized once, or do we need 2 instances for comparison?
-        self.dbgRun = DbgRun()
         self.run.observations.append([])
 
     def init_trace(self, emulator, target_desc: UnicornTargetDesc) -> None:
@@ -75,7 +73,7 @@ class UnicornTracer(Tracer):
 
     def add_pc_to_trace(self, address, model):
         self.trace.append(address)
-        self.run.observations[-1].append(Observation(address))
+        self.run.observations[0].append(Observation(address))
         model.taint_tracker.taint_pc()
 
     def observe_mem_access(self, access, address: int, size: int, value: int,
@@ -385,7 +383,7 @@ class UnicornModel(Model, ABC):
         return archstate
 
     def execute(self, input):
-        # print(f"[+] Executing on input: {input}")
+        print(f"[+] Executing on input: {input}")
         self.execution_tracing_enabled = True
         self.reset_model()
         try:
@@ -401,6 +399,7 @@ class UnicornModel(Model, ABC):
                 # LOGGER.error("[X86UnicornModel:trace_test_case] %s" % e)
         self.execution_tracing_enabled = False
         # print(f"[+] Execution finished with obj: {self.tracer.run}")
+        # Execute always just re-uses the tracer's run attribute.
         return self.tracer.run
 
     @abstractmethod
