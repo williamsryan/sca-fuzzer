@@ -614,6 +614,7 @@ HTraceMap = Dict[HTrace, HTraceGroup]
 
 
 class EquivalenceClass:
+    # This is what's returned from a violation.
     ctrace: CTrace
     measurements: List[Measurement]
     htrace_map: HTraceMap
