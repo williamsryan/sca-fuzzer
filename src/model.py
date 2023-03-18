@@ -398,7 +398,7 @@ class UnicornModel(Model, ABC):
                 self.print_state()
                 # LOGGER.error("[X86UnicornModel:trace_test_case] %s" % e)
         self.execution_tracing_enabled = False
-        print(f"[+] Execution finished with obj_len: {len(self.tracer.run.archstates)}")
+        # print(f"[+] Execution finished with obj_len: {len(self.tracer.run.archstates)}")
         # Execute always just re-uses the tracer's run attribute.
         return self.tracer.run
 
