@@ -122,7 +122,9 @@ class Fuzzer:
                 # print(f"[+] Violation: {violation}")
                 runs = self.capture(test_case, violate_inputs)
                 run1 = runs[0]
+                print(f"[+] run1_len: {len(run1)}")
                 run2 = runs[1]
+                print(f"[+] run2_len: {len(run2)}")
                 # print(f"[+] Equiv test: {run1.__dict__ == run2.__dict__}")
                 # Debug info to show raw run data before synthesis step.
                 # print(f"[+] Debug run1: {run1} run2: {run2}")
@@ -155,6 +157,8 @@ class Fuzzer:
         measurements: List[Measurement] = violation.measurements
         i1: Input = measurements[0].input_
         i2: Input = measurements[1].input_
+        # Another test.
+        print(f"[+] Measurements: {measurements[0]}")
         return [i1, i2]
 
     def capture(self, test_case, inputs):

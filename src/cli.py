@@ -248,7 +248,8 @@ def main() -> int:
 
             rosette = Rosette(theory_fname, args.working_directory, 1)
             # Do the below two run maps correspond to contract traces?
-            # If so, they should always be the same since we want equivalent ctraces with different inputs, producing different hardware traces.
+            # If so, they should always be the same since we want equivalent ctrace
+            # with different inputs, producing different hardware traces.
             rosette.map(run1)
             rosette.map(run2)
 
