@@ -41,7 +41,7 @@ class Rosette:
             for reg in xstate.regs.values():
                 if regs != '':
                     regs += indentation
-                print(f"[+] rosette.map: adding register val: {reg}")
+                # print(f"[+] rosette.map: adding register val: {reg}")
                 regs += "(bv {0} (bitvector 64))\n".format(str(reg))
             if xstate.pc is not None:
                 print(f"[+] rosette.map: adding xstate.pc: {xstate.pc}")
@@ -49,10 +49,7 @@ class Rosette:
                     "(bv {0} (bitvector 64))".format(str(xstate.pc))
             else:
                 # Meaning this is the final state; end with -1.
-                print(f"[+] rosette.map: adding (final) register val: {str(-1)}")
                 regs += indentation + "(bv {0} (bitvector 64))".format(str(-1))
-            map_test = "(define {0} (list {1}))\n\n".format(xstate_name, regs)
-            print(f"[+] rosette.map: returning map: {map_test}")
             return "(define {0} (list {1}))\n\n".format(xstate_name, regs)
 
         with open(self.work_dir + "/" + self.filename, "a") as f:
@@ -89,6 +86,7 @@ class Rosette:
             )
             i, i_ = j, j_
             while (k < len(pairs)):
+                print(f"[+] rosette.generate_constraints: {constraints}")
                 j, j_ = pairs[k]
                 constraints += indentation + "(diff {0} {1} {2} {3} {4} {5} myexpr)\n".format(
                     str(i), str(i+1), self.get_run_name(rid1),

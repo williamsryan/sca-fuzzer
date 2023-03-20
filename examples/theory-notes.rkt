@@ -275,13 +275,10 @@
 ;        returns true if the trace produce r[i]->r[j] and r_[i_]->r_[j_] are distinguishable 
 ;                false otherwise
 
-(define sol (solve (assert (diff 0 1 r1 0 0 r1 myexpr))))
-sol
-myexpr
 ; (define (diff i j r i_ j_ r_ expr)
-; (define sol (solve (assert (or (diff 0 0 r1 0 0 r1 myexpr)
-;                                (diff 0 1 r1 0 1 r1 myexpr)
-;                                (diff 1 13 r1 1 13 r1 myexpr)
-; ))))
+(define sol (solve (assert (or (diff 0 0 r1 0 0 r1 myexpr)
+                               (diff 0 1 r1 0 1 r1 myexpr)
+                               (diff 1 13 r1 1 13 r1 myexpr)
+))))
 
 (print-forms sol)
