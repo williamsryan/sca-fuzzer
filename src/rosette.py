@@ -78,8 +78,8 @@ class Rosette:
             print(f"[+] rosette.generate_constraints: pairs: {pairs}")
             j, j_ = pairs[0]
             k = 1
-            rid1 = run1.id
-            rid2 = run2.id
+            rid1 = 1
+            rid2 = 2
             constraints = ''
             constraints += "(diff {0} {1} {2} {3} {4} {5} myexpr)\n".format(
                 str(i), str(j), self.get_run_name(rid1),
