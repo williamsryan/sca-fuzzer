@@ -32,7 +32,6 @@ class Rosette:
 
     def map(self, run):
         def model(rid, xid, xstate):
-            print(f"[+] rosette.map: run id: {rid}")
             xstate_name = self.get_xstate_name(rid, xid)
             header = len('(define {0} (list '.format(xstate_name))
             indentation = ''

@@ -51,6 +51,7 @@ class UnicornTracer(Tracer):
         super().__init__()
         self.trace = []
         self.run = Run()    # Is Run only initialized once, or do we need 2 instances for comparison?
+        # TODO: create two Runs for handling run1 and run2 when doing trace comparison.
         self.run.observations.append([])
 
     def init_trace(self, emulator, target_desc: UnicornTargetDesc) -> None:
@@ -379,7 +380,7 @@ class UnicornModel(Model, ABC):
         for i in range(mem_address_start, mem_address_end, 8):
             i_ = i - mem_address_start
             archstate.mems[i] = (mem_[i_:i_+8]).hex()
-        # print(f"[+] archstate: {archstate}")
+        # print(f"[+] archstate.mems: {archstate.mems}")
         return archstate
 
     def execute(self, input):
