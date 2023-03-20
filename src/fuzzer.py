@@ -157,6 +157,11 @@ class Fuzzer:
         measurements: List[Measurement] = violation.measurements
         i1: Input = measurements[0].input_
         i2: Input = measurements[1].input_
+
+        trace1 = measurements[0].htrace
+        trace2 = measurements[1].htrace
+        print(f"[+] htrace1: {trace1} htrace2: {trace2}")
+        
         # Another test.
         # print(f"[+] Measurements: {measurements[0]}")
         return [i1, i2]
