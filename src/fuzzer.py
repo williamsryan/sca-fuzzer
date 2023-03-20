@@ -153,6 +153,7 @@ class Fuzzer:
         # return None
 
     def get_single_violation(self, violation):
+        # TODO: verify if different runs have matching contract traces (part of measurement).
         measurements: List[Measurement] = violation.measurements
         i1: Input = measurements[0].input_
         i2: Input = measurements[1].input_
