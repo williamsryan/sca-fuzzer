@@ -251,13 +251,9 @@ def main() -> int:
             # If so, they should always be the same since we want equivalent ctrace
             # with different inputs, producing different hardware traces.
             rosette.map(run1)
-            # Testing the duplicate thing for now.
-            if run1 == run2:
-                print(f"[-] run1 and run2 are equivalent, skipping.")
-            else:
-                rosette.map(run2)
-                # TODO: should run1 and run2 be the same? Re-check definition of a valuable test case/trace.
-                rosette.generate_constraints(pairs, run1, run2)
+            rosette.map(run2)
+            # TODO: should run1 and run2 be the same? Re-check definition of a valuable test case/trace.
+            rosette.generate_constraints(pairs, run1, run2)
 
             # TODO: run synthesis refinement loop elsewhere.
             # import subprocess

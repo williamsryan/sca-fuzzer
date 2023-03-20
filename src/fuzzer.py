@@ -123,6 +123,7 @@ class Fuzzer:
                 runs = self.capture(test_case, violate_inputs)
                 run1 = runs[0]
                 run2 = runs[1]
+                print(f"TEST: run1.id: {run1.id} run2.id: {run2.id}")
                 # print(f"[+] Equiv test: {run1.archstates == run2.archstates}")
                 # Debug info to show raw run data before synthesis step.
                 # print(f"[+] Debug run1: {run1} run2: {run2}")
@@ -175,7 +176,6 @@ class Fuzzer:
             run.id = id
             # self.store_run(run)
             runs[id] = run
-            print(f"[+] [fuzzer.capture] run.obj: {run}")
 
         # print(f"[+] Run obj: {runs}")
         return runs
