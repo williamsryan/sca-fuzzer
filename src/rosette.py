@@ -32,7 +32,6 @@ class Rosette:
 
     def map(self, run):
         def model(rid, xid, xstate):
-            print(f"[+] rosette.map: run id: {rid}")
             xstate_name = self.get_xstate_name(rid, xid)
             header = len('(define {0} (list '.format(xstate_name))
             indentation = ''
@@ -56,12 +55,13 @@ class Rosette:
         with open(self.work_dir + "/" + self.filename, "a") as f:
             xstates = ''
             for i, xstate in enumerate(run.archstates):
-                print(f"[+] Writing states: {model(run.id, i, xstate)}")
+                # print(f"[+] Writing states: {model(run.id, i, xstate)}")
                 f.write(model(run.id, i, xstate))
                 if xstates == '':
                     xstates += self.get_xstate_name(run.id, i)
                 else:
                     xstates += ' ' + self.get_xstate_name(run.id, i)
+            print(f"[+] DEBUG::xstates: {xstates}")
             f.write("(define {0} (list {1}))\n\n".format(
                 self.get_run_name(run.id), xstates))
 
