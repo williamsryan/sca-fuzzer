@@ -28,7 +28,7 @@ class Rosette:
         return "{0}_{1}".format(self.get_run_name(rid), str(xid))
 
     def get_run_name(self, rid):
-        return"r{0}".format(str(rid))
+        return "r{0}".format(str(rid))
 
     def map(self, run):
         def model(rid, xid, xstate):
@@ -41,13 +41,18 @@ class Rosette:
             for reg in xstate.regs.values():
                 if regs != '':
                     regs += indentation
+                print(f"[+] rosette.map: adding register val: {reg}")
                 regs += "(bv {0} (bitvector 64))\n".format(str(reg))
             if xstate.pc is not None:
+                print(f"[+] rosette.map: adding xstate.pc: {xstate.pc}")
                 regs += indentation + \
                     "(bv {0} (bitvector 64))".format(str(xstate.pc))
             else:
-                # meaning this is the final state
+                # Meaning this is the final state; end with -1.
+                print(f"[+] rosette.map: adding (final) register val: {str(-1)}")
                 regs += indentation + "(bv {0} (bitvector 64))".format(str(-1))
+            map_test = "(define {0} (list {1}))\n\n".format(xstate_name, regs)
+            print(f"[+] rosette.map: returning map: {map_test}")
             return "(define {0} (list {1}))\n\n".format(xstate_name, regs)
 
         with open(self.work_dir + "/" + self.filename, "a") as f:
@@ -72,6 +77,7 @@ class Rosette:
                 indentation += ' '
             i = i_ = 0
             pairs.append((len(run1.archstates)-1, len(run2.archstates)-1))
+            print(f"[+] rosette.generate_constraints: pairs: {pairs}")
             j, j_ = pairs[0]
             k = 1
             rid1 = run1.id
