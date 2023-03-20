@@ -250,8 +250,8 @@ def main() -> int:
             # Do the below two run maps correspond to contract traces?
             # If so, they should always be the same since we want equivalent ctrace
             # with different inputs, producing different hardware traces.
-            rosette.map(run1)
-            rosette.map(run2)
+            rosette.map(run1, 1)
+            rosette.map(run2, 2)
             # TODO: should run1 and run2 be the same? Re-check definition of a valuable test case/trace.
             rosette.generate_constraints(pairs, run1, run2)
 

@@ -30,7 +30,7 @@ class Rosette:
     def get_run_name(self, rid):
         return "r{0}".format(str(rid))
 
-    def map(self, run):
+    def map(self, run, rid):
         def model(rid, xid, xstate):
             xstate_name = self.get_xstate_name(rid, xid)
             header = len('(define {0} (list '.format(xstate_name))
@@ -56,14 +56,14 @@ class Rosette:
             xstates = ''
             for i, xstate in enumerate(run.archstates):
                 # print(f"[+] Writing states: {model(run.id, i, xstate)}")
-                f.write(model(run.id, i, xstate))
+                f.write(model(rid, i, xstate))
                 if xstates == '':
                     xstates += self.get_xstate_name(run.id, i)
                 else:
                     xstates += ' ' + self.get_xstate_name(run.id, i)
             print(f"[+] DEBUG::xstates: {xstates}")
             f.write("(define {0} (list {1}))\n\n".format(
-                self.get_run_name(run.id), xstates))
+                self.get_run_name(rid), xstates))
 
     def generate_constraints(self, pairs, run1, run2):
         with open(self.work_dir + "/" + self.filename, "a") as f:
