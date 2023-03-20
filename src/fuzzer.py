@@ -171,9 +171,11 @@ class Fuzzer:
 
         for id, input in enumerate(inputs):
             run = self.model.execute(input) # Equivalent contract traces with different inputs. That should be correct.
+            print(f"[+] [fuzzer.capture] run.id: {id}")
             run.id = id
             # self.store_run(run)
             runs[id] = run
+            print(f"[+] [fuzzer.capture] run.obj: {run}")
 
         # print(f"[+] Run obj: {runs}")
         return runs

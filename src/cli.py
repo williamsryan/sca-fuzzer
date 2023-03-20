@@ -256,9 +256,8 @@ def main() -> int:
                 print(f"[-] run1 and run2 are equivalent, skipping.")
             else:
                 rosette.map(run2)
-
-            # TODO: should run1 and run2 be the same? Re-check definition of a valuable test case/trace.
-            rosette.generate_constraints(pairs, run1, run2)
+                # TODO: should run1 and run2 be the same? Re-check definition of a valuable test case/trace.
+                rosette.generate_constraints(pairs, run1, run2)
 
             # TODO: run synthesis refinement loop elsewhere.
             # import subprocess
