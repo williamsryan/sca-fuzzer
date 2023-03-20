@@ -30,8 +30,9 @@ class Rosette:
     def get_run_name(self, rid):
         return "r{0}".format(str(rid))
 
-    def map(self, run, rid):
+    def map(self, run):
         def model(rid, xid, xstate):
+            print(f"[+] rosette.map: run id: {rid}")
             xstate_name = self.get_xstate_name(rid, xid)
             header = len('(define {0} (list '.format(xstate_name))
             indentation = ''
@@ -56,14 +57,13 @@ class Rosette:
             xstates = ''
             for i, xstate in enumerate(run.archstates):
                 # print(f"[+] Writing states: {model(run.id, i, xstate)}")
-                f.write(model(rid, i, xstate))
+                f.write(model(run.id, i, xstate))
                 if xstates == '':
                     xstates += self.get_xstate_name(run.id, i)
                 else:
                     xstates += ' ' + self.get_xstate_name(run.id, i)
-            print(f"[+] DEBUG::xstates: {xstates}")
             f.write("(define {0} (list {1}))\n\n".format(
-                self.get_run_name(rid), xstates))
+                self.get_run_name(run.id), xstates))
 
     def generate_constraints(self, pairs, run1, run2):
         with open(self.work_dir + "/" + self.filename, "a") as f:
@@ -78,8 +78,8 @@ class Rosette:
             print(f"[+] rosette.generate_constraints: pairs: {pairs}")
             j, j_ = pairs[0]
             k = 1
-            rid1 = 1
-            rid2 = 2
+            rid1 = run1.id
+            rid2 = run2.id
             constraints = ''
             constraints += "(diff {0} {1} {2} {3} {4} {5} myexpr)\n".format(
                 str(i), str(j), self.get_run_name(rid1),
