@@ -124,15 +124,11 @@ class Fuzzer:
                 runs = self.capture(test_case, violate_inputs)
                 run1 = runs[0]
                 run2 = runs[1]
-                # print(f"TEST: run1.id: {run1.id} run2.id: {run2.id}")
-                # print(f"[+] Equiv test: {run1.archstates == run2.archstates}")
                 # Debug info to show raw run data before synthesis step.
                 # print(f"[+] Debug run1: {run1} run2: {run2}")
-                pairs = self.analyser.get_obs_pairs(run1, run2)
-                # # Debug info to show observation pairs too.
-                # print(f"[+] Debug pairs: {pairs}")
+                # pairs = self.analyser.get_obs_pairs(run1, run2)
 
-                return run1, run2, pairs
+                # return run1, run2, pairs
 
                 # STAT.violations += 1
                 # if not nonstop:
@@ -146,12 +142,12 @@ class Fuzzer:
                     break
 
         LOGGER.fuzzer_finish()
-        # if run1 is not None and run2 is not None:
-        #     # TODO: confirm the output of 'pairs' here. Is it always number of "runs"? [(0,0), (5,5)] implies each run has 5 elements (e.g., r1_0 -> r1_5).
-        #     pairs = self.analyser.get_obs_pairs(run1, run2)
-        #     return run1, run2, pairs
-        # return STAT.violations > 0
-        return None
+        if run1 is not None and run2 is not None:
+            # TODO: confirm the output of 'pairs' here. Is it always number of "runs"? [(0,0), (5,5)] implies each run has 5 elements (e.g., r1_0 -> r1_5).
+            pairs = self.analyser.get_obs_pairs(run1, run2)
+            return run1, run2, pairs
+        return STAT.violations > 0
+        # return None
 
     def get_single_violation(self, violation):
         measurements: List[Measurement] = violation.measurements
@@ -172,7 +168,7 @@ class Fuzzer:
     def capture(self, test_case, inputs):
         runs = {}
 
-        print(f"[+] Capturing run data: {test_case} -> {inputs}")
+        # print(f"[+] Capturing run data: {test_case} -> {inputs}")
 
         self.model.load_test_case(test_case)
         self.executor.load_test_case(test_case)
@@ -185,7 +181,6 @@ class Fuzzer:
             # self.store_run(run)
             runs[id] = run
 
-        # print(f"[+] Run obj: {runs}")
         return runs
 
     def filter(self, test_case, inputs):

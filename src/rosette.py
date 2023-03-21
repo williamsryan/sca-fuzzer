@@ -41,7 +41,6 @@ class Rosette:
             for reg in xstate.regs.values():
                 if regs != '':
                     regs += indentation
-                # print(f"[+] rosette.map: adding register val: {reg}")
                 regs += "(bv {0} (bitvector 64))\n".format(str(reg))
             if xstate.pc is not None:
                 regs += indentation + \

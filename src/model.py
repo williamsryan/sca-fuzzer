@@ -57,13 +57,8 @@ class UnicornTracer(Tracer):
         self.execution_trace = []
         # Reset our Run object.
         self.run = Run()
-        # Does this fix init issue?
+        # Does this fix init issue? Yes. - RPW.
         self.run.observations.append([])
-
-    # TODO: need a separate function?
-    def reset_trace(self, emulator) -> None:
-        # self.run = Run()
-        pass
 
     def get_contract_trace(self) -> CTrace:
         return hash(tuple(self.trace))
@@ -366,7 +361,6 @@ class UnicornModel(Model, ABC):
         self.in_speculation = False
         self.speculation_window = 0
         self.tracer.init_trace(self.emulator, self.target_desc)
-        # self.tracer.reset_trace(self.emulator)
         if self.tainting_enabled:
             self.taint_tracker = self.taint_tracker_cls(
                 self.initial_taints, self.sandbox_base)
@@ -374,20 +368,14 @@ class UnicornModel(Model, ABC):
             self.taint_tracker = DummyTaintTracker([])
         self.pending_fault_id = 0
 
-    # TODO: fix this next.
     def capture_state(self):
         archstate = ArchState()
-        # TODO: reimplement this later.
-        # registers = CONF.registers.keys()
-        # TODO: different way to get registers now?
         registers = self.target_desc.registers
         for reg in registers:
             archstate.regs[reg] = self.emulator.reg_read(reg)
 
         mem_address_start = self.sandbox_base
-        # TODO: replace 20 with self.input_size.
         mem_address_end = mem_address_start + self.input_size
-        # TODO: replace 20 with self.input_size.
         mem_ = self.emulator.mem_read(mem_address_start, self.input_size)
 
         for i in range(mem_address_start, mem_address_end, 8):
@@ -412,8 +400,6 @@ class UnicornModel(Model, ABC):
                 self.print_state()
                 # LOGGER.error("[X86UnicornModel:trace_test_case] %s" % e)
         self.execution_tracing_enabled = False
-        # print(f"[+] Execution finished with obj_len: {len(self.tracer.run.archstates)}")
-        # Execute always just re-uses the tracer's run attribute.
         return self.tracer.run
 
     @abstractmethod
