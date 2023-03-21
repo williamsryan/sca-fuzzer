@@ -692,6 +692,7 @@ class Run:
 
     def __init__(self) -> None:
         print(f"[+] Run class init()")
+        # TODO: fix observations initialization as it has index out of bounds on start now.
         self.instructions = []
         self.archstates = []
         self.observations = []
