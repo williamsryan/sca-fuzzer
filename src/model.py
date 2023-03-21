@@ -440,6 +440,7 @@ class UnicornModel(Model, ABC):
         # We call a different method that handles customize contract, i.e., contract that's comprised of sequences of expression.
         model.taint_tracker.start_instruction(model.current_instruction)
         model.tracer.observe_instruction(address, size, model)
+        
         for expr in model.contract:
             model.evaluateExpr(emulator, address, size, expr)
 

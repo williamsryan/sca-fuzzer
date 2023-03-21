@@ -488,6 +488,7 @@ class TestCase:
     main: Function
     functions: List[Function]
     address_map: Dict[int, Instruction]
+    instructions_map: Dict[int, str]
     num_prologue_instructions: int = 0
     faulty_pte: PageTableModifier
 
@@ -495,6 +496,7 @@ class TestCase:
         self.functions = []
         self.address_map = {}
         self.faulty_pte = PageTableModifier()
+        self.instructions_map = {}
 
     def __iter__(self):
         for func in self.functions:
