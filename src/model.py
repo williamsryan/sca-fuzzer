@@ -450,7 +450,8 @@ class UnicornModel(Model, ABC):
         model.taint_tracker.start_instruction(model.current_instruction)
         model.tracer.observe_instruction(address, size, model)
 
-        print(f"[+] Current contract: {model.contract}")
+        # print(f"[+] Current contract: {model.contract}")
+        # TODO: I don't think this object is ever populated.
         for expr in model.contract:
             model.evaluateExpr(emulator, address, size, expr)
 

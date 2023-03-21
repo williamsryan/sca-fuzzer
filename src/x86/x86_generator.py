@@ -137,10 +137,10 @@ class X86Generator(ConfigurableGenerator, abc.ABC):
             if address not in address_map:
                 address_map[address] = Instruction("UNMAPPED", True)
 
-        # Debug test.
-        print(f"[+] instructions_map: {test_case.instructions_map}")
-        print(f"[+] address_map: {test_case.address_map}")
         test_case.address_map = address_map
+        # TODO: Debug test. They match, so we can update later to just use address_map.
+        # print(f"[+] instructions_map: {test_case.instructions_map}")
+        # print(f"[+] address_map: {test_case.address_map}")
 
     def get_return_instruction(self) -> Instruction:
         return Instruction("RET", False, "", True)
