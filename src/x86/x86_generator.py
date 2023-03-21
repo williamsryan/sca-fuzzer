@@ -108,7 +108,8 @@ class X86Generator(ConfigurableGenerator, abc.ABC):
 
         # TODO: Get a list of relative instruction addresses.
         for instruction in dump.stdout.decode().split("\n"):
-            print(f"[+] TEST INST: {instruction}")
+            address_list.append(instruction.ip)
+            test_case.instructions_map[instruction.ip] = str(instruction)
 
         # connect them with instructions in the test case
         address_map: Dict[int, Instruction] = {}
