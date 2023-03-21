@@ -32,6 +32,10 @@ def update_instruction_list():
 class X86Fuzzer(Fuzzer):
     executor: X86IntelExecutor
 
+    # Had to add this for passing a contract in constructor now.
+    def set_contract(self, contract):
+        self.contract = contract
+
     def _adjust_config(self, existing_test_case):
         super()._adjust_config(existing_test_case)
         update_instruction_list()

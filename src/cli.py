@@ -210,7 +210,7 @@ def main() -> int:
 
     # Fuzzing
     if args.subparser_name == 'fuzz':
-        # Make sure we're ready for fuzzing
+        # Make sure we're ready for fuzzing.
         if args.working_directory and not os.path.isdir(args.working_directory):
             SystemExit("The working directory does not exist")
 
@@ -229,7 +229,7 @@ def main() -> int:
 
         # Normal fuzzing mode
         fuzzer = get_fuzzer(args.instruction_set,
-                            args.working_directory, args.testcase, "")
+                            args.working_directory, args.testcase, "", contract)
         result = fuzzer.start(
             args.num_test_cases,
             args.num_inputs,
@@ -237,7 +237,7 @@ def main() -> int:
             args.nonstop,
         )
 
-        if result is False:
+        if result is None:
             print(f"[-] No result tuple from fuzzer.")
         else:
             # print(f"[+] Violation result: {result}")
@@ -281,7 +281,6 @@ def main() -> int:
 
             LOGGER.show_contract(contract)
 
-        # print(f"[+] Final result: {result}") # (<interfaces.Run object at 0x7f11bd72ffa0>, <interfaces.Run object at 0x7f11bd72ffa0>, [(0, 0), (11, 11)])
         return result
 
     # Reproducing a violation

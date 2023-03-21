@@ -38,8 +38,8 @@ class Fuzzer:
     def __init__(self,
                  instruction_set_spec: str,
                  work_dir: str,
-                 existing_test_case: str = "",
                  contract: List[Expr] = [],
+                 existing_test_case: str = "",
                  inputs: List[str] = []):
         # Debugging stuff - RPW.
         print(f"[+] Fuzzer.init()")
@@ -64,7 +64,6 @@ class Fuzzer:
         self.generator = factory.get_generator(self.instruction_set)
         self.input_gen = factory.get_input_generator()
         self.executor = factory.get_executor()
-        # get_model returns UnicornModel which is how Run() first gets initialized.
         self.model = factory.get_model(self.executor.read_base_addresses(), self.contract)
         self.analyser = factory.get_analyser()
         self.coverage = factory.get_coverage(self.instruction_set, self.executor, self.model,
@@ -83,6 +82,8 @@ class Fuzzer:
 
         run1: Run
         run2: Run
+
+        print(f"[+] Starting with base contract of: {len(self.contract)} elements\n")
 
         for i in range(num_test_cases):
             LOGGER.fuzzer_start_round(i)
@@ -126,9 +127,9 @@ class Fuzzer:
                 run2 = runs[1]
                 # Debug info to show raw run data before synthesis step.
                 # print(f"[+] Debug run1: {run1} run2: {run2}")
-                # pairs = self.analyser.get_obs_pairs(run1, run2)
+                pairs = self.analyser.get_obs_pairs(run1, run2)
 
-                # return run1, run2, pairs
+                return run1, run2, pairs
 
                 # STAT.violations += 1
                 # if not nonstop:
@@ -142,12 +143,12 @@ class Fuzzer:
                     break
 
         LOGGER.fuzzer_finish()
-        if run1 is not None and run2 is not None:
-            # TODO: confirm the output of 'pairs' here. Is it always number of "runs"? [(0,0), (5,5)] implies each run has 5 elements (e.g., r1_0 -> r1_5).
-            pairs = self.analyser.get_obs_pairs(run1, run2)
-            return run1, run2, pairs
-        return STAT.violations > 0
-        # return None
+        # if run1 is not None and run2 is not None:
+        #     # TODO: confirm the output of 'pairs' here. Is it always number of "runs"? [(0,0), (5,5)] implies each run has 5 elements (e.g., r1_0 -> r1_5).
+        #     pairs = self.analyser.get_obs_pairs(run1, run2)
+        #     return run1, run2, pairs
+        # return STAT.violations > 0
+        return None
 
     def get_single_violation(self, violation):
         measurements: List[Measurement] = violation.measurements

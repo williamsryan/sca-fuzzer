@@ -81,7 +81,7 @@ def _get_from_config(options: Dict, key: str, conf_option_name: str, *args):
     raise ConfigException(f"unknown value {key} for `{conf_option_name}` configuration option")
 
 
-def get_fuzzer(instruction_set, working_directory, testcase, inputs):
+def get_fuzzer(instruction_set, working_directory, testcase, inputs, contract: List[Expr]):
     if CONF.fuzzer == "architectural":
         if CONF.instruction_set == "x86-64":
             return x86_fuzzer.X86ArchitecturalFuzzer(instruction_set, working_directory, testcase,
@@ -90,7 +90,10 @@ def get_fuzzer(instruction_set, working_directory, testcase, inputs):
     elif CONF.fuzzer == "basic":
         if CONF.instruction_set == "x86-64":
             # This is where the fuzzer is actually started with parameters.
-            return x86_fuzzer.X86Fuzzer(instruction_set, working_directory, testcase, inputs)
+            fuzzer_instance = x86_fuzzer.X86Fuzzer(instruction_set, working_directory, testcase, inputs)
+            fuzzer_instance.set_contract(contract)
+            return fuzzer_instance
+            # return x86_fuzzer.X86Fuzzer(instruction_set, working_directory, testcase, inputs, contract)
         raise ConfigException("unknown value of `instruction_set` configuration option")
     raise ConfigException("unknown value of `fuzzer` configuration option")
 
@@ -115,6 +118,7 @@ def get_model(bases: Tuple[int, int], contract: List[Expr]) -> interfaces.Model:
                                               CONF.contract_execution_clause[0],
                                               "contract_execution_clause", bases[0], bases[1])
             # Set contract here.
+            # print(f"[+] Setting contract in model: {contract}")
             model_instance.set_contract(contract)
         else:
             raise ConfigException(

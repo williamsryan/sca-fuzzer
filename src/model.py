@@ -432,12 +432,11 @@ class UnicornModel(Model, ABC):
             archstate.pc = address
             model.tracer.run.archstates.append(archstate)
 
-        # We call a different method that handles customize contract, i.e., contract that's comprised of sequences of expression.
+        # We call a different method that handles customized contracts, i.e., contract that's comprised of sequences of expressions.
         model.taint_tracker.start_instruction(model.current_instruction)
         model.tracer.observe_instruction(address, size, model)
 
         # print(f"[+] Current contract: {model.contract}")
-        # TODO: I don't think this object is ever populated.
         for expr in model.contract:
             model.evaluateExpr(emulator, address, size, expr)
 
@@ -452,7 +451,7 @@ class UnicornModel(Model, ABC):
     def capture_bs(model: UnicornModel, emulator: Uc, address: int, size: int, bs: Bs):
         if (bs.keyword == 'REG'):
             val = bs.val
-            print(f"[+] bs val test: {val}") # TODO: if this is Dict[str, int], use reg_decode.
+            # print(f"[+] bs val test: {val}") # TODO: if this is Dict[str, int], use reg_decode.
             reg = CONF.map_reg(val)
             res = emulator.reg_read(reg)
             # model.add_mem_address_to_trace()
