@@ -35,7 +35,7 @@ class UnicornTargetDesc(ABC):
     reg_decode: Dict[str, int]
 
 
-class   (Tracer):
+class UnicornTracer(Tracer):
     """
     A simple tracer.
     Collect instructions as they are emulated. See :class:`TracedInstruction`
@@ -56,7 +56,7 @@ class   (Tracer):
     def init_trace(self, emulator, target_desc: UnicornTargetDesc) -> None:
         self.trace = []
         self.execution_trace = []
-        # This is where we should "reset" Run.
+        # Reser our Run object.
         self.run = Run()
 
     def get_contract_trace(self) -> CTrace:
