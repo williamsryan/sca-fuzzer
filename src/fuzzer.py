@@ -153,17 +153,19 @@ class Fuzzer:
         # return None
 
     def get_single_violation(self, violation):
-        # TODO: verify if different runs have matching contract traces (part of measurement).
         measurements: List[Measurement] = violation.measurements
         i1: Input = measurements[0].input_
         i2: Input = measurements[1].input_
 
-        trace1 = measurements[0].htrace
-        trace2 = measurements[1].htrace
-        print(f"[+] htrace1: {trace1} htrace2: {trace2}")
-        
-        # Another test.
-        # print(f"[+] Measurements: {measurements[0]}")
+        # Debug test: confirm that a violation produces same contract trace with different hardware trace.
+        htrace1 = measurements[0].htrace
+        htrace2 = measurements[1].htrace
+        print(f"[+] htrace1: {htrace1} htrace2: {htrace2}")
+
+        ctrace1 = measurements[0].ctrace
+        ctrace2 = measurements[1].ctrace
+        print(f"[+] ctrace1: {ctrace1} ctrace2: {ctrace2}")
+
         return [i1, i2]
 
     def capture(self, test_case, inputs):
