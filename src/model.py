@@ -56,7 +56,7 @@ class UnicornTracer(Tracer):
         self.trace = []
         self.execution_trace = []
         # Reset our Run object.
-        self.run = Run()
+        # self.run = Run()
     
     # TODO: need a separate function?
     def reset_trace(self, emulator) -> None:
@@ -364,6 +364,7 @@ class UnicornModel(Model, ABC):
         self.in_speculation = False
         self.speculation_window = 0
         self.tracer.init_trace(self.emulator, self.target_desc)
+        self.tracer.reset_trace(self.emulator)
         if self.tainting_enabled:
             self.taint_tracker = self.taint_tracker_cls(
                 self.initial_taints, self.sandbox_base)

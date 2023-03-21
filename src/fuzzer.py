@@ -128,11 +128,11 @@ class Fuzzer:
                 # print(f"[+] Equiv test: {run1.archstates == run2.archstates}")
                 # Debug info to show raw run data before synthesis step.
                 # print(f"[+] Debug run1: {run1} run2: {run2}")
-                # pairs = self.analyser.get_obs_pairs(run1, run2)
+                pairs = self.analyser.get_obs_pairs(run1, run2)
                 # # Debug info to show observation pairs too.
                 # print(f"[+] Debug pairs: {pairs}")
 
-                # return run1, run2, pairs
+                return run1, run2, pairs
 
                 # STAT.violations += 1
                 # if not nonstop:
@@ -146,12 +146,12 @@ class Fuzzer:
                     break
 
         LOGGER.fuzzer_finish()
-        if run1 is not None and run2 is not None:
-            # TODO: confirm the output of 'pairs' here. Is it always number of "runs"? [(0,0), (5,5)] implies each run has 5 elements (e.g., r1_0 -> r1_5).
-            pairs = self.analyser.get_obs_pairs(run1, run2)
-            return run1, run2, pairs
-        return STAT.violations > 0
-        # return None
+        # if run1 is not None and run2 is not None:
+        #     # TODO: confirm the output of 'pairs' here. Is it always number of "runs"? [(0,0), (5,5)] implies each run has 5 elements (e.g., r1_0 -> r1_5).
+        #     pairs = self.analyser.get_obs_pairs(run1, run2)
+        #     return run1, run2, pairs
+        # return STAT.violations > 0
+        return None
 
     def get_single_violation(self, violation):
         measurements: List[Measurement] = violation.measurements
