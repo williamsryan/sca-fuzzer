@@ -43,7 +43,6 @@ class UnicornTracer(Tracer):
     trace: List[int]
     execution_trace: ExecutionTrace
     instruction_id: int
-
     # Our run.
     run: Run
 
@@ -51,13 +50,18 @@ class UnicornTracer(Tracer):
         super().__init__()
         self.trace = []
         self.run = Run()
-        self.run.observations.append([])
+        # self.run.observations.append([])
 
     def init_trace(self, emulator, target_desc: UnicornTargetDesc) -> None:
         self.trace = []
         self.execution_trace = []
-        # Reser our Run object.
-        self.run = Run()
+        # Reset our Run object.
+        # self.run = Run()
+    
+    # TODO: need a separate function?
+    def reset_trace(self, emulator) -> None:
+        # self.run = Run()
+        pass
 
     def get_contract_trace(self) -> CTrace:
         return hash(tuple(self.trace))
@@ -75,7 +79,7 @@ class UnicornTracer(Tracer):
 
     def add_pc_to_trace(self, address, model):
         self.trace.append(address)
-        self.run.observations[0].append(Observation(address))
+        self.run.observations[-1].append(Observation(address))
         model.taint_tracker.taint_pc()
 
     def observe_mem_access(self, access, address: int, size: int, value: int,
