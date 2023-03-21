@@ -107,9 +107,6 @@ def get_input_generator() -> interfaces.InputGenerator:
 def get_model(bases: Tuple[int, int], contract: List[Expr]) -> interfaces.Model:
     model_instance: model.UnicornModel
 
-    # Set contract here?
-    model_instance.set_contract(contract)
-
     if CONF.instruction_set == 'x86-64':
         if "cond" in CONF.contract_execution_clause and "bpas" in CONF.contract_execution_clause:
             model_instance = x86_model.X86UnicornCondBpas(bases[0], bases[1])
@@ -117,6 +114,8 @@ def get_model(bases: Tuple[int, int], contract: List[Expr]) -> interfaces.Model:
             model_instance = _get_from_config(X86_SIMPLE_EXECUTION_CLAUSES,
                                               CONF.contract_execution_clause[0],
                                               "contract_execution_clause", bases[0], bases[1])
+            # Set contract here?
+            model_instance.set_contract(contract)
         else:
             raise ConfigException(
                 "unknown value of `contract_execution_clause` configuration option")
