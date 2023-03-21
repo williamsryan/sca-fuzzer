@@ -35,7 +35,7 @@ class UnicornTargetDesc(ABC):
     reg_decode: Dict[str, int]
 
 
-class UnicornTracer(Tracer):
+class   (Tracer):
     """
     A simple tracer.
     Collect instructions as they are emulated. See :class:`TracedInstruction`
@@ -50,13 +50,14 @@ class UnicornTracer(Tracer):
     def __init__(self):
         super().__init__()
         self.trace = []
-        self.run = Run()    # Is Run only initialized once, or do we need 2 instances for comparison?
-        # TODO: create two Runs for handling run1 and run2 when doing trace comparison.
+        self.run = Run()
         self.run.observations.append([])
 
     def init_trace(self, emulator, target_desc: UnicornTargetDesc) -> None:
         self.trace = []
         self.execution_trace = []
+        # This is where we should "reset" Run.
+        self.run = Run()
 
     def get_contract_trace(self) -> CTrace:
         return hash(tuple(self.trace))
