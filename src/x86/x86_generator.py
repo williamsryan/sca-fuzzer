@@ -119,7 +119,7 @@ class X86Generator(ConfigurableGenerator, abc.ABC):
         # Get a list of relative instruction addresses.
         for instruction in decoder:
             # print(f"[+] TEST INST: {instruction.ip} && {instruction}")
-            address_list.append(instruction.ip)
+            # address_list.append(instruction.ip)
             test_case.instructions_map[instruction.ip] = str(instruction)
 
         # connect them with instructions in the test case

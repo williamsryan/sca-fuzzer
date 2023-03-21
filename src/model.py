@@ -57,7 +57,7 @@ class UnicornTracer(Tracer):
         self.execution_trace = []
         # Reset our Run object.
         self.run = Run()
-    
+
     # TODO: need a separate function?
     def reset_trace(self, emulator) -> None:
         # self.run = Run()
@@ -217,7 +217,7 @@ class UnicornModel(Model, ABC):
             self.write_protect = True
         if 'assist-accessed' in CONF.permitted_faults:
             self.rw_protect = True
-    
+
     def set_contract(self, contract):
         self.contract = contract
 
@@ -383,9 +383,11 @@ class UnicornModel(Model, ABC):
             archstate.regs[reg] = self.emulator.reg_read(reg)
 
         mem_address_start = self.sandbox_base
-        mem_address_end = mem_address_start + self.input_size # TODO: replace 20 with self.input_size.
-        mem_ = self.emulator.mem_read(mem_address_start, self.input_size) # TODO: replace 20 with self.input_size.
-        
+        # TODO: replace 20 with self.input_size.
+        mem_address_end = mem_address_start + self.input_size
+        # TODO: replace 20 with self.input_size.
+        mem_ = self.emulator.mem_read(mem_address_start, self.input_size)
+
         for i in range(mem_address_start, mem_address_end, 8):
             i_ = i - mem_address_start
             archstate.mems[i] = (mem_[i_:i_+8]).hex()
@@ -433,7 +435,8 @@ class UnicornModel(Model, ABC):
             model.tracer.run.observations.append([])
 
             # Aux code.
-            instr = model.test_case.instructions_map[address - model.code_start]
+            instr = model.test_case.instructions_map[address -
+                                                     model.code_start]
             if (model.current_instruction.is_instrumentation):
                 instr += " #instrumentation"
             model.tracer.run.instructions.append(instr)
@@ -445,27 +448,29 @@ class UnicornModel(Model, ABC):
         model.taint_tracker.start_instruction(model.current_instruction)
         model.tracer.observe_instruction(address, size, model)
 
+        print(f"[+] Current contract: {model.contract}")
         for expr in model.contract:
             model.evaluateExpr(emulator, address, size, expr)
 
     def evaluateExpr(model: UnicornModel, emulator: Uc, address: int, size: int, expr: Expr):
         if (expr.keyword == 'IF'):
             pred = expr.pred
-            res = model.evaluatePred(emulator,address,size,pred)
+            res = model.evaluatePred(emulator, address, size, pred)
             if (res):
-                bs = expr.bs 
-                model.capture_bs(emulator,address,size,bs)
-    
+                bs = expr.bs
+                model.capture_bs(emulator, address, size, bs)
+
     def capture_bs(model: UnicornModel, emulator: Uc, address: int, size: int, bs: Bs):
         if (bs.keyword == 'REG'):
             val = bs.val
+            print(f"[+] bs val test: {val}") # TODO: if this is Dict[str, int], use reg_decode.
             reg = CONF.map_reg(val)
             res = emulator.reg_read(reg)
             # model.add_mem_address_to_trace()
             model.tracer.trace.append(res)
             if model.tracable:
                 model.tracer.run.observations[-1].append(Observation(res))
-    
+
     def evaluatePred(model: UnicornModel, emulator: Uc, address: int, size: int, pred: Pred):
         if (pred.keyword == 'BOOL'):
             return pred.val
