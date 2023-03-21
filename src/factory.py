@@ -1,4 +1,4 @@
-from typing import Tuple, Dict, Type
+from typing import Tuple, Dict, Type, List
 
 import x86.x86_generator as x86_generator
 
@@ -16,6 +16,8 @@ import postprocessor
 
 import interfaces
 from config import CONF, ConfigException
+
+from parser import Expr
 
 GENERATORS: Dict[str, Type[interfaces.Generator]] = {
     "x86-64-random": x86_generator.X86RandomGenerator
@@ -102,8 +104,11 @@ def get_input_generator() -> interfaces.InputGenerator:
     return _get_from_config(INPUT_GENERATORS, CONF.input_generator, "input_generator")
 
 
-def get_model(bases: Tuple[int, int]) -> interfaces.Model:
+def get_model(bases: Tuple[int, int], contract: List[Expr]) -> interfaces.Model:
     model_instance: model.UnicornModel
+
+    # Set contract here?
+    model_instance.set_contract(contract)
 
     if CONF.instruction_set == 'x86-64':
         if "cond" in CONF.contract_execution_clause and "bpas" in CONF.contract_execution_clause:

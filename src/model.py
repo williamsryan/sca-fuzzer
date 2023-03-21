@@ -217,6 +217,9 @@ class UnicornModel(Model, ABC):
             self.write_protect = True
         if 'assist-accessed' in CONF.permitted_faults:
             self.rw_protect = True
+    
+    def set_contract(self, contract):
+        self.contract = contract
 
     def load_test_case(self, test_case: TestCase) -> None:
         """
@@ -440,7 +443,7 @@ class UnicornModel(Model, ABC):
         # We call a different method that handles customize contract, i.e., contract that's comprised of sequences of expression.
         model.taint_tracker.start_instruction(model.current_instruction)
         model.tracer.observe_instruction(address, size, model)
-        
+
         for expr in model.contract:
             model.evaluateExpr(emulator, address, size, expr)
 
