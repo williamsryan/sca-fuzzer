@@ -383,8 +383,8 @@ class UnicornModel(Model, ABC):
             archstate.regs[reg] = self.emulator.reg_read(reg)
 
         mem_address_start = self.sandbox_base
-        mem_address_end = mem_address_start + 20 # TODO: replace 20 with self.input_size.
-        mem_ = self.emulator.mem_read(mem_address_start, 20) # TODO: replace 20 with self.input_size.
+        mem_address_end = mem_address_start + self.input_size # TODO: replace 20 with self.input_size.
+        mem_ = self.emulator.mem_read(mem_address_start, self.input_size) # TODO: replace 20 with self.input_size.
         
         for i in range(mem_address_start, mem_address_end, 8):
             i_ = i - mem_address_start

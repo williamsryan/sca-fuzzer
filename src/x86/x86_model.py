@@ -45,6 +45,8 @@ class X86UnicornModel(UnicornModel):
         self.emulator.mem_write(self.lower_overflow_base, self.overflow_region_values)
         self.emulator.mem_write(self.upper_overflow_base, self.overflow_region_values)
 
+        self.input_size = len(input_.tobytes())
+
         # - sandbox pages
         self.emulator.mem_write(self.sandbox_base, input_.get_memory().tobytes())
 
