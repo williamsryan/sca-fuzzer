@@ -114,7 +114,7 @@ def get_model(bases: Tuple[int, int], contract: List[Expr]) -> interfaces.Model:
             model_instance = _get_from_config(X86_SIMPLE_EXECUTION_CLAUSES,
                                               CONF.contract_execution_clause[0],
                                               "contract_execution_clause", bases[0], bases[1])
-            # Set contract here?
+            # Set contract here.
             model_instance.set_contract(contract)
         else:
             raise ConfigException(

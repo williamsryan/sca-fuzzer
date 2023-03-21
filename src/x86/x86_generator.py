@@ -106,6 +106,10 @@ class X86Generator(ConfigurableGenerator, abc.ABC):
             capture_output=True)
         address_list = [int(addr[:-1], 16) for addr in dump.stdout.decode().split("\n") if addr]
 
+        # TODO: Get a list of relative instruction addresses.
+        for instruction in dump.stdout.decode().split("\n"):
+            print(f"[+] TEST INST: {instruction}")
+
         # connect them with instructions in the test case
         address_map: Dict[int, Instruction] = {}
         counter = test_case.num_prologue_instructions
