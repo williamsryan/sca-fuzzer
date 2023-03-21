@@ -57,6 +57,8 @@ class UnicornTracer(Tracer):
         self.execution_trace = []
         # Reset our Run object.
         self.run = Run()
+        # Does this fix init issue?
+        self.run.observations.append([])
 
     # TODO: need a separate function?
     def reset_trace(self, emulator) -> None:
