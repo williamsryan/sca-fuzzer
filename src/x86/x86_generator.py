@@ -111,13 +111,14 @@ class X86Generator(ConfigurableGenerator, abc.ABC):
         with open(bin_file, "rb") as f:
             bin_file_contents = f.read()
 
+        # TODO: update to use objdump like above.
         decoder = iced_x86.Decoder(64, bin_file_contents)
 
         # TODO: Get a list of relative instruction addresses.
         for instruction in decoder:
-            print(f"[+] TEST INST: {instruction}")
-            # address_list.append(instruction.ip)
-            # test_case.instructions_map[instruction.ip] = str(instruction)
+            # print(f"[+] TEST INST: {instruction.ip} && {instruction}")
+            address_list.append(instruction.ip)
+            test_case.instructions_map[instruction.ip] = str(instruction)
 
         # connect them with instructions in the test case
         address_map: Dict[int, Instruction] = {}
