@@ -244,6 +244,8 @@ def main() -> int:
 
             if result is None:
                 print(f"[-] No result tuple from fuzzer.")
+                print(f"[+] Latest contract:")
+                LOGGER.show_contract(contract)
                 break
             else:
                 # print(f"[+] Violation result: {result}")
@@ -259,7 +261,6 @@ def main() -> int:
                 rosette.map(run2)
                 rosette.generate_constraints(pairs, run1, run2)
 
-                # TODO: run synthesis refinement loop elsewhere.
                 import subprocess
                 import signal
 
@@ -287,61 +288,6 @@ def main() -> int:
 
                 LOGGER.show_contract(contract)
         # End test.
-
-        # Normal fuzzing mode
-        # fuzzer = get_fuzzer(args.instruction_set,
-        #                     args.working_directory, args.testcase, "", contract)
-        # result = fuzzer.start(
-        #     args.num_test_cases,
-        #     args.num_inputs,
-        #     args.timeout,
-        #     args.nonstop,
-        # )
-
-        # if result is None:
-        #     print(f"[-] No result tuple from fuzzer.")
-        # else:
-        #     # print(f"[+] Violation result: {result}")
-        #     run1, run2, pairs = result
-        #     timestamp = datetime.today().strftime('%H%M%S-%d-%m-%y')
-        #     theory_fname = "theory-" + timestamp + ".rkt"
-        #     expr_fname = "expr-" + timestamp + ".txt"
-
-        #     rosette = Rosette(theory_fname, args.working_directory, 1)
-        #     # Each run object corresponds to an execution of a same program with different inputs
-        #     # that produce the same contract trace and different hardware trace.
-        #     rosette.map(run1)
-        #     rosette.map(run2)
-        #     rosette.generate_constraints(pairs, run1, run2)
-
-        #     # TODO: run synthesis refinement loop elsewhere.
-        #     import subprocess
-        #     import signal
-
-        #     command = "racket " + args.working_directory + "/" + theory_fname
-        #     with subprocess.Popen(command, shell=True, stdout=subprocess.PIPE,
-        #                           start_new_session=True) as process:
-        #         try:
-        #             stdout, stderr = process.communicate(timeout=6000)
-        #             return_code = process.poll()
-        #             if return_code:
-        #                 raise subprocess.CalledProcessError(return_code, process.args,
-        #                                                     output=stdout, stderr=stderr)
-        #         except subprocess.TimeoutExpired:
-        #             os.killpg(process.pid, signal.SIGINT)
-        #             raise
-
-        #     with open(args.working_directory + "/" + expr_fname, "w") as file:
-        #         file.write(stdout.decode("UTF-8"))
-        #     with open(args.working_directory + "/" + expr_fname, "r") as file:
-        #         s = file.readlines()[-1]
-        #         s = s[len("(define myexpr "):-1]
-        #         parser = Parser(s)
-        #         # print(f"[+] Test parse: {parser.parse()}")
-        #         contract.append(parser.parse())
-
-        #     LOGGER.show_contract(contract)
-
         return result
 
     # Reproducing a violation

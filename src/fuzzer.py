@@ -41,7 +41,6 @@ class Fuzzer:
                  contract: List[Expr] = [],
                  existing_test_case: str = "",
                  inputs: List[str] = []):
-        # Debugging stuff - RPW.
         print(f"[+] Fuzzer.init()")
         self._adjust_config(existing_test_case)
         self.existing_test_case = existing_test_case
