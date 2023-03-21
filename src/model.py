@@ -364,7 +364,7 @@ class UnicornModel(Model, ABC):
         self.in_speculation = False
         self.speculation_window = 0
         self.tracer.init_trace(self.emulator, self.target_desc)
-        self.tracer.reset_trace(self.emulator)
+        # self.tracer.reset_trace(self.emulator)
         if self.tainting_enabled:
             self.taint_tracker = self.taint_tracker_cls(
                 self.initial_taints, self.sandbox_base)
@@ -524,6 +524,10 @@ class UnicornModel(Model, ABC):
 # Implementation of Observation Clauses
 # ==================================================================================================
 class L1DTracer(UnicornTracer):
+
+    # def reset_trace(self, emulator):
+    #     self.trace = [0, 0]
+    #     self.execution_trace = []
 
     def init_trace(self, _, __):
         self.trace = [0, 0]
