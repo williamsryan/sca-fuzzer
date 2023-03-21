@@ -30,6 +30,18 @@ class StatisticsCls:
     spec_filter: int = 0
     observ_filter: int = 0
 
+    def reset(self):
+        self.test_cases = 0
+        self.num_inputs = 0
+        self.eff_classes = 0
+        self.single_entry_classes = 0
+        self.required_priming = 0
+        self.priming_errors = 0
+        self.violations = 0
+        self.coverage = 0
+        self.coverage_longest_uncovered = 0
+        self.fully_covered: int = 0
+
     def __str__(self):
         total_clss = self.eff_classes + self.single_entry_classes
         effectiveness = self.eff_classes / total_clss if total_clss else 0
@@ -107,6 +119,12 @@ class Logger:
     dbg_model: bool = False
     dbg_coverage: bool = False
     dbg_generator: bool = False
+
+    def reset(self):
+        self.one_percent_progress: float = 0.0
+        self.progress: float = 0.0
+        self.progress_percent: int = 0
+        STAT.reset()
 
     def __init__(self) -> None:
         pass
