@@ -64,6 +64,7 @@ class Fuzzer:
         self.generator = factory.get_generator(self.instruction_set)
         self.input_gen = factory.get_input_generator()
         self.executor = factory.get_executor()
+        # get_model returns UnicornModel which is how Run() first gets initialized.
         self.model = factory.get_model(self.executor.read_base_addresses())
         self.analyser = factory.get_analyser()
         self.coverage = factory.get_coverage(self.instruction_set, self.executor, self.model,
