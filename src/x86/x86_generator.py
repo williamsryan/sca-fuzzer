@@ -11,6 +11,8 @@ import random
 from typing import List, Dict, Set, Optional, Tuple
 from subprocess import run
 
+import iced_x86
+
 from isa_loader import InstructionSet
 from interfaces import TestCase, Operand, RegisterOperand, FlagsOperand, MemoryOperand, \
     ImmediateOperand, AgenOperand, LabelOperand, OT, Instruction, BasicBlock, InstructionSpec, \
@@ -106,10 +108,16 @@ class X86Generator(ConfigurableGenerator, abc.ABC):
             capture_output=True)
         address_list = [int(addr[:-1], 16) for addr in dump.stdout.decode().split("\n") if addr]
 
+        with open(bin_file, "rb") as f:
+            bin_file_contents = f.read()
+
+        decoder = iced_x86.Decoder(64, bin_file_contents)
+
         # TODO: Get a list of relative instruction addresses.
-        for instruction in dump.stdout.decode().split("\n"):
-            address_list.append(instruction.ip)
-            test_case.instructions_map[instruction.ip] = str(instruction)
+        for instruction in decoder:
+            print(f"[+] TEST INST: {instruction}")
+            # address_list.append(instruction.ip)
+            # test_case.instructions_map[instruction.ip] = str(instruction)
 
         # connect them with instructions in the test case
         address_map: Dict[int, Instruction] = {}
