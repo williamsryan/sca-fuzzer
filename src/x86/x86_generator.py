@@ -114,7 +114,9 @@ class X86Generator(ConfigurableGenerator, abc.ABC):
         # TODO: update to use objdump like above.
         decoder = iced_x86.Decoder(64, bin_file_contents)
 
-        # TODO: Get a list of relative instruction addresses.
+        # TODO: check the differences between address_map and instructions_map.
+
+        # Get a list of relative instruction addresses.
         for instruction in decoder:
             # print(f"[+] TEST INST: {instruction.ip} && {instruction}")
             address_list.append(instruction.ip)
@@ -135,6 +137,9 @@ class X86Generator(ConfigurableGenerator, abc.ABC):
             if address not in address_map:
                 address_map[address] = Instruction("UNMAPPED", True)
 
+        # Debug test.
+        print(f"[+] instructions_map: {test_case.instructions_map}")
+        print(f"[+] address_map: {test_case.address_map}")
         test_case.address_map = address_map
 
     def get_return_instruction(self) -> Instruction:
