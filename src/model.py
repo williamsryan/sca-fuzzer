@@ -22,7 +22,7 @@ from interfaces import ArchState, CTrace, Run, TestCase, Observation, Model, Inp
 from config import CONF
 from service import LOGGER, NotSupportedException
 
-from parser import Expr
+from parser import Expr, Pred, Bs
 
 
 # ==================================================================================================
@@ -50,7 +50,7 @@ class UnicornTracer(Tracer):
         super().__init__()
         self.trace = []
         self.run = Run()
-        # self.run.observations.append([])
+        self.run.observations.append([])
 
     def init_trace(self, emulator, target_desc: UnicornTargetDesc) -> None:
         self.trace = []
@@ -420,11 +420,50 @@ class UnicornModel(Model, ABC):
         """
         model.previous_context = model.emulator.context_save()
         model.current_instruction = model.test_case.address_map[address - model.code_start]
-        model.trace_instruction(emulator, address, size, model)
+
+        # TODO: come back to this if we need.
+        # model.trace_instruction(emulator, address, size, model)
 
         # Testing for now - RPW.
-        # if model.tracable:
-        #     model.tracer.run.observations.append([])
+        if model.tracable:
+            model.tracer.run.observations.append([])
+
+            # Aux code.
+            instr = model.test_case.instructions_map[address - model.code_start]
+            if (model.current_instruction.is_instrumentation):
+                instr += " #instrumentation"
+            model.tracer.run.instructions.append(instr)
+            archstate = model.capture_state()
+            archstate.pc = address
+            model.tracer.run.archstates.append(archstate)
+
+        # We call a different method that handles customize contract, i.e., contract that's comprised of sequences of expression.
+        model.taint_tracker.start_instruction(model.current_instruction)
+        model.tracer.observe_instruction(address, size, model)
+        for expr in model.contract:
+            model.evaluateExpr(emulator, address, size, expr)
+
+    def evaluateExpr(model: UnicornModel, emulator: Uc, address: int, size: int, expr: Expr):
+        if (expr.keyword == 'IF'):
+            pred = expr.pred
+            res = model.evaluatePred(emulator,address,size,pred)
+            if (res):
+                bs = expr.bs 
+                model.capture_bs(emulator,address,size,bs)
+    
+    def capture_bs(model: UnicornModel, emulator: Uc, address: int, size: int, bs: Bs):
+        if (bs.keyword == 'REG'):
+            val = bs.val
+            reg = CONF.map_reg(val)
+            res = emulator.reg_read(reg)
+            # model.add_mem_address_to_trace()
+            model.tracer.trace.append(res)
+            if model.tracable:
+                model.tracer.run.observations[-1].append(Observation(res))
+    
+    def evaluatePred(model: UnicornModel, emulator: Uc, address: int, size: int, pred: Pred):
+        if (pred.keyword == 'BOOL'):
+            return pred.val
 
     def handle_fault(self, errno: int) -> int:
         next_addr = self.speculate_fault(errno)
@@ -569,6 +608,7 @@ class ArchTracer(CTRTracer):
             val = int.from_bytes(model.emulator.mem_read(
                 address, size), byteorder='little')
             self.trace.append(val)
+            self.run.observations[-1].append(Observation(val))
             model.taint_tracker.taint_memory_load()
         super(ArchTracer, self).observe_mem_access(
             access, address, size, value, model)
