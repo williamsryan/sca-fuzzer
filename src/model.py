@@ -56,7 +56,7 @@ class UnicornTracer(Tracer):
         self.trace = []
         self.execution_trace = []
         # Reset our Run object.
-        # self.run = Run()
+        self.run = Run()
     
     # TODO: need a separate function?
     def reset_trace(self, emulator) -> None:

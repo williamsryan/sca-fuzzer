@@ -44,7 +44,6 @@ class Rosette:
                 # print(f"[+] rosette.map: adding register val: {reg}")
                 regs += "(bv {0} (bitvector 64))\n".format(str(reg))
             if xstate.pc is not None:
-                print(f"[+] rosette.map: adding xstate.pc: {xstate.pc}")
                 regs += indentation + \
                     "(bv {0} (bitvector 64))".format(str(xstate.pc))
             else:
@@ -74,7 +73,6 @@ class Rosette:
                 indentation += ' '
             i = i_ = 0
             pairs.append((len(run1.archstates)-1, len(run2.archstates)-1))
-            print(f"[+] rosette.generate_constraints: pairs: {pairs}")
             j, j_ = pairs[0]
             k = 1
             rid1 = run1.id
@@ -86,7 +84,6 @@ class Rosette:
             )
             i, i_ = j, j_
             while (k < len(pairs)):
-                print(f"[+] rosette.generate_constraints: {constraints}")
                 j, j_ = pairs[k]
                 constraints += indentation + "(diff {0} {1} {2} {3} {4} {5} myexpr)\n".format(
                     str(i), str(i+1), self.get_run_name(rid1),
