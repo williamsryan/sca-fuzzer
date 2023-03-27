@@ -13,7 +13,7 @@ import signal
 import sys, os
 
 def main():
-    theory_fname = "theory-new.rkt"
+    theory_fname = "theory-real.rkt"
     command = "racket " + "./" + theory_fname
 
     expr_fname = "expr-" + "001" + ".txt"
@@ -30,8 +30,8 @@ def main():
             os.killpg(process.pid, signal.SIGINT)
             raise
 
-    # with open("./" + expr_fname, "w") as file:
-    #     file.write(stdout.decode("UTF-8"))
+    with open("./" + expr_fname, "w") as file:
+        file.write(stdout.decode("UTF-8"))
 
     with open("./" + expr_fname, "r") as file:
         s = file.readlines()[-1]
