@@ -46,6 +46,8 @@
 
 ; Grammar for the actual contract.
 ; (IF (BOOL #f) (REG 12))
+
+; The expr object everywhere is just this cexpr.
 (define-grammar (cexpr)
   [expr (IF (pred) (bs))]
   [pred (choose (BOOL (?? boolean?))
@@ -63,7 +65,7 @@
 
 (define EMPTY (list '()))
 
-; Debug note: e: expression, x: state (bv).
+; Debug note: e: c-expression (grammar), x: state (bv).
 (define (eval e x)
   (destruct e
             [(IF pred bs) (if (eval-pred pred x) (list (eval-bs bs x))
@@ -94,12 +96,16 @@
   ; (println reg)
   ; (print "x: ")
   ; (println x)
+  ; (println (list-ref x reg))
   (list-ref x reg))
 
 ; Auxiliary functions
 ; obs() takes an expression and a xstate 
 ;       returns its observation
+
+; Debug note: get an observation from expr grammar with state data (bitvector values).
 (define (obs expr state)
+  ; (println state)
   (eval expr state))
 
 ; obs() takes an expression and a xstate 
