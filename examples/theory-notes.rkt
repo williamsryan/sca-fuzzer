@@ -187,13 +187,11 @@
     #:forall (list r0 r1)
     #:guarantee (assert (diff 0 1 r0 0 1 r1 myexpr))))
 
-(print-forms sol)
-
 ; Angelic execution example.
 ; (diff 0 1 r1_0 0 0 r1_1 myexpr)
 ; (define sol (solve (assert (diff 0 1 r1_0 0 0 r1_1 myexpr))))
 
-; (print-forms sol)
+(print-forms sol)
 ; Returns: '(define myexpr (IF (BOOL #f) INSTR))'
 
 ; (define sol (solve (assert (or (diff 0 0 r1 0 0 r1 myexpr)
