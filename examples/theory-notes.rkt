@@ -212,9 +212,11 @@
 
 ; Angelic execution mode.
 (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
-                               (diff 1 2 r0 1 2 r1 myexpr)
+                              ;  (diff 1 2 r0 1 2 r1 myexpr)
                               ;  (diff 2 2 r0 2 2 r1 myexpr)
 ))))
+
+; (define sol (solve (assert #t)))
 
 (print-forms sol)
 ; Returns: '(define myexpr (IF (BOOL #f) INSTR))'
