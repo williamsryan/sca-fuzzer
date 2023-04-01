@@ -155,7 +155,7 @@
 
 ; ------------- END-CORE ------------------ ;
 
-; Run 1.
+; Run 1 archstates.
 (define r0_0 (list (bv 760209211569 (bitvector 64))
                    (bv 133143986207 (bitvector 64))
                    (bv 382252089433 (bitvector 64))
@@ -167,7 +167,7 @@
 
 (define r0 (list r0_0))
 
-; Run 2.
+; Run 2 archstates.
 (define r1_0 (list (bv 1503238553950 (bitvector 64))
                    (bv 605590388877 (bitvector 64))
                    (bv 549755814016 (bitvector 64))
