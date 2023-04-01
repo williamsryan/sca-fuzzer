@@ -158,6 +158,11 @@
                                   (not (empty-obs expr (list-ref r_ i_)))
                                   (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
 
+
+; Debug testing function for playing with grammar directly.
+(define (debug i j r i_ j_ r_ expr)
+  (obs-equal expr (list-ref r i ) (list-ref r_ i_)))
+
 ; ------------- END-CORE ------------------ ;
 
 ; Run 1 archstates.
@@ -211,14 +216,18 @@
 ;     #:guarantee (assert (diff 0 1 r0 0 1 r1 myexpr))))
 
 ; Angelic execution mode.
-(define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
-                               (diff 1 2 r0 1 2 r1 myexpr)
-                              ;  (diff 2 2 r0 2 2 r1 myexpr)
-))))
+; (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
+;                                (diff 1 2 r0 1 2 r1 myexpr)
+;                               ;  (diff 2 2 r0 2 2 r1 myexpr)
+; ))))
 
-; (define sol (solve (assert #t)))
+; TODO: test out finishing this part later.
+(define sol
+  (solve
+    (assert (debug 0 1 r0 0 1 r1 myexpr))))
 
 (print-forms sol)
+
 ; Returns: '(define myexpr (IF (BOOL #f) INSTR))'
 
 ; (define sol (solve (assert (or (diff 0 0 r1 0 0 r1 myexpr)
