@@ -104,9 +104,11 @@
 ; obs() takes an expression and a xstate 
 ;       returns its observation
 
-; ((union [??:theory-notes:53:23$choose:theory-notes:53:9$pred:theory-notes:52:13$expr:theory-notes:52:3$cexpr:theory-notes:184:16 (ite* (⊢ (= 0 ??:theory-notes:61:20$choose:theory-notes:59:7$bs:theory-notes:52:20$expr:theory-notes:52:3$cexpr:theory-notes:184:16) ...) ...)] [(! ??:theory-notes:53:23$choose:theory-notes:53:9$pred:theory-notes:52:13$expr:theory-notes:52:3$cexpr:theory-notes:184:16) ()]))
+; state contains all bitvectors for each run object.
 (define (obs expr state)
   ; (println (eval expr state))
+  ; (print "Getting observations for state:")
+  ; (println state)
   (eval expr state))
 
 ; obs() takes an expression and a xstate 
@@ -168,7 +170,16 @@
                    (bv 71 (bitvector 64))
                    (bv 18446621768290996224 (bitvector 64))))
 
-(define r0 (list r0_0))
+(define r0_1 (list (bv 382252089433 (bitvector 64))
+                    (bv 133143986207 (bitvector 64))
+                    (bv 382252089433 (bitvector 64))
+                    (bv 1610612736269 (bitvector 64))
+                    (bv 465 (bitvector 64))
+                    (bv 1507533521319 (bitvector 64))
+                    (bv 131 (bitvector 64))
+                    (bv -1 (bitvector 64))))
+
+(define r0 (list r0_0 r0_1))
 
 ; Run 2 archstates.
 (define r1_0 (list (bv 1503238553950 (bitvector 64))
@@ -180,21 +191,30 @@
                    (bv 71 (bitvector 64))
                    (bv 18446621768290996224 (bitvector 64))))
 
-(define r1 (list r1_0))
+(define r1_1 (list (bv 549755814016 (bitvector 64))
+                    (bv 605590388877 (bitvector 64))
+                    (bv 549755814016 (bitvector 64))
+                    (bv 1610612736269 (bitvector 64))
+                    (bv 465 (bitvector 64))
+                    (bv 1507533521319 (bitvector 64))
+                    (bv 131 (bitvector 64))
+                    (bv -1 (bitvector 64))))
+
+(define r1 (list r1_0 r1_1))
 
 (define myexpr (cexpr #:depth 1))
 
 ; Synthesis mode.
-(define sol 
-  (synthesize
-    #:forall (list r0 r1)
-    #:guarantee (assert (diff 0 1 r0 0 1 r1 myexpr))))
+; (define sol 
+;   (synthesize
+;     #:forall (list r0 r1)
+;     #:guarantee (assert (diff 0 1 r0 0 1 r1 myexpr))))
 
 ; Angelic execution mode.
-; (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
-;                               ;  (diff 1 2 r0 1 2 r1 myexpr)
-;                               ;  (diff 2 2 r0 2 2 r1 myexpr)
-; ))))
+(define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
+                               (diff 1 2 r0 1 2 r1 myexpr)
+                              ;  (diff 2 2 r0 2 2 r1 myexpr)
+))))
 
 (print-forms sol)
 ; Returns: '(define myexpr (IF (BOOL #f) INSTR))'
