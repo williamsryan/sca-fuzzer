@@ -104,9 +104,6 @@
 ; obs() takes an expression and a xstate 
 ;       returns its observation
 
-; Debug note: given the c-expr and state, what
-; is the form of the "observation" returned?
-
 ; ((union [??:theory-notes:53:23$choose:theory-notes:53:9$pred:theory-notes:52:13$expr:theory-notes:52:3$cexpr:theory-notes:184:16 (ite* (⊢ (= 0 ??:theory-notes:61:20$choose:theory-notes:59:7$bs:theory-notes:52:20$expr:theory-notes:52:3$cexpr:theory-notes:184:16) ...) ...)] [(! ??:theory-notes:53:23$choose:theory-notes:53:9$pred:theory-notes:52:13$expr:theory-notes:52:3$cexpr:theory-notes:184:16) ()]))
 (define (obs expr state)
   ; (println (eval expr state))
@@ -143,7 +140,7 @@
 ;        returns true if the trace produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable 
 ;                false otherwise
 
-; TODO: check the remaining diffs here
+; TODO: check the remaining diffs here - RPW.
 (define (diff i j r i_ j_ r_ expr)
   (if (equal? i j)
       (if (equal? i_ j_) #f
@@ -193,9 +190,11 @@
     #:forall (list r0 r1)
     #:guarantee (assert (diff 0 1 r0 0 1 r1 myexpr))))
 
-; Angelic execution example.
-; (diff 0 1 r1_0 0 0 r1_1 myexpr)
-; (define sol (solve (assert (diff 0 1 r1_0 0 0 r1_1 myexpr))))
+; Angelic execution mode.
+; (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
+;                               ;  (diff 1 2 r0 1 2 r1 myexpr)
+;                               ;  (diff 2 2 r0 2 2 r1 myexpr)
+; ))))
 
 (print-forms sol)
 ; Returns: '(define myexpr (IF (BOOL #f) INSTR))'
