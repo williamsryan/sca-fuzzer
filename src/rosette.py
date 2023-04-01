@@ -38,6 +38,7 @@ class Rosette:
             for i in range(0, header):
                 indentation += ' '
             regs = ''
+            # TODO: test printing mems instead. Both are [int, ByteString] dicts.
             for reg in xstate.regs.values():
                 if regs != '':
                     regs += indentation
