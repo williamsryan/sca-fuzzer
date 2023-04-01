@@ -66,6 +66,7 @@
 (define EMPTY (list '()))
 
 ; Debug note: e: c-expression (grammar), x: state (bv).
+;   returns the observation.
 (define (eval e x)
   (destruct e
             [(IF pred bs) (if (eval-pred pred x) (list (eval-bs bs x))
@@ -103,9 +104,12 @@
 ; obs() takes an expression and a xstate 
 ;       returns its observation
 
-; Debug note: get an observation from expr grammar with state data (bitvector values).
+; Debug note: given the c-expr and state, what
+; is the form of the "observation" returned?
+
+; ((union [??:theory-notes:53:23$choose:theory-notes:53:9$pred:theory-notes:52:13$expr:theory-notes:52:3$cexpr:theory-notes:184:16 (ite* (⊢ (= 0 ??:theory-notes:61:20$choose:theory-notes:59:7$bs:theory-notes:52:20$expr:theory-notes:52:3$cexpr:theory-notes:184:16) ...) ...)] [(! ??:theory-notes:53:23$choose:theory-notes:53:9$pred:theory-notes:52:13$expr:theory-notes:52:3$cexpr:theory-notes:184:16) ()]))
 (define (obs expr state)
-  ; (println state)
+  ; (println (eval expr state))
   (eval expr state))
 
 ; obs() takes an expression and a xstate 
@@ -136,7 +140,7 @@
 ;              i,j,i_,j_: natural numbers such that i <= j and i_ <= j_
 ;              r, r_: two runs
 ;              expr: an expression
-;        returns true if the trace produce r[i]->r[j] and r_[i_]->r_[j_] are distinguishable 
+;        returns true if the trace produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable 
 ;                false otherwise
 
 ; TODO: check the remaining diffs here
