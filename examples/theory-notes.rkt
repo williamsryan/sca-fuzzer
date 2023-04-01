@@ -138,6 +138,8 @@
 ;              expr: an expression
 ;        returns true if the trace produce r[i]->r[j] and r_[i_]->r_[j_] are distinguishable 
 ;                false otherwise
+
+; TODO: check the remaining diffs here
 (define (diff i j r i_ j_ r_ expr)
   (if (equal? i j)
       (if (equal? i_ j_) #f
