@@ -461,6 +461,7 @@ class UnicornModel(Model, ABC):
             # model.add_mem_address_to_trace()
             model.tracer.trace.append(res)
             if model.tracable:
+                # Add observations that correspond to the contract clauses.
                 model.tracer.run.observations[-1].append(Observation(res))
 
     def evaluatePred(model: UnicornModel, emulator: Uc, address: int, size: int, pred: Pred):
