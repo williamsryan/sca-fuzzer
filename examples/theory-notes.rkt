@@ -161,7 +161,7 @@
 
 ; Debug testing function for playing with grammar directly.
 (define (debug i j r i_ j_ r_ expr)
-  (obs-equal expr (list-ref r i ) (list-ref r_ i_)))
+  (obs-equal expr (list-ref r i) (list-ref r_ i_)))
 
 ; ------------- END-CORE ------------------ ;
 
