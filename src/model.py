@@ -457,7 +457,7 @@ class UnicornModel(Model, ABC):
             # print(f"[+] bs val test: {val}") # TODO: if this is Dict[str, int], use reg_decode.
             reg = CONF.map_reg(val)
             res = emulator.reg_read(reg)
-            print(f"[capture_bs] reg = {reg} res = {res}")
+            # print(f"[capture_bs] reg = {reg} res = {res}")
             # model.add_mem_address_to_trace()
             model.tracer.trace.append(res)
             if model.tracable:
