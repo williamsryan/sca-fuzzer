@@ -73,6 +73,7 @@ class Rosette:
                 indentation += ' '
             i = i_ = 0
             pairs.append((len(run1.archstates)-1, len(run2.archstates)-1))
+            print(f"[generate_constraints] pairs.len: {len(pairs)}")
             j, j_ = pairs[0]
             k = 1
             rid1 = run1.id
