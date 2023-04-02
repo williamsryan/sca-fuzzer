@@ -371,7 +371,10 @@ class UnicornModel(Model, ABC):
     def capture_state(self):
         archstate = ArchState()
         registers = self.target_desc.registers
+        # From other version.
+        # registers = CONF.registers.keys()
         for reg in registers:
+            # print(f"[+] Reading register #{reg}") # e.g., 35 = RAX.
             archstate.regs[reg] = self.emulator.reg_read(reg)
 
         mem_address_start = self.sandbox_base

@@ -257,7 +257,8 @@ def main() -> int:
                 # TODO: test for register mapping stuff.
                 for _, xstate in enumerate(run1.archstates):
                     print(f"[+] xstate test: {xstate.regs}")
-
+                    # print(f"[+] mems test: {xstate.mems}")
+                
                 rosette = Rosette(theory_fname, args.working_directory, 1)
                 # Each run object corresponds to an execution of a same program with different inputs
                 # that produce the same contract trace and different hardware trace.
