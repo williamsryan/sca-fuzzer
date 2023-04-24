@@ -456,9 +456,10 @@ class UnicornModel(Model, ABC):
             val = bs.val
             # TODO: if this is Dict[str, int], use reg_decode.
             reg = CONF.map_reg(val)
-            # print(f"[+] bs.val: {val} reg: {reg}")
+            # print(f"[+] Got bs.val: {val}; reading from register: {reg}")
             res = emulator.reg_read(reg)
             # model.add_mem_address_to_trace()
+            # print(f"[+] Read value: {res} from register: {reg}")
             model.tracer.trace.append(res)
             if model.tracable:
                 # Add observations that correspond to the contract clauses.
