@@ -156,13 +156,13 @@ class UnicornModel(Model, ABC):
     # set by subclasses
     architecture: Tuple[int, int]
 
-    tracable: bool = False
+    traceable: bool = False
     input_size: int
 
     contract: List[Expr]
 
-    def set_tracable(self):
-        self.tracable = True
+    def set_traceable(self):
+        self.traceable = True
 
     def __init__(self, sandbox_base, code_start):
         super().__init__(sandbox_base, code_start)
@@ -370,10 +370,9 @@ class UnicornModel(Model, ABC):
 
     def capture_state(self):
         archstate = ArchState()
-        registers = self.target_desc.registers
-        # From other version.
-        # registers = CONF.registers.keys()
-        for reg in registers:
+        # registers = self.target_desc.registers  # 7 registers.
+        registers_llex = CONF.registers.keys()  # 16 registers.
+        for reg in registers_llex:
             # print(f"[+] Reading register #{reg}") # e.g., 35 = RAX.
             archstate.regs[reg] = self.emulator.reg_read(reg)
 
@@ -395,7 +394,7 @@ class UnicornModel(Model, ABC):
             self._load_input(input)
             self.emulator.emu_start(
                 self.code_start, self.code_end, timeout=10 * uni.UC_SECOND_SCALE)
-            if self.tracable:
+            if self.traceable:
                 archstate = self.capture_state()
                 self.tracer.run.archstates.append(archstate)
         except UcError as e:
@@ -422,7 +421,7 @@ class UnicornModel(Model, ABC):
         # model.trace_instruction(emulator, address, size, model)
 
         # Testing for now - RPW.
-        if model.tracable:
+        if model.traceable:
             model.tracer.run.observations.append([])
 
             # Aux code.
@@ -461,7 +460,7 @@ class UnicornModel(Model, ABC):
             # model.add_mem_address_to_trace()
             # print(f"[+] Read value: {res} from register: {reg}")
             model.tracer.trace.append(res)
-            if model.tracable:
+            if model.traceable:
                 # Add observations that correspond to the contract clauses.
                 model.tracer.run.observations[-1].append(Observation(res))
 
