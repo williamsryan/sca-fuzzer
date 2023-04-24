@@ -454,11 +454,10 @@ class UnicornModel(Model, ABC):
     def capture_bs(model: UnicornModel, emulator: Uc, address: int, size: int, bs: Bs):
         if (bs.keyword == 'REG'):
             val = bs.val
-            print(f"[+] bs val test: {val}") # TODO: if this is Dict[str, int], use reg_decode.
+            # TODO: if this is Dict[str, int], use reg_decode.
             reg = CONF.map_reg(val)
-            print(f"[+] map test: {reg}")
+            # print(f"[+] bs.val: {val} reg: {reg}")
             res = emulator.reg_read(reg)
-            # print(f"[capture_bs] reg = {reg} res = {res}")
             # model.add_mem_address_to_trace()
             model.tracer.trace.append(res)
             if model.tracable:
@@ -1033,7 +1032,7 @@ class BaseTaintTracker(TaintTrackerInterface):
             else:
                 reg = self.unicorn_target_desc.reg_decode[label]
                 # TODO: test this later.
-                # print(f"[+] Register test: {reg}") # Prints value in register from current test?
+                # print(f"[+] Register test: {reg}") # This is the register ID, not the value in it.
                 if reg in self._registers:
                     input_offset = register_start + \
                         self._registers.index(
