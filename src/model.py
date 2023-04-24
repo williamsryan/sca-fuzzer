@@ -373,8 +373,8 @@ class UnicornModel(Model, ABC):
         # registers = self.target_desc.registers  # 7 registers.
         registers_llex = CONF.registers.keys()  # 16 registers.
         for reg in registers_llex:
-            # print(f"[+] Reading register #{reg}") # e.g., 35 = RAX.
             archstate.regs[reg] = self.emulator.reg_read(reg)
+            # print(f"[+] REG {reg} : {self.emulator.reg_read(reg)}")
 
         mem_address_start = self.sandbox_base
         mem_address_end = mem_address_start + self.input_size

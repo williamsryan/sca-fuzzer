@@ -42,6 +42,7 @@ class Rosette:
             for reg in xstate.regs.values():
                 if regs != '':
                     regs += indentation
+                regs += ";; Testing comment - RPW."
                 regs += "(bv {0} (bitvector 64))\n".format(str(reg))
             if xstate.pc is not None:
                 regs += indentation + \
