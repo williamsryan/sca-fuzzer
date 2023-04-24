@@ -255,8 +255,8 @@ def main() -> int:
                 expr_fname = "expr-" + timestamp + ".txt"
 
                 # TODO: test for register mapping stuff.
-                for _, xstate in enumerate(run1.archstates):
-                    print(f"[+] xstate test: {xstate.regs}")
+                # for _, xstate in enumerate(run1.archstates):
+                #     print(f"[+] xstate test: {xstate.regs}")
                     # print(f"[+] mems test: {xstate.mems}")
                 
                 rosette = Rosette(theory_fname, args.working_directory, 1)

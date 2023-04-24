@@ -454,8 +454,9 @@ class UnicornModel(Model, ABC):
     def capture_bs(model: UnicornModel, emulator: Uc, address: int, size: int, bs: Bs):
         if (bs.keyword == 'REG'):
             val = bs.val
-            # print(f"[+] bs val test: {val}") # TODO: if this is Dict[str, int], use reg_decode.
+            print(f"[+] bs val test: {val}") # TODO: if this is Dict[str, int], use reg_decode.
             reg = CONF.map_reg(val)
+            print(f"[+] map test: {reg}")
             res = emulator.reg_read(reg)
             # print(f"[capture_bs] reg = {reg} res = {res}")
             # model.add_mem_address_to_trace()

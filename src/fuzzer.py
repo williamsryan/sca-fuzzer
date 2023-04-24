@@ -171,8 +171,8 @@ class Fuzzer:
         # print(f"[+] Capturing run data: {test_case} -> {inputs}")
 
         self.model.load_test_case(test_case)
-        self.executor.load_test_case(test_case)
-        self.coverage.load_test_case(test_case)
+        # self.executor.load_test_case(test_case)
+        # self.coverage.load_test_case(test_case)
         self.model.set_tracable()
 
         for id, input in enumerate(inputs):
@@ -201,7 +201,7 @@ class Fuzzer:
         boosted_inputs: List[Input] = self.boost_inputs(inputs, 1)
 
         # check for violations
-        ctraces = self.model.trace_test_case(boosted_inputs, 1)
+        ctraces = self.model.trace_test_case(boosted_inputs, 1) # This is where we pass contract?
         htraces = self.executor.trace_test_case(
             boosted_inputs, CONF.executor_repetitions)
         LOGGER.trc_fuzzer_dump_traces(self.model, boosted_inputs, htraces, ctraces,
