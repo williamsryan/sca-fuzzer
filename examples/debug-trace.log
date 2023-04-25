@@ -1,0 +1,207 @@
+================================ Debug Trace ==================================
+                      ##### Input 5 #####
+
+0x0 : UNMAPPED
+  rax=0xbd000000bd      rbx=0x9100000091      rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0000000e0      rdi=0x19800000198
+  fl=000011010010
+0x3 : JMP
+  rax=0xbd000000bd      rbx=0x9100000091      rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0000000e0      rdi=0x19800000198
+  fl=000011010010
+0x5 : TEST
+  rax=0xbd000000bd      rbx=0x9100000091      rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0000000e0      rdi=0x19800000198
+  fl=000011010010
+0x7 : AND
+  rax=0xbd000000bd      rbx=0x9100000091      rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0000000e0      rdi=0x19800000198
+  fl=000010000010
+0xe : LOCK ADC
+  rax=0xbd000000bd      rbx=0x91              rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0000000e0      rdi=0x19800000198
+  fl=000000000010
+  > load from +0x91 value 0x0
+  > store to +0x91 value 0xbd
+0x14: OR
+  rax=0xbd000000bd      rbx=0x91              rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0000000e0      rdi=0x19800000198
+  fl=000000000110
+0x19: BSF
+  rax=0xbd000000bd      rbx=0x91              rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0000000e0      rdi=0x19800008198
+  fl=000010000010
+0x1d: BTR
+  rax=0xbd000000bd      rbx=0x3               rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0000000e0      rdi=0x19800008198
+  fl=000010000010
+0x21: AND
+  rax=0xbd000000bd      rbx=0x3               rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0000000e0      rdi=0x19800008198
+  fl=100010000010
+0x28: LOCK SBB
+  rax=0xbd000000bd      rbx=0x3               rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0              rdi=0x19800008198
+  fl=000000000010
+  > load from +0xe0 value 0xc6
+  > store to +0xe0 value 0xbb
+0x2e: JB
+  rax=0xbd000000bd      rbx=0x3               rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0              rdi=0x19800008198
+  fl=000010010110
+0x30: JMP
+  rax=0xbd000000bd      rbx=0x3               rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0              rdi=0x19800008198
+  fl=000010010110
+0x57: TEST
+  rax=0xbd000000bd      rbx=0x3               rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0              rdi=0x19800008198
+  fl=000010010110
+0x59: OR
+  rax=0xbd000000bd      rbx=0x3               rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0              rdi=0x19800008198
+  fl=000000000110
+0x5d: AND
+  rax=0xbd000000bd      rbx=0xffffffffffffffe7 rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0              rdi=0x19800008198
+  fl=000010000110
+0x64: CMP
+  rax=0xbd000000bd      rbx=0xffffffffffffffe7 rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0              rdi=0x19800008198
+  fl=000000000010
+  > load from +0xe0 value 0xbb
+0x68: JMP
+  rax=0xbd000000bd      rbx=0xffffffffffffffe7 rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0              rdi=0x19800008198
+  fl=100000000110
+0x6a: TEST
+  rax=0xbd000000bd      rbx=0xffffffffffffffe7 rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0              rdi=0x19800008198
+  fl=100000000110
+0x6c: JMP
+  rax=0xbd000000bd      rbx=0xffffffffffffffe7 rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0              rdi=0x19800008198
+  fl=000000000110
+0x6e: MOV
+  rax=0xbd000000bd      rbx=0xffffffffffffffe7 rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0              rdi=0x19800008198
+  fl=000000000110
+0x71: AND
+  rax=0xbd000000bd      rbx=0xffffffffffffffe7 rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0              rdi=0x1980000ffe7
+  fl=000000000110
+0x78: LOCK BTC
+  rax=0xbd000000bd      rbx=0xffffffffffffffe7 rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0              rdi=0x1fe7
+  fl=000000000110
+  > load from +0x1fe7 value 0xcf00
+  > store to +0x1fe7 value 0xcf40
+0x80: UNMAPPED
+  rax=0xbd000000bd      rbx=0xffffffffffffffe7 rcx=0x1ae000001ae
+  rdx=0x15800000158     rsi=0xe0              rdi=0x1fe7
+  fl=000000000110
+
+
+
+                      ##### Input 25 #####
+
+                     ##### Input 0 #####
+0x0 : UNMAPPED
+  rax=0xbd000000bd      rbx=0x9100000091      rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0000000e0      rdi=0x19800000198
+  fl=000011010010
+0x3 : JMP
+  rax=0xbd000000bd      rbx=0x9100000091      rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0000000e0      rdi=0x19800000198
+  fl=000011010010
+0x5 : TEST
+  rax=0xbd000000bd      rbx=0x9100000091      rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0000000e0      rdi=0x19800000198
+  fl=000011010010
+0x7 : AND
+  rax=0xbd000000bd      rbx=0x9100000091      rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0000000e0      rdi=0x19800000198
+  fl=000010000010
+0xe : LOCK ADC
+  rax=0xbd000000bd      rbx=0x91              rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0000000e0      rdi=0x19800000198
+  fl=000000000010
+  > load from +0x91 value 0x0
+  > store to +0x91 value 0xbd
+0x14: OR
+  rax=0xbd000000bd      rbx=0x91              rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0000000e0      rdi=0x19800000198
+  fl=000000000110
+0x19: BSF
+  rax=0xbd000000bd      rbx=0x91              rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0000000e0      rdi=0x19800008198
+  fl=000010000010
+0x1d: BTR
+  rax=0xbd000000bd      rbx=0x3               rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0000000e0      rdi=0x19800008198
+  fl=000010000010
+0x21: AND
+  rax=0xbd000000bd      rbx=0x3               rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0000000e0      rdi=0x19800008198
+  fl=100010000010
+0x28: LOCK SBB
+  rax=0xbd000000bd      rbx=0x3               rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0              rdi=0x19800008198
+  fl=000000000010
+  > load from +0xe0 value 0xc6
+  > store to +0xe0 value 0xbb
+0x2e: JB
+  rax=0xbd000000bd      rbx=0x3               rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0              rdi=0x19800008198
+  fl=000010010110
+0x30: JMP
+  rax=0xbd000000bd      rbx=0x3               rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0              rdi=0x19800008198
+  fl=000010010110
+0x57: TEST
+  rax=0xbd000000bd      rbx=0x3               rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0              rdi=0x19800008198
+  fl=000010010110
+0x59: OR
+  rax=0xbd000000bd      rbx=0x3               rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0              rdi=0x19800008198
+  fl=000000000110
+0x5d: AND
+  rax=0xbd000000bd      rbx=0xffffffffffffffe7 rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0              rdi=0x19800008198
+  fl=000010000110
+0x64: CMP
+  rax=0xbd000000bd      rbx=0xffffffffffffffe7 rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0              rdi=0x19800008198
+  fl=000000000010
+  > load from +0xe0 value 0xbb
+0x68: JMP
+  rax=0xbd000000bd      rbx=0xffffffffffffffe7 rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0              rdi=0x19800008198
+  fl=100000000010
+0x6a: TEST
+  rax=0xbd000000bd      rbx=0xffffffffffffffe7 rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0              rdi=0x19800008198
+  fl=100000000010
+0x6c: JMP
+  rax=0xbd000000bd      rbx=0xffffffffffffffe7 rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0              rdi=0x19800008198
+  fl=000000000110
+0x6e: MOV
+  rax=0xbd000000bd      rbx=0xffffffffffffffe7 rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0              rdi=0x19800008198
+  fl=000000000110
+0x71: AND
+  rax=0xbd000000bd      rbx=0xffffffffffffffe7 rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0              rdi=0x1980000ffe7
+  fl=000000000110
+0x78: LOCK BTC
+  rax=0xbd000000bd      rbx=0xffffffffffffffe7 rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0              rdi=0x1fe7
+  fl=000000000110
+  > load from +0x1fe7 value 0xee00
+  > store to +0x1fe7 value 0xee40
+0x80: UNMAPPED
+  rax=0xbd000000bd      rbx=0xffffffffffffffe7 rcx=0x1d2000001d2
+  rdx=0x5400000054      rsi=0xe0              rdi=0x1fe7
+  fl=000000000110
