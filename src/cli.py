@@ -227,60 +227,72 @@ def main() -> int:
             parser = Parser(s)
             contract.append(parser.parse())
 
-        # Normal fuzzing mode
-        fuzzer = get_fuzzer(args.instruction_set,
-                            args.working_directory, args.testcase, "", contract)
-        result = fuzzer.start(
-            args.num_test_cases,
-            args.num_inputs,
-            args.timeout,
-            args.nonstop,
-        )
+        # TODO: testing looping over violations differently to continuously update contract object.
+        while True:
+            LOGGER.reset()
+            LOGGER.set_logging_modes()
 
-        if result is None:
-            print(f"[-] No result tuple from fuzzer.")
-        else:
-            # print(f"[+] Violation result: {result}")
-            run1, run2, pairs = result
-            timestamp = datetime.today().strftime('%H%M%S-%d-%m-%y')
-            theory_fname = "theory-" + timestamp + ".rkt"
-            expr_fname = "expr-" + timestamp + ".txt"
+            # Normal fuzzing mode
+            fuzzer = get_fuzzer(args.instruction_set,
+                                args.working_directory, args.testcase, "", contract)
+            result = fuzzer.start(
+                args.num_test_cases,
+                args.num_inputs,
+                args.timeout,
+                args.nonstop,
+            )            
 
-            rosette = Rosette(theory_fname, args.working_directory, 1)
-            # Each run object corresponds to an execution of a same program with different inputs
-            # that produce the same contract trace and different hardware trace.
-            rosette.map(run1)
-            rosette.map(run2)
-            rosette.generate_constraints(pairs, run1, run2)
+            if result is None:
+                print(f"[-] No result tuple from fuzzer.")
+                print(f"[+] Latest contract:")
+                LOGGER.show_contract(contract)
+                break
+            else:
+                # print(f"[+] Violation result: {result}")
+                run1, run2, pairs = result
+                timestamp = datetime.today().strftime('%H%M%S-%d-%m-%y')
+                theory_fname = "theory-" + timestamp + ".rkt"
+                expr_fname = "expr-" + timestamp + ".txt"
 
-            # TODO: run synthesis refinement loop elsewhere.
-            import subprocess
-            import signal
+                # TODO: test for register mapping stuff.
+                # for _, xstate in enumerate(run1.archstates):
+                #     print(f"[+] xstate test: {xstate.regs}")
+                    # print(f"[+] mems test: {xstate.mems}")
+                
+                rosette = Rosette(theory_fname, args.working_directory, 1)
+                # Each run object corresponds to an execution of a same program with different inputs
+                # that produce the same contract trace and different hardware trace.
+                rosette.map(run1)
+                rosette.map(run2)
+                rosette.generate_constraints(pairs, run1, run2)
 
-            command = "racket " + args.working_directory + "/" + theory_fname
-            with subprocess.Popen(command, shell=True, stdout=subprocess.PIPE,
-                                  start_new_session=True) as process:
-                try:
-                    stdout, stderr = process.communicate(timeout=6000)
-                    return_code = process.poll()
-                    if return_code:
-                        raise subprocess.CalledProcessError(return_code, process.args,
-                                                            output=stdout, stderr=stderr)
-                except subprocess.TimeoutExpired:
-                    os.killpg(process.pid, signal.SIGINT)
-                    raise
+                import subprocess
+                import signal
 
-            with open(args.working_directory + "/" + expr_fname, "w") as file:
-                file.write(stdout.decode("UTF-8"))
-            with open(args.working_directory + "/" + expr_fname, "r") as file:
-                s = file.readlines()[-1]
-                s = s[len("(define myexpr "):-1]
-                parser = Parser(s)
-                # print(f"[+] Test parse: {parser.parse()}")
-                contract.append(parser.parse())
+                command = "racket " + args.working_directory + "/" + theory_fname
+                with subprocess.Popen(command, shell=True, stdout=subprocess.PIPE,
+                                      start_new_session=True) as process:
+                    try:
+                        stdout, stderr = process.communicate(timeout=6000)
+                        return_code = process.poll()
+                        if return_code:
+                            raise subprocess.CalledProcessError(return_code, process.args,
+                                                                output=stdout, stderr=stderr)
+                    except subprocess.TimeoutExpired:
+                        os.killpg(process.pid, signal.SIGINT)
+                        raise
 
-            LOGGER.show_contract(contract)
+                with open(args.working_directory + "/" + expr_fname, "w") as file:
+                    file.write(stdout.decode("UTF-8"))
+                with open(args.working_directory + "/" + expr_fname, "r") as file:
+                    s = file.readlines()[-1]
+                    s = s[len("(define myexpr "):-1]
+                    parser = Parser(s)
+                    # print(f"[+] Test parse: {parser.parse()}")
+                    contract.append(parser.parse())
 
+                LOGGER.show_contract(contract)
+        # End test.
         return result
 
     # Reproducing a violation

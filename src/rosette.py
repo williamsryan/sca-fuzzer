@@ -38,10 +38,12 @@ class Rosette:
             for i in range(0, header):
                 indentation += ' '
             regs = ''
+            # TODO: test printing mems instead. Both are [int, ByteString] dicts.
             for reg in xstate.regs.values():
                 if regs != '':
                     regs += indentation
-                regs += "(bv {0} (bitvector 64))\n".format(str(reg))
+                # regs += ";; Testing comment - RPW."
+                regs += "(bv {0} (bitvector 64))\n".format(str(reg)) # Each of these is the value of the register (16 regs?).
             if xstate.pc is not None:
                 regs += indentation + \
                     "(bv {0} (bitvector 64))".format(str(xstate.pc))
@@ -72,6 +74,7 @@ class Rosette:
                 indentation += ' '
             i = i_ = 0
             pairs.append((len(run1.archstates)-1, len(run2.archstates)-1))
+            print(f"[generate_constraints] pairs.len: {len(pairs)}")
             j, j_ = pairs[0]
             k = 1
             rid1 = run1.id

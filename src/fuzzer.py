@@ -41,7 +41,6 @@ class Fuzzer:
                  contract: List[Expr] = [],
                  existing_test_case: str = "",
                  inputs: List[str] = []):
-        # Debugging stuff - RPW.
         print(f"[+] Fuzzer.init()")
         self._adjust_config(existing_test_case)
         self.existing_test_case = existing_test_case
@@ -172,9 +171,9 @@ class Fuzzer:
         # print(f"[+] Capturing run data: {test_case} -> {inputs}")
 
         self.model.load_test_case(test_case)
-        self.executor.load_test_case(test_case)
-        self.coverage.load_test_case(test_case)
-        self.model.set_tracable()
+        # self.executor.load_test_case(test_case)
+        # self.coverage.load_test_case(test_case)
+        self.model.set_traceable()
 
         for id, input in enumerate(inputs):
             run = self.model.execute(input) # Equivalent contract traces with different inputs. That should be correct.
@@ -202,7 +201,7 @@ class Fuzzer:
         boosted_inputs: List[Input] = self.boost_inputs(inputs, 1)
 
         # check for violations
-        ctraces = self.model.trace_test_case(boosted_inputs, 1)
+        ctraces = self.model.trace_test_case(boosted_inputs, 1) # This is where we pass contract?
         htraces = self.executor.trace_test_case(
             boosted_inputs, CONF.executor_repetitions)
         LOGGER.trc_fuzzer_dump_traces(self.model, boosted_inputs, htraces, ctraces,

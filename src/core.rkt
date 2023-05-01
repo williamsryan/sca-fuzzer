@@ -56,7 +56,7 @@
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
               (REG (?? integer?))
-              INSTR
+              INSTR ;; actual instruction/etc.?
               )]
   )
 

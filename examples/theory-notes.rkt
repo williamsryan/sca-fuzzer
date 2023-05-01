@@ -5,6 +5,7 @@
 ; ----------------------------------------- ;
 
 ; ----------------- CORE ------------------ ;
+; packages
 (require rosette/lib/destruct) ; Value destructuring library.
 (require rosette/lib/synthax)  ; Synthesis library.
 
@@ -45,6 +46,8 @@
 
 ; Grammar for the actual contract.
 ; (IF (BOOL #f) (REG 12))
+
+; The expr object everywhere is just this cexpr.
 (define-grammar (cexpr)
   [expr (IF (pred) (bs))]
   [pred (choose (BOOL (?? boolean?))
@@ -62,11 +65,14 @@
 
 (define EMPTY (list '()))
 
+; Debug note: e: c-expression (grammar), x: state (bv).
+;   returns the observation.
 (define (eval e x)
   (destruct e
             [(IF pred bs) (if (eval-pred pred x) (list (eval-bs bs x))
                               EMPTY)]))
 
+; Debug note: p: pred (e.g., BOOL); x: state (bv).
 (define (eval-pred p x)
   (destruct p
             [(BOOL b) b]
@@ -75,6 +81,7 @@
             [(OR p1 p2) (or (eval-pred p1 x) (eval-pred p2 x))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 x) (eval-bs bs2 x))]))
 
+; Debug note: bs: bitstring; x: state (bv).
 (define (eval-bs bs x)
   (destruct bs
      [(BS b) b]
@@ -83,13 +90,25 @@
      [INSTR (eval-reg PC x)]
      ))
 
+; Debug note: reg: integer val; x: state (bv).
 (define (eval-reg reg x)
+  ; Debug stuff.
+  ; (print "reg-val: ")
+  ; (println reg)
+  ; (print "x: ")
+  ; (println x)
+  ; (println (list-ref x reg))
   (list-ref x reg))
 
 ; Auxiliary functions
 ; obs() takes an expression and a xstate 
 ;       returns its observation
+
+; state contains all bitvectors for each run object.
 (define (obs expr state)
+  ; (println (eval expr state))
+  ; (print "Getting observations for state:")
+  ; (println state)
   (eval expr state))
 
 ; obs() takes an expression and a xstate 
@@ -120,8 +139,10 @@
 ;              i,j,i_,j_: natural numbers such that i <= j and i_ <= j_
 ;              r, r_: two runs
 ;              expr: an expression
-;        returns true if the trace produce r[i]->r[j] and r_[i_]->r_[j_] are distinguishable 
+;        returns true if the trace produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable 
 ;                false otherwise
+
+; TODO: check the remaining diffs here - RPW.
 (define (diff i j r i_ j_ r_ expr)
   (if (equal? i j)
       (if (equal? i_ j_) #f
@@ -137,148 +158,81 @@
                                   (not (empty-obs expr (list-ref r_ i_)))
                                   (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
 
+
+; Debug testing function for playing with grammar directly.
+(define (debug i j r i_ j_ r_ expr)
+  (obs-equal expr (list-ref r i) (list-ref r_ i_)))
+
 ; ------------- END-CORE ------------------ ;
-(define r1_0 (list (bv 1992864825593 (bitvector 64))
-                   (bv 117 (bitvector 64))
-                   (bv 1971390021888 (bitvector 64))
-                   (bv 1657857376512 (bitvector 64))
-                   (bv 249 (bitvector 64))
-                   (bv 329 (bitvector 64))
-                   (bv 2 (bitvector 64))
-                   (bv -1 (bitvector 64))))
 
-(define r1_1 (list (bv 682899800504 (bitvector 64))
-                   (bv 117 (bitvector 64))
-                   (bv 210453437952 (bitvector 64))
-                   (bv 1657857376512 (bitvector 64))
-                   (bv 440 (bitvector 64))
-                   (bv 329 (bitvector 64))
-                   (bv 2 (bitvector 64))
-                   (bv -1 (bitvector 64))))
-
-(define r1_2 (list (bv 880468295757 (bitvector 64))
-                   (bv 1563368096108 (bitvector 64))
-                   (bv 2156073583094 (bitvector 64))
-                   (bv 468151435373 (bitvector 64))
-                   (bv 1726576853394 (bitvector 64))
-                   (bv 167503724583 (bitvector 64))
-                   (bv 22 (bitvector 64))
-                   (bv -1 (bitvector 64))))
-
-(define r1_3 (list (bv 1997159793497 (bitvector 64))
-                   (bv 347892351057 (bitvector 64))
-                   (bv 1086626726141 (bitvector 64))
-                   (bv 1163936137487 (bitvector 64))
-                   (bv 38654705673 (bitvector 64))
-                   (bv 1301375090991 (bitvector 64))
-                   (bv 23 (bitvector 64))
-                   (bv -1 (bitvector 64))))
-
-(define r1_4 (list (bv 0 (bitvector 64))
+; Run 1 archstates.
+(define r0_0 (list (bv 760209211569 (bitvector 64))
                    (bv 133143986207 (bitvector 64))
                    (bv 382252089433 (bitvector 64))
-                   (bv 375 (bitvector 64))
-                   (bv 760209211393 (bitvector 64))
-                   (bv 1507533521257 (bitvector 64))
-                   (bv 70 (bitvector 64))
-                   (bv -1 (bitvector 64))))
+                   (bv 1610612736375 (bitvector 64))
+                   (bv 1997159793105 (bitvector 64))
+                   (bv 1507533521247 (bitvector 64))
+                   (bv 71 (bitvector 64))
+                   (bv 18446621768290996224 (bitvector 64))))
 
-(define r1_5 (list (bv 0 (bitvector 64))
+(define r0_1 (list (bv 382252089433 (bitvector 64))
+                    (bv 133143986207 (bitvector 64))
+                    (bv 382252089433 (bitvector 64))
+                    (bv 1610612736269 (bitvector 64))
+                    (bv 465 (bitvector 64))
+                    (bv 1507533521319 (bitvector 64))
+                    (bv 131 (bitvector 64))
+                    (bv -1 (bitvector 64))))
+
+(define r0 (list r0_0 r0_1))
+
+; Run 2 archstates.
+(define r1_0 (list (bv 1503238553950 (bitvector 64))
                    (bv 605590388877 (bitvector 64))
                    (bv 549755814016 (bitvector 64))
-                   (bv 375 (bitvector 64))
-                   (bv 760209211393 (bitvector 64))
-                   (bv 1507533521257 (bitvector 64))
-                   (bv 70 (bitvector 64))
-                   (bv -1 (bitvector 64))))
+                   (bv 1610612736375 (bitvector 64))
+                   (bv 1997159793105 (bitvector 64))
+                   (bv 1507533521247 (bitvector 64))
+                   (bv 71 (bitvector 64))
+                   (bv 18446621768290996224 (bitvector 64))))
 
-(define r1_6 (list (bv 4200227213 (bitvector 64))
-                   (bv 347892350977 (bitvector 64))
-                   (bv 1163936137569 (bitvector 64))
-                   (bv 1163936137569 (bitvector 64))
-                   (bv 18446742810989166312 (bitvector 64))
-                   (bv 1301375090977 (bitvector 64))
-                   (bv 135 (bitvector 64))
-                   (bv -1 (bitvector 64))))
-
-(define r1_7 (list (bv 4200227489 (bitvector 64))
-                   (bv 622770257920 (bitvector 64))
-                   (bv 1477468750314 (bitvector 64))
-                   (bv 1477468750314 (bitvector 64))
-                   (bv 18446743283435568984 (bitvector 64))
-                   (bv 1752346657160 (bitvector 64))
-                   (bv 147 (bitvector 64))
-                   (bv -1 (bitvector 64))))
-
-(define r1_8 (list (bv 1997159793105 (bitvector 64))
-                   (bv 347892351057 (bitvector 64))
-                   (bv 1086626726141 (bitvector 64))
-                   (bv 1163936137487 (bitvector 64))
-                   (bv 38654705697 (bitvector 64))
-                   (bv 1301375091114 (bitvector 64))
-                   (bv 7 (bitvector 64))
-                   (bv -1 (bitvector 64))))
-
-(define r1_9 (list (bv 1056561955062 (bitvector 64))
-                   (bv 880468295885 (bitvector 64))
-                   (bv 1447403979089 (bitvector 64))
-                   (bv 343597383760 (bitvector 64))
-                   (bv 2134598746377 (bitvector 64))
-                   (bv 1151051235719 (bitvector 64))
-                   (bv 7 (bitvector 64))
-                   (bv -1 (bitvector 64))))
-
-(define r1_10 (list (bv 811748819133 (bitvector 64))
-                    (bv 197 (bitvector 64))
-                    (bv 1846835937710 (bitvector 64))
-                    (bv 345 (bitvector 64))
-                    (bv 148 (bitvector 64))
-                    (bv 1752346657176 (bitvector 64))
-                    (bv 1026 (bitvector 64))
+(define r1_1 (list (bv 549755814016 (bitvector 64))
+                    (bv 605590388877 (bitvector 64))
+                    (bv 549755814016 (bitvector 64))
+                    (bv 1610612736269 (bitvector 64))
+                    (bv 465 (bitvector 64))
+                    (bv 1507533521319 (bitvector 64))
+                    (bv 131 (bitvector 64))
                     (bv -1 (bitvector 64))))
 
-(define r1_11 (list (bv 154618822692 (bitvector 64))
-                    (bv 197 (bitvector 64))
-                    (bv 2001454760402 (bitvector 64))
-                    (bv 345 (bitvector 64))
-                    (bv 148 (bitvector 64))
-                    (bv 1670742278533 (bitvector 64))
-                    (bv 1026 (bitvector 64))
-                    (bv -1 (bitvector 64))))
-
-(define r1_12 (list (bv 124 (bitvector 64))
-                    (bv 0 (bitvector 64))
-                    (bv 148 (bitvector 64))
-                    (bv 380 (bitvector 64))
-                    (bv 437 (bitvector 64))
-                    (bv 211 (bitvector 64))
-                    (bv 147 (bitvector 64))
-                    (bv -1 (bitvector 64))))
-
-(define r1_13 (list (bv 124 (bitvector 64))
-                    (bv 0 (bitvector 64))
-                    (bv 148 (bitvector 64))
-                    (bv 380 (bitvector 64))
-                    (bv 448 (bitvector 64))
-                    (bv 211 (bitvector 64))
-                    (bv 147 (bitvector 64))
-                    (bv -1 (bitvector 64))))
-
-(define r1 (list r1_0 r1_1 r1_2 r1_3 r1_4 r1_5 r1_6 r1_7 r1_8 r1_9 r1_10 r1_11 r1_12 r1_13))
+(define r1 (list r1_0 r1_1))
 
 (define myexpr (cexpr #:depth 1))
 
-; diff() takes the following arguments:
-;              i,j,i_,j_: natural numbers such that i <= j and i_ <= j_
-;              r, r_: two runs
-;              expr: an expression
-;        returns true if the trace produce r[i]->r[j] and r_[i_]->r_[j_] are distinguishable 
-;                false otherwise
+; Synthesis mode.
+; (define sol 
+;   (synthesize
+;     #:forall (list r0 r1)
+;     #:guarantee (assert (diff 0 1 r0 0 1 r1 myexpr))))
 
-; (define (diff i j r i_ j_ r_ expr)
-(define sol (solve (assert (or (diff 0 0 r1 0 0 r1 myexpr)
-                               (diff 0 1 r1 0 1 r1 myexpr)
-                               (diff 1 13 r1 1 13 r1 myexpr)
-))))
+; Angelic execution mode.
+; (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
+;                                (diff 1 2 r0 1 2 r1 myexpr)
+;                               ;  (diff 2 2 r0 2 2 r1 myexpr)
+; ))))
+
+; TODO: test out finishing this part later.
+(define sol
+  (solve
+    (assert (debug 0 1 r0 0 1 r1 myexpr))))
 
 (print-forms sol)
+
+; Returns: '(define myexpr (IF (BOOL #f) INSTR))'
+
+; (define sol (solve (assert (or (diff 0 0 r1 0 0 r1 myexpr)
+;                                (diff 0 1 r1 0 1 r1 myexpr)
+;                                (diff 1 1 r1 1 1 r1 myexpr)
+; ))))
+
+; (print-forms sol)

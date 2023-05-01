@@ -1,0 +1,100 @@
+> ./cli.py fuzz -s x86/isa_spec/base.json -i 20 -n 100 -c tests/test-detection.yaml
+-w .
+[+] Fuzzer.init()
+
+INFO: [fuzzer] Starting at 10:00:31
+
+WARNING: [executor] SMT is on! You may experience false positives.
+[+] Starting with base contract of: 4 elements
+
+77    (77%)| Stats: Cls:8.6/31.4,In:40.0,Cv:0,SpF:0,ObF:0,Prm:0,Flk:0,Vio:0> Prime  1
+
+================================ Violations detected ==========================
+Contract trace:
+ -2025575463898245661 (hash)
+Hardware traces:
+ Inputs [17]:
+  ^^_^___^________________________________________________________
+ Inputs [37]:
+  ^^____^^________________________________________________________
+
+[+] htrace1: 15060037153926938624 htrace2: 14051230837395947520
+[+] ctrace1: -2025575463898245661 ctrace2: -2025575463898245661
+[+] Executing on input: 27
+[+] Executing on input: 47
+[generate_constraints] pairs.len: 18
+
+Current contract: {
+        (IF (BOOL True) (REG 0))
+        (IF (BOOL True) (REG 1))
+        (IF (BOOL True) (REG 2))
+        (IF (BOOL True) (REG 4))
+        (IF (BOOL True) (REG 3))
+}
+[+] Fuzzer.init()
+
+INFO: [fuzzer] Starting at 10:01:11
+
+WARNING: [executor] SMT is on! You may experience false positives.
+[+] Starting with base contract of: 5 elements
+
+50    (50%)| Stats: Cls:3.1/12.5,In:40.0,Cv:0,SpF:0,ObF:0,Prm:0,Flk:0,Vio:0> Prime  1
+
+================================ Violations detected ==========================
+Contract trace:
+ -1454804976080711750 (hash)
+Hardware traces:
+ Inputs [6]:
+  ^^^^_^__________________________________________________________
+ Inputs [26]:
+  ^_^^_^_^________________________________________________________
+
+[+] htrace1: 17582052945254416384 htrace2: 13042424520864956416
+[+] ctrace1: -1454804976080711750 ctrace2: -1454804976080711750
+[+] Executing on input: 16
+[+] Executing on input: 36
+[generate_constraints] pairs.len: 28
+
+Current contract: {
+        (IF (BOOL True) (REG 0))
+        (IF (BOOL True) (REG 1))
+        (IF (BOOL True) (REG 2))
+        (IF (BOOL True) (REG 4))
+        (IF (BOOL True) (REG 3))
+        (IF (BOOL True) (REG 6))
+}
+[+] Fuzzer.init()
+
+INFO: [fuzzer] Starting at 10:01:35
+
+WARNING: [executor] SMT is on! You may experience false positives.
+[+] Starting with base contract of: 6 elements
+
+99    (99%)| Stats: Cls:3.1/14.3,In:40.0,Cv:0,SpF:0,ObF:0,Prm:0,Flk:0,Vio:0
+================================ Statistics ===================================
+Test Cases: 100
+Inputs per test case: 40.0
+Required priming: 0
+Flaky violations: 0
+Violations: 0
+Effectiveness:
+  Effectiveness: 0.2
+  Total Cls: 14.4
+  Effective Cls: 3.1
+Filters:
+  Speculation Filter: 0
+  Observation Filter: 0
+
+Duration: 42.7
+Finished at 10:02:18
+[-] No result tuple from fuzzer.
+[+] Latest contract:
+
+Current contract: {
+        (IF (BOOL True) (REG 0))
+        (IF (BOOL True) (REG 1))
+        (IF (BOOL True) (REG 2))
+        (IF (BOOL True) (REG 4))
+        (IF (BOOL True) (REG 3))
+        (IF (BOOL True) (REG 6))
+}

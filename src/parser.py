@@ -1,5 +1,4 @@
 from pyparsing import Keyword, Word, nums, oneOf, Suppress
-from dateutil.parser import parse as parse_date
 
 
 class Node(object):
