@@ -764,8 +764,13 @@ class Generator(ABC):
 
 class InputGenerator(ABC):
 
+    # This is the older one; testing input updates.
+    # @abstractmethod
+    # def generate(self, seed: int, count: int) -> List[Input]:
+    #     pass
+
     @abstractmethod
-    def generate(self, seed: int, count: int) -> List[Input]:
+    def generate(self, count: int) -> List[Input]:
         pass
 
     @abstractmethod
