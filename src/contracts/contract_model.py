@@ -10,7 +10,7 @@ import csv
 import numpy as np
 from collections import Counter
 from typing import List
-from interfaces import CombinedHTrace, Input, TestCase, Executor
+from interfaces import CombinedHTrace, Input, TestCase, Model
 
 from config import CONF
 from service import LOGGER
@@ -28,7 +28,7 @@ from parser import Parser, Expr
 
 TRACE_NUM_ELEMENTS = 6
 
-class ContractModel(Executor):
+class ContractModel(Model):
     previous_num_inputs: int = 0
     feedback: List[int]
 
