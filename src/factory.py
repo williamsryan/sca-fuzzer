@@ -136,6 +136,10 @@ def get_model(bases: Tuple[int, int], contract: List[Expr]) -> interfaces.Model:
     return model_instance
 
 
+# TODO: do we need a method here for getting the contract executor?
+# We need to determine how to load the test case + contract as well.
+# Does the contract executor class need to inherit from Unicorn model,
+# or can it just run a contract against a test case?
 def get_executor() -> interfaces.Executor:
     if CONF.executor != 'default':
         raise ConfigException("unknown value of `executor` configuration option")
