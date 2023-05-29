@@ -52,7 +52,7 @@ class ContractExecutor(Executor):
         if smt_on:
             LOGGER.warning("executor", "SMT is on! You may experience false positives.")
     
-    def load_contract(self, contract):
+    def load_contract(self, contract: List[Expr]):
         # TODO: use actual generated contract/etc.
         contract_str: List[str] = [
             "(IF (BOOL #t) (REG 0))",
@@ -61,7 +61,7 @@ class ContractExecutor(Executor):
             "(IF (BOOL #t) (REG 4))"
         ]
 
-        contract: List[Expr] = []
+        # contract: List[Expr] = []
 
         for s in contract_str:
             parser = Parser(s)
