@@ -137,4 +137,8 @@
                                   (not (empty-obs expr (list-ref r_ i_)))
                                   (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
 
+; This diff() function will assume no silent steps, so we simply look
+; for differences across runs element-by-element.
+; (define (diff-no-silent-steps i j r i_ j_ r_ expr))
+
 ; ------------- END-CORE ------------------ ;
