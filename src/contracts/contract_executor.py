@@ -28,7 +28,7 @@ from parser import Parser, Expr
 
 TRACE_NUM_ELEMENTS = 6
 
-class ContractModel(Executor):
+class ContractExecutor(Executor):
     previous_num_inputs: int = 0
     feedback: List[int]
 

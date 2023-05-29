@@ -5,7 +5,11 @@ import x86.x86_generator as x86_generator
 import model
 import x86.x86_model as x86_model
 
+import contracts.contract_model as contract_model
+
 import x86.x86_executor as x86_executor
+
+import contracts.contract_executor as contract_executor
 
 import x86.x86_fuzzer as x86_fuzzer
 import fuzzer
@@ -57,6 +61,7 @@ X86_SIMPLE_EXECUTION_CLAUSES: Dict[str, Type[x86_model.X86UnicornModel]] = {
 
 EXECUTORS = {
     'x86-64': x86_executor.X86IntelExecutor,
+    # 'contract-only': contract_executor.ContractExecutor,
 }
 
 ANALYSERS: Dict[str, Type[interfaces.Analyser]] = {
