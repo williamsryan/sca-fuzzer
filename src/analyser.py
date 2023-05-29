@@ -33,6 +33,10 @@ class EquivalenceAnalyser(Analyser):
         require retries
     """
 
+    """
+    TODO: for our first evaluation, we won't need these values, as the steps
+    will always be equal, so no need for assuming "silent steps".
+    """
     def get_obs_pairs(self, run1: Run, run2: Run):
         pairs = []
         i1 = i2 = 0

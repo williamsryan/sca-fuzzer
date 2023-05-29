@@ -7,7 +7,7 @@ from typing import List
 from pathlib import Path
 
 
-class Rosette:
+class Synthesizer:
     filename: str
     work_dir: str
     depth: int

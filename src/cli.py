@@ -20,7 +20,7 @@ from service import LOGGER
 from parser import Parser, Expr
 
 # Synthesis parts.
-from rosette import Rosette
+from synthesizer import Synthesizer
 
 
 def main() -> int:
@@ -259,12 +259,12 @@ def main() -> int:
                 #     print(f"[+] xstate test: {xstate.regs}")
                     # print(f"[+] mems test: {xstate.mems}")
                 
-                rosette = Rosette(theory_fname, args.working_directory, 1)
+                synth = Synthesizer(theory_fname, args.working_directory, 1)
                 # Each run object corresponds to an execution of a same program with different inputs
                 # that produce the same contract trace and different hardware trace.
-                rosette.map(run1)
-                rosette.map(run2)
-                rosette.generate_constraints(pairs, run1, run2)
+                synth.map(run1)
+                synth.map(run2)
+                synth.generate_constraints(pairs, run1, run2)
 
                 import subprocess
                 import signal

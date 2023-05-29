@@ -117,7 +117,7 @@ class Fuzzer:
 
             if violation:
                 LOGGER.fuzzer_report_violations(violation, self.model)
-                self.store_test_case(test_case, violation) # Don't need this, just debugging.
+                self.store_test_case(test_case, violation) # TODO: use test case for parametric contract executor.
 
                 violate_inputs: List[Input] = self.get_single_violation(violation)
                 # print(f"[+] Violation: {violation}")
@@ -126,6 +126,7 @@ class Fuzzer:
                 run2 = runs[1]
                 # Debug info to show raw run data before synthesis step.
                 # print(f"[+] Debug run1: {run1} run2: {run2}")
+                # TODO: how to ignore this for first evaluation where we assume lock-step?
                 pairs = self.analyser.get_obs_pairs(run1, run2)
 
                 return run1, run2, pairs
