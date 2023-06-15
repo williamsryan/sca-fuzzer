@@ -104,8 +104,8 @@ class Fuzzer:
             if self.input_paths:
                 inputs = self.input_gen.load(self.input_paths)
             else:
-                # inputs = self.input_gen.generate(CONF.input_gen_seed, num_inputs)
-                inputs = self.input_gen.generate(num_inputs) # Newer way; testing.
+                inputs = self.input_gen.generate(CONF.input_gen_seed, num_inputs)
+                # inputs = self.input_gen.generate(num_inputs) # Newer way; testing.
             STAT.num_inputs += len(inputs) * CONF.inputs_per_class
 
             # Check if the test case is useful
