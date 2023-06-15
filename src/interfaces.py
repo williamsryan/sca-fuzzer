@@ -614,9 +614,11 @@ class Measurement(NamedTuple):
 HTraceGroup = List[Measurement]
 HTraceMap = Dict[HTrace, HTraceGroup]
 
-
+"""
+    A violation is an EquivalenceClass
+    where we return the contract trace.
+"""
 class EquivalenceClass:
-    # This is what's returned from a violation.
     ctrace: CTrace
     measurements: List[Measurement]
     htrace_map: HTraceMap
