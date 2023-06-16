@@ -26,3 +26,9 @@ avg_mem_accesses: 4
 input_gen_entropy_bits: 9
 
 # x86_executor_enable_ssbp_patch: true
+
+logging_modes:
+  - info
+  - fuzzer_debug
+  # - fuzzer_trace
+  # - coverage_debug
