@@ -430,7 +430,7 @@ class UnicornModel(Model, ABC):
             # Aux code.
             instr = model.test_case.instructions_map[address -
                                                      model.code_start]
-            dbg_instr = model.test_case.address_map[address - model.code_start]
+            instr_obj = model.test_case.address_map[address - model.code_start]
 
             # print(f"[model] Instr name: {dbg_instr.name} Instr op: {dbg_instr.get_mem_operands()}")
             # print(f"[model] Instr name: {dbg_instr.name} Instr op: {dbg_instr.operands}")
@@ -441,6 +441,7 @@ class UnicornModel(Model, ABC):
             if (model.current_instruction.is_instrumentation):
                 instr += " #instrumentation"
             model.tracer.run.instructions.append(instr)
+            model.tracer.run.mem_instrs.append(instr_obj)
             archstate = model.capture_state()
             archstate.pc = address
             model.tracer.run.archstates.append(archstate)

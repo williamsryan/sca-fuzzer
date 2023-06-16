@@ -254,8 +254,6 @@ def main() -> int:
                 theory_fname = "theory-" + timestamp + ".rkt"
                 expr_fname = "expr-" + timestamp + ".txt"
 
-                print(f"[cli] instr test: {run1.instructions}")
-
                 # TODO: test for register mapping stuff.
                 # for _, xstate in enumerate(run1.archstates):
                 #     print(f"[+] xstate test: {xstate.regs}")
