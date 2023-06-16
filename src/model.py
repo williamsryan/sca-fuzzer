@@ -430,7 +430,8 @@ class UnicornModel(Model, ABC):
             # Aux code.
             instr = model.test_case.instructions_map[address -
                                                      model.code_start]
-            print(f"[model::instruction_hook] instr: {instr}")
+            print(f"[model::instruction_hook] instr_map: {instr}")
+            print(f"[model::instruction_hook] address_map: {model.test_case.address_map[address - model.code_start]}")
             if (model.current_instruction.is_instrumentation):
                 instr += " #instrumentation"
             model.tracer.run.instructions.append(instr)
