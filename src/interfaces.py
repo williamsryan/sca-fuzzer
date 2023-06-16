@@ -695,6 +695,7 @@ class Run:
 
     def __init__(self) -> None:
         self.instructions = []
+        self.mem_instrs = []
         self.archstates = []
         self.observations = []
 
