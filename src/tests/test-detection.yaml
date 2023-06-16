@@ -1,22 +1,22 @@
 instruction_categories:
-  - BASE-NOP
+  # - BASE-NOP
   - BASE-BINARY
-  - BASE-BITBYTE
+  # - BASE-BITBYTE
   - BASE-COND_BR
-  - BASE-CMOV
-  - BASE-CONVERT
-  - BASE-DATAXFER
-  - BASE-FLAGOP
-  - BASE-SETCC
-  - BASE-LOGICAL
-  - BASE-POP
-  - BASE-PUSH
-contract_observation_clause: ct
+  # - BASE-CMOV
+  # - BASE-CONVERT
+  # - BASE-DATAXFER
+  # - BASE-FLAGOP
+  # - BASE-SETCC
+  # - BASE-LOGICAL
+  # - BASE-POP
+  # - BASE-PUSH
+contract_observation_clause: ct # loads+stores+pc
 contract_execution_clause:
-  - seq
+  - seq # no_speculation
 
 program_size: 16
-min_bb_per_function: 5
+min_bb_per_function: 1
 max_bb_per_function: 5
 avg_mem_accesses: 4
 input_gen_entropy_bits: 9
