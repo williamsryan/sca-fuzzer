@@ -439,7 +439,7 @@ class UnicornModel(Model, ABC):
             #     print(f"[model] operand: {op.value}")
 
             if (model.current_instruction.is_instrumentation):
-                instr.name += " #instrumentation"
+                instr += " #instrumentation"
             model.tracer.run.instructions.append(instr)
             archstate = model.capture_state()
             archstate.pc = address
