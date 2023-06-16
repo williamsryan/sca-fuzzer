@@ -1,24 +1,34 @@
-instruction_categories:
-  - BASE-NOP
-  - BASE-BINARY
-  - BASE-BITBYTE
-  - BASE-COND_BR
-  - BASE-CMOV
-  - BASE-CONVERT
-  - BASE-DATAXFER
-  - BASE-FLAGOP
-  - BASE-SETCC
-  - BASE-LOGICAL
-  - BASE-POP
-  - BASE-PUSH
+##### Base contract. #####
+
+# [str]: Observation clause.
+#  Available options: "l1d", "memory", "ct", "pc", "ct-nonspecstore", "ctr", "arch".
 contract_observation_clause: ct
+
+# List[str]: Execution clause. 
+# Available options: "seq", "cond", "bpas", "null-injection".
 contract_execution_clause:
   - seq
 
-program_size: 30
-min_bb_per_function: 5
-max_bb_per_function: 5
-avg_mem_accesses: 4
-input_gen_entropy_bits: 9
 
-x86_executor_enable_ssbp_patch: true
+##### Extra config/filtering options. #####
+instruction_categories:
+  - BASE-BINARY
+  - BASE-NOP
+  # - BASE-BITBYTE
+  # - BASE-COND_BR
+  # - BASE-CMOV
+  # - BASE-CONVERT
+  # - BASE-DATAXFER
+  # - BASE-FLAGOP
+  # - BASE-SETCC
+  # - BASE-LOGICAL
+  # - BASE-POP
+  # - BASE-PUSH
+
+# program_size: 30
+# min_bb_per_function: 5
+# max_bb_per_function: 5
+# avg_mem_accesses: 4
+# input_gen_entropy_bits: 9
+
+# x86_executor_enable_ssbp_patch: true
