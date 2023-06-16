@@ -383,7 +383,7 @@ class UnicornModel(Model, ABC):
         for i in range(mem_address_start, mem_address_end, 8):
             i_ = i - mem_address_start
             archstate.mems[i] = (mem_[i_:i_+8]).hex()
-        print(f"[+] archstate.mems: {archstate.mems}")
+        # print(f"[+] archstate.mems: {archstate.mems}")
         return archstate
 
     def execute(self, input):
@@ -453,11 +453,11 @@ class UnicornModel(Model, ABC):
                 bs = expr.bs
                 model.capture_bs(emulator, address, size, bs)
     
-    def evaluatePred(model: UnicornModel, pred: Pred):
+    def evaluatePred(model: UnicornModel, emulator: Uc, address: int, size: int, pred: Pred):
         if (pred.keyword == 'BOOL'):
             return pred.val
 
-    def capture_bs(model: UnicornModel, emulator: Uc, bs: Bs):
+    def capture_bs(model: UnicornModel, emulator: Uc, address: int, size: int, bs: Bs):
         if (bs.keyword == 'REG'):
             val = bs.val
             # TODO: if this is Dict[str, int], use reg_decode.
@@ -466,7 +466,7 @@ class UnicornModel(Model, ABC):
             # model.add_mem_address_to_trace()
             # print(f"[+] Read value: {res} from register: {reg}")
             model.tracer.trace.append(res)
-
+            
             if model.traceable:
                 # Add observations that correspond to the contract clauses.
                 model.tracer.run.observations[-1].append(Observation(res))
