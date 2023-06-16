@@ -259,6 +259,9 @@ def main() -> int:
                 #       register values between runs. A load/store leaking an
                 #       address will be covered by this. Look at differences
                 #       between operand values (addresses) as opposed to registers.
+
+                print(run1.instructions)
+                print(run2.instructions)
                 
                 synth = Synthesizer(theory_fname, args.working_directory, 1)
                 # Each run object corresponds to an execution of a same program with different inputs
