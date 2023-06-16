@@ -18,8 +18,8 @@ instruction_categories:
   # - BASE-BITBYTE
   - BASE-COND_BR  # Triggers speculation (with our contract being SEQ, this is a violation).
 
-min_bb_per_function: 5  # Up to 5 branches per test case.
-max_bb_per_function: 1
+max_bb_per_function: 5  # Up to 5 branches per test case.
+min_bb_per_function: 1
 
 # program_size: 30
 # avg_mem_accesses: 4
