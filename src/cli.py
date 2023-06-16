@@ -262,8 +262,8 @@ def main() -> int:
 
                 # Test dumping both traces first to see where we notice distinctions.
                 for i in range(8):
-                    print(f"[run1] instr: {run1.mem_instr[i]} --> {run1.archstate.regs[i]}")
-                    print(f"[run2] instr: {run2.mem_instr[i]} --> {run2.archstate.regs[i]}")
+                    print(f"[run1] instr: {run1.mem_instrs[i]} --> {run1.archstate.regs[i]}")
+                    print(f"[run2] instr: {run2.mem_instrs[i]} --> {run2.archstate.regs[i]}")
                     
                 return
                 
