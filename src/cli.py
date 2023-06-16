@@ -259,16 +259,6 @@ def main() -> int:
                 #       register values between runs. A load/store leaking an
                 #       address will be covered by this. Look at differences
                 #       between operand values (addresses) as opposed to registers.
-
-                # Test dumping both traces first to see where we notice distinctions.
-                for i in range(8):
-                    try:
-                        print(f"[run1] instr: {run1.mem_instrs[i]} --> {run1.archstates[i].regs[i]}")
-                        print(f"[run2] instr: {run2.mem_instrs[i]} --> {run2.archstates[i].regs[i]}")
-                    except KeyError:
-                        pass
-                    
-                return
                 
                 synth = Synthesizer(theory_fname, args.working_directory, 1)
                 # Each run object corresponds to an execution of a same program with different inputs
