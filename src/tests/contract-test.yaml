@@ -2,12 +2,12 @@
 
 # [str]: Observation clause.
 #  Available options: "l1d", "memory", "ct", "pc", "ct-nonspecstore", "ctr", "arch".
-contract_observation_clause: ct #load+store+pc # aka ct.
+contract_observation_clause: ct #load+store+pc
 
 # List[str]: Execution clause. 
 # Available options: "seq", "cond", "bpas", "null-injection".
 contract_execution_clause:
-  - seq #no_speculation  # aka seq.
+  - seq #no_speculation
 
 
 ##### Extra config/filtering options. #####
@@ -21,8 +21,8 @@ instruction_categories:
 max_bb_per_function: 5  # Up to 5 branches per test case.
 min_bb_per_function: 1
 
-# program_size: 30
-# avg_mem_accesses: 4
-# input_gen_entropy_bits: 9
+program_size: 16
+avg_mem_accesses: 4
+input_gen_entropy_bits: 9
 
 # x86_executor_enable_ssbp_patch: true
