@@ -412,7 +412,6 @@ class UnicornModel(Model, ABC):
     def instruction_hook(emulator: Uc, address: int, size: int, model: UnicornModel) -> None:
         """
         Invoked when an instruction is executed.
-        it records instruction
         """
         model.previous_context = model.emulator.context_save()
         model.current_instruction = model.test_case.address_map[address - model.code_start]
@@ -421,6 +420,7 @@ class UnicornModel(Model, ABC):
         # model.trace_instruction(emulator, address, size, model)
 
         # This matches the iced_x86 decoded map from creating a test case.
+        # address_map :: {int, Instruction} (where int is instruction pointer).
         # print(f"[model.py] Model's test case: {model.test_case.address_map}")
 
         # Testing for now - RPW.
@@ -430,6 +430,7 @@ class UnicornModel(Model, ABC):
             # Aux code.
             instr = model.test_case.instructions_map[address -
                                                      model.code_start]
+            print(f"[model::instruction_hook] instr: {instr}")
             if (model.current_instruction.is_instrumentation):
                 instr += " #instrumentation"
             model.tracer.run.instructions.append(instr)
