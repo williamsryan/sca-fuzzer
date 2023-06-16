@@ -2,20 +2,20 @@
 
 # [str]: Observation clause.
 #  Available options: "l1d", "memory", "ct", "pc", "ct-nonspecstore", "ctr", "arch".
-contract_observation_clause: ct
+contract_observation_clause: load+store+pc # aka CT.
 
 # List[str]: Execution clause. 
 # Available options: "seq", "cond", "bpas", "null-injection".
 contract_execution_clause:
-  - seq
+  - no_speculation  # aka SEQ.
 
 
 ##### Extra config/filtering options. #####
 instruction_categories:
-  - BASE-BINARY
-  - BASE-NOP
+  - BASE-BINARY # Arithmetic instructions.
+  # - BASE-NOP
   # - BASE-BITBYTE
-  # - BASE-COND_BR
+  - BASE-COND_BR  # Triggers speculation (with our contract being SEQ, this is a violation).
   # - BASE-CMOV
   # - BASE-CONVERT
   # - BASE-DATAXFER
@@ -26,8 +26,8 @@ instruction_categories:
   # - BASE-PUSH
 
 # program_size: 30
-# min_bb_per_function: 5
-# max_bb_per_function: 5
+min_bb_per_function: 5  # Up to 5 branches per test case.
+max_bb_per_function: 1
 # avg_mem_accesses: 4
 # input_gen_entropy_bits: 9
 
