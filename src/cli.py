@@ -261,10 +261,9 @@ def main() -> int:
                 #       between operand values (addresses) as opposed to registers.
 
                 # Test dumping both traces first to see where we notice distinctions.
-                for instr in run1.mem_instrs:
-                    print(f"[run1] instrs: {instr}")
-                for instr in run2.mem_instrs:
-                    print(f"[run2] instrs: {instr}")
+                for i in range(8):
+                    print(f"[run1] instr: {run1.mem_instr[i]} --> {run1.archstate.regs[i]}")
+                    print(f"[run2] instr: {run2.mem_instr[i]} --> {run2.archstate.regs[i]}")
                     
                 return
                 
