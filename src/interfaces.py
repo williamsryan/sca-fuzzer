@@ -689,7 +689,7 @@ Observations = List[Observation]
 class Run:
     id: int
     instructions: List[str]
-    mem_instrs = List[Instruction]  # Maybe make this object part of Run?
+    mem_instrs: List[Instruction]  # Maybe make this object part of Run?
     archstates: List[ArchState]
     observations: List[Observations]
 
