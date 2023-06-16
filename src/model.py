@@ -374,7 +374,7 @@ class UnicornModel(Model, ABC):
         registers_llex = CONF.registers.keys()  # 16 registers.
         for reg in registers_llex:
             archstate.regs[reg] = self.emulator.reg_read(reg)
-            # print(f"[+] REG {reg} : {self.emulator.reg_read(reg)}")
+            print(f"[+] REG {reg} : {self.emulator.reg_read(reg)}")
 
         mem_address_start = self.sandbox_base
         mem_address_end = mem_address_start + self.input_size
@@ -384,10 +384,6 @@ class UnicornModel(Model, ABC):
             i_ = i - mem_address_start
             archstate.mems[i] = (mem_[i_:i_+8]).hex()
         # print(f"[+] archstate.mems: {archstate.mems[i]}")
-
-        # TODO: check archstates vs regs.
-        print(f"[capture_state] archstate.regs len: {len(archstate.regs)} archstate.mems len: {len(archstate.mems)}")
-        
         return archstate
 
     def execute(self, input):
@@ -446,7 +442,7 @@ class UnicornModel(Model, ABC):
                 dbg_instr.name += " #instrumentation"
             model.tracer.run.instructions.append(dbg_instr)
             archstate = model.capture_state()
-            archstate.pc = address  # Never used?
+            archstate.pc = address
             model.tracer.run.archstates.append(archstate)
 
         # We call a different method that handles customized contracts, i.e., contract that's comprised of sequences of expressions.
