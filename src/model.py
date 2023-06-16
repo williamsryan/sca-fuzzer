@@ -420,6 +420,8 @@ class UnicornModel(Model, ABC):
         # TODO: come back to this if we need.
         # model.trace_instruction(emulator, address, size, model)
 
+        print(f"[model.py] Model's test case: {model.test_case}")
+
         # Testing for now - RPW.
         if model.traceable:
             model.tracer.run.observations.append([])

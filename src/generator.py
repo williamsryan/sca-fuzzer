@@ -121,7 +121,6 @@ class ConfigurableGenerator(Generator, abc.ABC):
         self.assemble(asm_file, bin_file)
         self.test_case.bin_path = bin_file
 
-        print(f"[generator] Calling `map_addresses` from create_test_case")
         self.map_addresses(self.test_case, bin_file)
 
         return self.test_case
@@ -279,7 +278,6 @@ class ConfigurableGenerator(Generator, abc.ABC):
         self.assemble(asm_file, bin_file)
         test_case.bin_path = bin_file
 
-        print(f"[generator] calling map_addresses from load")
         self.map_addresses(test_case, bin_file)
 
         return test_case
