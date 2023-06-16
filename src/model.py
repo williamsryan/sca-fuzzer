@@ -383,7 +383,7 @@ class UnicornModel(Model, ABC):
         for i in range(mem_address_start, mem_address_end, 8):
             i_ = i - mem_address_start
             archstate.mems[i] = (mem_[i_:i_+8]).hex()
-        # print(f"[+] archstate.mems: {archstate.mems}")
+        print(f"[+] archstate.mems: {archstate.mems}")
         return archstate
 
     def execute(self, input):
@@ -420,7 +420,8 @@ class UnicornModel(Model, ABC):
         # TODO: come back to this if we need.
         # model.trace_instruction(emulator, address, size, model)
 
-        print(f"[model.py] Model's test case: {model.test_case}")
+        # This matches the iced_x86 decoded map from creating a test case.
+        # print(f"[model.py] Model's test case: {model.test_case.address_map}")
 
         # Testing for now - RPW.
         if model.traceable:
@@ -433,7 +434,7 @@ class UnicornModel(Model, ABC):
                 instr += " #instrumentation"
             model.tracer.run.instructions.append(instr)
             archstate = model.capture_state()
-            archstate.pc = address
+            archstate.pc = address  # Never used?
             model.tracer.run.archstates.append(archstate)
 
         # We call a different method that handles customized contracts, i.e., contract that's comprised of sequences of expressions.
@@ -451,24 +452,24 @@ class UnicornModel(Model, ABC):
             if (res):
                 bs = expr.bs
                 model.capture_bs(emulator, address, size, bs)
+    
+    def evaluatePred(model: UnicornModel, pred: Pred):
+        if (pred.keyword == 'BOOL'):
+            return pred.val
 
-    def capture_bs(model: UnicornModel, emulator: Uc, address: int, size: int, bs: Bs):
+    def capture_bs(model: UnicornModel, emulator: Uc, bs: Bs):
         if (bs.keyword == 'REG'):
             val = bs.val
             # TODO: if this is Dict[str, int], use reg_decode.
             reg = CONF.map_reg(val)
-            # print(f"[+] Got bs.val: {val}; reading from register: {reg}")
             res = emulator.reg_read(reg)
             # model.add_mem_address_to_trace()
             # print(f"[+] Read value: {res} from register: {reg}")
             model.tracer.trace.append(res)
+
             if model.traceable:
                 # Add observations that correspond to the contract clauses.
                 model.tracer.run.observations[-1].append(Observation(res))
-
-    def evaluatePred(model: UnicornModel, emulator: Uc, address: int, size: int, pred: Pred):
-        if (pred.keyword == 'BOOL'):
-            return pred.val
 
     def handle_fault(self, errno: int) -> int:
         next_addr = self.speculate_fault(errno)
