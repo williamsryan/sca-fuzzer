@@ -64,6 +64,7 @@ class Synthesizer:
             f.write("(define {0} (list {1}))\n\n".format(
                 self.get_run_name(run.id), xstates))
 
+    # TODO: update to look at sequential traces, and ignore silent steps for now.
     def generate_constraints(self, pairs, run1, run2):
         with open(self.work_dir + "/" + self.filename, "a") as f:
             f.write("(define myexpr (cexpr #:depth {0}))\n\n".format(
@@ -74,7 +75,7 @@ class Synthesizer:
                 indentation += ' '
             i = i_ = 0
             pairs.append((len(run1.archstates)-1, len(run2.archstates)-1))
-            print(f"[generate_constraints] pairs.len: {len(pairs)}")
+            # print(f"[generate_constraints] pairs.len: {len(pairs)}")
             j, j_ = pairs[0]
             k = 1
             rid1 = run1.id
