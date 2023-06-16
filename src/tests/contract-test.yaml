@@ -2,12 +2,12 @@
 
 # [str]: Observation clause.
 #  Available options: "l1d", "memory", "ct", "pc", "ct-nonspecstore", "ctr", "arch".
-contract_observation_clause: load+store+pc # aka ct.
+contract_observation_clause: ct #load+store+pc # aka ct.
 
 # List[str]: Execution clause. 
 # Available options: "seq", "cond", "bpas", "null-injection".
 contract_execution_clause:
-  - no_speculation  # aka seq.
+  - seq #no_speculation  # aka seq.
 
 
 ##### Extra config/filtering options. #####
