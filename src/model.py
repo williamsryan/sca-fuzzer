@@ -384,6 +384,10 @@ class UnicornModel(Model, ABC):
             i_ = i - mem_address_start
             archstate.mems[i] = (mem_[i_:i_+8]).hex()
         # print(f"[+] archstate.mems: {archstate.mems[i]}")
+
+        # TODO: check archstates vs regs.
+        print(f"[capture_state] archstate.regs len: {len(archstate.regs)} archstate.mems len: {len(archstate.mems)}")
+        
         return archstate
 
     def execute(self, input):
@@ -433,10 +437,10 @@ class UnicornModel(Model, ABC):
             dbg_instr = model.test_case.address_map[address - model.code_start]
 
             # print(f"[model] Instr name: {dbg_instr.name} Instr op: {dbg_instr.get_mem_operands()}")
-            print(f"[model] Instr name: {dbg_instr.name} Instr op: {dbg_instr.operands}")
+            # print(f"[model] Instr name: {dbg_instr.name} Instr op: {dbg_instr.operands}")
 
-            for op in dbg_instr.operands:
-                print(f"[model] operand: {op.value}")
+            # for op in dbg_instr.operands:
+            #     print(f"[model] operand: {op.value}")
 
             if (model.current_instruction.is_instrumentation):
                 dbg_instr.name += " #instrumentation"
