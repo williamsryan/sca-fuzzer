@@ -254,10 +254,11 @@ def main() -> int:
                 theory_fname = "theory-" + timestamp + ".rkt"
                 expr_fname = "expr-" + timestamp + ".txt"
 
-                # TODO: test for register mapping stuff.
-                # for _, xstate in enumerate(run1.archstates):
-                #     print(f"[+] xstate test: {xstate.regs}")
-                    # print(f"[+] mems test: {xstate.mems}")
+                # TODO: for all instructions in run trace, get memory operands.
+                #       add these to our synthesis mapper to have more than just
+                #       register values between runs. A load/store leaking an
+                #       address will be covered by this. Look at differences
+                #       between operand values (addresses) as opposed to registers.
                 
                 synth = Synthesizer(theory_fname, args.working_directory, 1)
                 # Each run object corresponds to an execution of a same program with different inputs
