@@ -432,7 +432,7 @@ class UnicornModel(Model, ABC):
                                                      model.code_start]
             dbg_instr = model.test_case.address_map[address - model.code_start]
 
-            print(f"[model] Instruction op test: {dbg_instr.get_all_operands()}")
+            print(f"[model] Instr name: {dbg_instr.name} Instruction op: {dbg_instr.get_reg_operands()}")
 
             if (model.current_instruction.is_instrumentation):
                 instr += " #instrumentation"
