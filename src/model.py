@@ -435,8 +435,11 @@ class UnicornModel(Model, ABC):
             # print(f"[model] Instr name: {dbg_instr.name} Instr op: {dbg_instr.get_mem_operands()}")
             print(f"[model] Instr name: {dbg_instr.name} Instr op: {dbg_instr.operands}")
 
+            for op in dbg_instr.operands:
+                print(f"[model] operand: {op.value}")
+
             if (model.current_instruction.is_instrumentation):
-                instr += " #instrumentation"
+                dbg_instr.name += " #instrumentation"
             model.tracer.run.instructions.append(dbg_instr)
             archstate = model.capture_state()
             archstate.pc = address  # Never used?
