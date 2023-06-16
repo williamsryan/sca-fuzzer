@@ -38,7 +38,11 @@ class Synthesizer:
             for i in range(0, header):
                 indentation += ' '
             regs = ''
-            # TODO: test printing mems instead. Both are [int, ByteString] dicts.
+            # TODO: Similar to parsing each register value to generate constraints, do
+            #       this for instructions + operands too (memory instructions).
+            #       Run objects have list of instructions, and instruction objects have
+            #       operands/etc. Archstate has all register + register values, which is
+            #       all we use currently. How can we specify that a load/store leaks?
             for reg in xstate.regs.values():
                 if regs != '':
                     regs += indentation
