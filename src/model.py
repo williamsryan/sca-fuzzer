@@ -374,7 +374,7 @@ class UnicornModel(Model, ABC):
         registers_llex = CONF.registers.keys()  # 16 registers.
         for reg in registers_llex:
             archstate.regs[reg] = self.emulator.reg_read(reg)
-            print(f"[+] REG {reg} : {self.emulator.reg_read(reg)}")
+            # print(f"[+] REG {reg} : {self.emulator.reg_read(reg)}")
 
         mem_address_start = self.sandbox_base
         mem_address_end = mem_address_start + self.input_size
@@ -439,8 +439,8 @@ class UnicornModel(Model, ABC):
             #     print(f"[model] operand: {op.value}")
 
             if (model.current_instruction.is_instrumentation):
-                dbg_instr.name += " #instrumentation"
-            model.tracer.run.instructions.append(dbg_instr)
+                instr.name += " #instrumentation"
+            model.tracer.run.instructions.append(instr)
             archstate = model.capture_state()
             archstate.pc = address
             model.tracer.run.archstates.append(archstate)
