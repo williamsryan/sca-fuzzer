@@ -688,7 +688,8 @@ Observations = List[Observation]
 
 class Run:
     id: int
-    instructions: List[str]
+    # instructions: List[str]
+    instructions: List[Instruction]
     archstates: List[ArchState]
     observations: List[Observations]
 
