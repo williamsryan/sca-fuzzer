@@ -316,6 +316,9 @@ def main() -> int:
                     except subprocess.TimeoutExpired:
                         os.killpg(process.pid, signal.SIGINT)
                         raise
+                    except subprocess.CalledProcessError:
+                        print(f"[-] Got an unsat model from Racket")
+                        break
 
                 with open(args.working_directory + "/" + expr_fname, "w") as file:
                     file.write(stdout.decode("UTF-8"))
@@ -331,7 +334,7 @@ def main() -> int:
         with open('learned-contract', 'w') as f:
             for clause in contract:
                 f.write(f"{clause}\n")
-                
+
         return result
 
     # Reproducing a violation
