@@ -279,12 +279,12 @@ def main() -> int:
                     combined_test["run_1"].update(xstate.mems)
                     if i == 1:
                         break
-                for i, xstate in enumerate(run2.arcahstates):
+                for i, xstate in enumerate(run2.archstates):
                     # run2_mems.update(xstate.mems)
                     combined_test["run_2"].update(xstate.mems)
                     if i == 1:
                         break
-                    
+
                 import json
                 print(f"[+] Test combined: {json.dumps(combined_test, indent=4, sort_keys=True)}")
 
