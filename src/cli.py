@@ -222,9 +222,7 @@ def main() -> int:
         if args.empty_synth:
             print(f"[+] Starting with empty contract for evaluation")
             # For now, PC always leaks, just hard-code in contract at end.
-            contract_str: List[str] = [
-                "(IF (BOOL #t) (PC))"
-            ]
+            contract_str: List[str] = []
         else:
             print(f"[+] Starting with base contract for synthesis")
             contract_str: List[str] = [
