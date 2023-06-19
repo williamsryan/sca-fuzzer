@@ -76,9 +76,11 @@ boolval = oneOf("#t #f")
 # I did find a result that showed a negative value, then this failed. Not sure if the issue is here
 # or with the value that was synthesized.
 regval = Word(nums)
-bs = LBRACE + REG + regval + RBRACE
+
+reg_bs = LBRACE + REG + regval + RBRACE
+pc_bs = LBRACE + PC + RBRACE
 pred = LBRACE + BOOL + boolval + RBRACE
-expr = LBRACE + IF + pred + bs + RBRACE
+expr = LBRACE + IF + pred + (reg_bs | pc_bs) + RBRACE
 
 # This expects the form:
 # (IF (BOOL #f) (REG 12))
