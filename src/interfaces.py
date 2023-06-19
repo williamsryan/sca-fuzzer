@@ -677,6 +677,8 @@ class Observation:
 
 class ArchState:
     regs: Dict[int, ByteString]
+    # Can we just use the memor yvalues to look for differences?
+    # E.g., to say "in this run, this memory address is leaked".
     mems: List[int, ByteString]
     pc: ByteString = None
 
