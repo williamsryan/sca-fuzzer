@@ -78,16 +78,16 @@ boolval = oneOf("#t #f")
 regval = Word(nums)
 
 reg_bs = LBRACE + REG + regval + RBRACE
-pc_bs = LBRACE + PC + RBRACE
+pc = LBRACE + PC + RBRACE
 pred = LBRACE + BOOL + boolval + RBRACE
-expr = LBRACE + IF + pred + (reg_bs | pc_bs) + RBRACE
+expr = LBRACE + IF + pred + (reg_bs | pc) + RBRACE
 
 # This expects the form:
 # (IF (BOOL #f) (REG 12))
 
 boolval.addParseAction(Bool)
 regval.addParseAction(Reg)
-bs.addParseAction(Bs)
+reg_bs.addParseAction(Bs)
 pred.addParseAction(Pred)
 expr.addParseAction(Expr)
 
