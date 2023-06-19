@@ -330,8 +330,11 @@ def main() -> int:
                     contract.append(parser.parse())
 
                 LOGGER.show_contract(contract)
+                
         # End fuzzing/synthesis loop.
-        with open('learned-contract', 'w') as f:
+        timestamp = datetime.today().strftime('%H%M%S-%d-%m-%y')
+        log_out = "learned-contract-" + timestamp + ".out"
+        with open(log_out, 'w') as f:
             for clause in contract:
                 f.write(f"{clause}\n")
 
