@@ -327,7 +327,9 @@ def main() -> int:
                     contract.append(parser.parse())
 
                 LOGGER.show_contract(contract)
-        # End test.
+        # End fuzzing/synthesis loop.
+        with open('learned-contract', 'w') as f:
+            f.write(contract)
         return result
 
     # Reproducing a violation
