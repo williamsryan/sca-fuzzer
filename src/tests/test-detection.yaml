@@ -1,6 +1,6 @@
 instruction_categories:
   # - BASE-NOP
-  - BASE-BINARY
+  - BASE-BINARY # Load and store are in this category.
   # - BASE-BITBYTE
   - BASE-COND_BR
   # - BASE-CMOV
@@ -11,7 +11,7 @@ instruction_categories:
   # - BASE-LOGICAL
   # - BASE-POP
   # - BASE-PUSH
-  
+
 # contract_observation_clause: ct # loads+stores+pc
 contract_execution_clause:
   - seq # no_speculation
