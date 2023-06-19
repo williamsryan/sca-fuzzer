@@ -1,4 +1,4 @@
-from pyparsing import Keyword, Word, nums, oneOf, Suppress
+from pyparsing import Keyword, Word, nums, oneOf, Suppress, Literal
 
 
 class Node(object):
@@ -69,13 +69,15 @@ LBRACE, RBRACE = map(Suppress, "()")
 IF = Keyword('IF')
 BOOL = Keyword('BOOL')
 REG = Keyword('REG')
+PC = Literal('PC')
 
 boolval = oneOf("#t #f")
+loc = REG | PC
 # TODO: looks like this parser fails on negative values. Update later if this is a use case.
 # I did find a result that showed a negative value, then this failed. Not sure if the issue is here
 # or with the value that was synthesized.
 regval = Word(nums)
-bs = LBRACE + REG + regval + RBRACE
+bs = LBRACE + loc + regval + RBRACE
 pred = LBRACE + BOOL + boolval + RBRACE
 expr = LBRACE + IF + pred + bs + RBRACE
 
