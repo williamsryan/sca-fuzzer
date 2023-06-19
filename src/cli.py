@@ -257,9 +257,6 @@ def main() -> int:
                 # Instructions should always be the same, but the differences are in
                 # the register/address values from those instructions (e.g., a violation is input-dependent).
                 
-                # TODO: test for differences in memory instruction operands/addresses.
-                #       A difference in addresses for same instruction would be a new clause.
-                
                 # Test printing memory differences between run1 and run2.
                 # run1_mems = {}
                 # run2_mems = {}
