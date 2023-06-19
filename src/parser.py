@@ -69,7 +69,7 @@ LBRACE, RBRACE = map(Suppress, "()")
 IF = Keyword('IF')
 BOOL = Keyword('BOOL')
 REG = Keyword('REG')
-PC = Keyword('PC')
+PC = Literal('PC')
 
 boolval = oneOf("#t #f")
 loc = REG | PC
