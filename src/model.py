@@ -442,7 +442,9 @@ class UnicornModel(Model, ABC):
             if (model.current_instruction.is_instrumentation):
                 instr += " #instrumentation"
             model.tracer.run.instructions.append(instr)
-            model.tracer.run.mem_instrs.append(instr_obj)
+            model.tracer.run.mem_instrs.append(instr_obj)   # To say which instruction leaks @ some memory, we can make new mapping.
+                                                            # E.g., map this instruction to memory address; if for two runs the mem value read
+                                                            # differs, record the instruction + address as being leaked.
             archstate = model.capture_state()
             archstate.pc = address
             model.tracer.run.archstates.append(archstate)
