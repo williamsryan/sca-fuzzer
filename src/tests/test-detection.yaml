@@ -11,7 +11,8 @@ instruction_categories:
   # - BASE-LOGICAL
   # - BASE-POP
   # - BASE-PUSH
-contract_observation_clause: ct # loads+stores+pc
+  
+# contract_observation_clause: ct # loads+stores+pc
 contract_execution_clause:
   - seq # no_speculation
 
