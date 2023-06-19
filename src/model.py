@@ -380,6 +380,8 @@ class UnicornModel(Model, ABC):
         mem_address_end = mem_address_start + self.input_size
         mem_ = self.emulator.mem_read(mem_address_start, self.input_size)
 
+        print(f"[model] Capturing memory range: {mem_address_start} --> {mem_address_end}")
+
         # These memory values aren't being used anywhere.
         for i in range(mem_address_start, mem_address_end, 8):
             i_ = i - mem_address_start
