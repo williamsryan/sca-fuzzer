@@ -73,6 +73,11 @@ def main() -> int:
         action='store_true',
         help="Don't stop after detecting an unexpected result"
     )
+    parser_fuzz.add_argument(
+        '--empty-synth',
+        action='store_true',
+        help="Set the base contract to be empty (synthesis contract)"
+    )
 
     parser_analyser = subparsers.add_parser('analyse')
     parser_analyser.add_argument(
@@ -214,12 +219,17 @@ def main() -> int:
         if args.working_directory and not os.path.isdir(args.working_directory):
             SystemExit("The working directory does not exist")
 
-        contract_str: List[str] = [
-            "(IF (BOOL #t) (REG 0))",
-            "(IF (BOOL #t) (REG 1))",
-            "(IF (BOOL #t) (REG 2))",
-            "(IF (BOOL #t) (REG 4))"
-        ]
+        if args.empty_synth:
+            print(f"[+] Starting with empty contract for evaluation")
+            contract_str: List[str] = []
+        else:
+            print(f"[+] Starting with base contract for synthesis")
+            contract_str: List[str] = [
+                "(IF (BOOL #t) (REG 0))",
+                "(IF (BOOL #t) (REG 1))",
+                "(IF (BOOL #t) (REG 2))",
+                "(IF (BOOL #t) (REG 4))"
+            ]
 
         contract: List[Expr] = []
 
