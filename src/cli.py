@@ -254,14 +254,9 @@ def main() -> int:
                 theory_fname = "theory-" + timestamp + ".rkt"
                 expr_fname = "expr-" + timestamp + ".txt"
 
-                # TODO: for all instructions in run trace, get memory operands.
-                #       add these to our synthesis mapper to have more than just
-                #       register values between runs. A load/store leaking an
-                #       address will be covered by this. Look at differences
-                #       between operand values (addresses) as opposed to registers.
-
                 # Instructions should always be the same, but the differences are in
-                # the register values from those instructions (e.g., a violation is input-dependent).
+                # the register/address values from those instructions (e.g., a violation is input-dependent).
+                
                 # TODO: test for differences in memory instruction operands/addresses.
                 #       A difference in addresses for same instruction would be a new clause.
                 
