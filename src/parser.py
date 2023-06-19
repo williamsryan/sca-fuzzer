@@ -97,6 +97,7 @@ expr = LBRACE + IF + pred + (reg_bs | pc) + RBRACE
 boolval.addParseAction(Bool)
 regval.addParseAction(Reg)
 reg_bs.addParseAction(Bs)
+pc.addParseAction(Pc)
 pred.addParseAction(Pred)
 expr.addParseAction(Expr)
 
