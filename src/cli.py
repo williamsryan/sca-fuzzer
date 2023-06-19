@@ -265,7 +265,8 @@ def main() -> int:
                 # TODO: test for differences in memory instruction operands/addresses.
                 #       A difference in addresses for same instruction would be a new clause.
                 for archstate in run1.archstates:
-                    print(f"[+] Archstate test: {archstate}")
+                    for mems in archstate:
+                        print(f"[+] Mme test: {mems}")
                 
                 synth = Synthesizer(theory_fname, args.working_directory, 1)
                 # Each run object corresponds to an execution of a same program with different inputs
