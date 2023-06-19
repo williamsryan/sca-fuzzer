@@ -223,7 +223,7 @@ def main() -> int:
             print(f"[+] Starting with empty contract for evaluation")
             # For now, PC always leaks, just hard-code in contract at end.
             contract_str: List[str] = [
-                "(IF (BOOL #t) (PC ))"
+                "(IF (BOOL #t) (PC 0))"
             ]
         else:
             print(f"[+] Starting with base contract for synthesis")
