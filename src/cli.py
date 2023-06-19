@@ -221,7 +221,10 @@ def main() -> int:
 
         if args.empty_synth:
             print(f"[+] Starting with empty contract for evaluation")
-            contract_str: List[str] = []
+            # For now, PC always leaks, just hard-code in contract at end.
+            contract_str: List[str] = [
+                "(IF (BOOL #t) (PC))"
+            ]
         else:
             print(f"[+] Starting with base contract for synthesis")
             contract_str: List[str] = [
@@ -330,7 +333,7 @@ def main() -> int:
                     contract.append(parser.parse())
 
                 LOGGER.show_contract(contract)
-                
+
         # End fuzzing/synthesis loop.
         timestamp = datetime.today().strftime('%H%M%S-%d-%m-%y')
         log_out = "learned-contract-" + timestamp + ".out"
