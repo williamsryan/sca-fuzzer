@@ -266,27 +266,21 @@ def main() -> int:
                 #       A difference in addresses for same instruction would be a new clause.
                 
                 # Test printing memory differences between run1 and run2.
-                # run1_mems = {}
-                # run2_mems = {}
-
-                combined_test = {
-                    "run_1" : {},
-                    "run_2" : {}
-                }
+                run1_mems = {}
+                run2_mems = {}
 
                 for i, xstate in enumerate(run1.archstates):
-                    # run1_mems.update(xstate.mems)
-                    combined_test["run_1"].update(xstate.mems)
+                    run1_mems.update(xstate.mems)
                     if i == 1:
                         break
                 for i, xstate in enumerate(run2.archstates):
-                    # run2_mems.update(xstate.mems)
-                    combined_test["run_2"].update(xstate.mems)
+                    run2_mems.update(xstate.mems)
                     if i == 1:
                         break
-
-                import json
-                print(f"[+] Test combined: {json.dumps(combined_test, indent=4, sort_keys=True)}")
+                
+                set1 = set(run1_mems.items())
+                set2 = set(run2_mems.items())
+                print(f"[+] Testing symmetric diff between runs: {set1 ^ set2}")
 
                 # unique_mems = {k: run1_mems[k] for k in run1_mems if k in run2_mems and run1_mems[k] != run2_mems[k]}
                 # print(f"[+] Testing unique mems between runs: {unique_mems}")
