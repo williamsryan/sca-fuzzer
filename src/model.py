@@ -383,7 +383,8 @@ class UnicornModel(Model, ABC):
         # These memory values aren't being used anywhere.
         for i in range(mem_address_start, mem_address_end, 8):
             i_ = i - mem_address_start
-            archstate.mems[i] = (mem_[i_:i_+8]).hex()
+            # archstate.mems[i] = (mem_[i_:i_+8]).hex()
+            archstate.mems[i] = mem_[i_:i_+8]
 
         return archstate
 
