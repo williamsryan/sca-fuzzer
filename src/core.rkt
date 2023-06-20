@@ -108,10 +108,11 @@
           (and (bveq (first bvs1) (first bvs2)) (listbv-equal (rest bvs1) (rest bvs2))))))
 
 ; diff() takes the following arguments:
-;              i,j,i_,j_: natural numbers such that i <= j and i_ <= j_
-;              r, r_: two runs
-;              expr: an expression
-;        returns true if the trace produce r[i]->r[j] and r_[i_]->r_[j_] are distinguishable
+;              i,j,i_,j_  : natural numbers such that i <= j and i_ <= j_
+;              r, r_      : two run objects
+;              expr       : our grammar expression
+;
+;        returns true if the trace produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
   (if (equal? i j)
@@ -125,21 +126,5 @@
               (and (not (empty-obs expr (list-ref r i)))
                    (not (empty-obs expr (list-ref r_ i_)))
                    (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
-
-; This diff() function will assume no silent steps, so we simply look
-; for differences across runs element-by-element.
-;
-; diff_no_silent_steps() take the following arguments:
-;              i,j,i_,j_  : natural numbers such that i <= j and i_ <= j_
-;              r, r_      : two run object
-;              expr       : grammar expression
-;
-;        returns true if the traces produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable
-;                false otherwise
-; (define (diff_no_silent_steps i j r i_ j_ r_ expr)
-;   (if (equal? i j)
-;       (if (equal? i_ j_)
-;           #f
-;           (or (not (empty-obs expr (list-ref r_ i_))) (diff j j r (+ i_ 1) j_ r_ expr)))))
 
 ; ------------- END-CORE ------------------ ;
