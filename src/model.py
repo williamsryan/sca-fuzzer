@@ -474,7 +474,6 @@ class UnicornModel(Model, ABC):
         if (bs.keyword == 'REG'):
             val = bs.val
             # TODO: if this is Dict[str, int], use reg_decode.
-            print(f"[+] Checking val: {val}")
             reg = CONF.map_reg(val)
             res = emulator.reg_read(reg)
             # model.add_mem_address_to_trace()
