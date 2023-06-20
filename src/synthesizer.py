@@ -30,7 +30,10 @@ class Synthesizer:
     def get_run_name(self, rid):
         return "r{0}".format(str(rid))
 
-    def map(self, run):
+    """
+        Method for generating Rosette structures for archstate memories.
+    """
+    def map_mems(self, run):
         def model(rid, xid, xstate):
             xstate_name = self.get_xstate_name(rid, xid)
             header = len('(define {0} (list '.format(xstate_name))
@@ -43,6 +46,51 @@ class Synthesizer:
             #       Run objects have list of instructions, and instruction objects have
             #       operands/etc. Archstate has all register + register values, which is
             #       all we use currently. How can we specify that a load/store leaks?
+            #       On top of register differences, let's try memory differences.
+            #       E.g., archstate.mems values.
+            for reg in xstate.regs.values():
+                if regs != '':
+                    regs += indentation
+                # regs += ";; Testing comment - RPW."
+                regs += "(bv {0} (bitvector 64))\n".format(str(reg)) # Each of these is the value of the register (16 regs?).
+            if xstate.pc is not None:
+                regs += indentation + \
+                    "(bv {0} (bitvector 64))".format(str(xstate.pc))
+            else:
+                # Meaning this is the final state; end with -1.
+                regs += indentation + "(bv {0} (bitvector 64))".format(str(-1))
+            return "(define {0} (list {1}))\n\n".format(xstate_name, regs)
+
+        with open(self.work_dir + "/" + self.filename, "a") as f:
+            xstates = ''
+            for i, xstate in enumerate(run.archstates):
+                # print(f"[+] Writing states: {model(run.id, i, xstate)}")
+                f.write(model(run.id, i, xstate))
+                if xstates == '':
+                    xstates += self.get_xstate_name(run.id, i)
+                else:
+                    xstates += ' ' + self.get_xstate_name(run.id, i)
+            f.write("(define {0} (list {1}))\n\n".format(
+                self.get_run_name(run.id), xstates))
+
+    """
+        Separate method for generating Rosette structures for register values.
+    """
+    def map_regs(self, run):
+        def model(rid, xid, xstate):
+            xstate_name = self.get_xstate_name(rid, xid)
+            header = len('(define {0} (list '.format(xstate_name))
+            indentation = ''
+            for i in range(0, header):
+                indentation += ' '
+            regs = ''
+            # TODO: Similar to parsing each register value to generate constraints, do
+            #       this for instructions + operands too (memory instructions).
+            #       Run objects have list of instructions, and instruction objects have
+            #       operands/etc. Archstate has all register + register values, which is
+            #       all we use currently. How can we specify that a load/store leaks?
+            #       On top of register differences, let's try memory differences.
+            #       E.g., archstate.mems values.
             for reg in xstate.regs.values():
                 if regs != '':
                     regs += indentation

@@ -26,40 +26,49 @@
 (define R15 15) ; R15
 (define PC 16)  ; R16
 
-; Struct for our contract language.
-(struct IF (pred expr) #:transparent)
-(struct OPCODE ())
-(struct INSTR ())
-(struct SLIDE (i1 i2 bs) #:transparent)
-(struct RS1 ())
-(struct RS2 ())
+; Struct definitions for our contract language.
+(struct IF (pred expr) #:transparent)   ; Represents an if-expression.
+(struct OPCODE ())                      ; An opcode.
+(struct INSTR ())                       ; An instruction.
+(struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
+(struct RS1 ())                         ; Register RS1.
+(struct RS2 ())                         ; Register RS2.
 (struct NOT (b))
 (struct AND (b1 b2))
 (struct OR (b1 b2))
 (struct EQ (b1 b2))
 (struct BOOL (b))
-(struct BS (bs))
-(struct REG (r) #:transparent)
+(struct BS (bs))                        ; Bitstring value.
+(struct REG (r) #:transparent)          ; Register value.
+(struct ADDR (a) #:transparent)         ; Address value.
 
 ; Grammar for the actual contract.
 ; (IF (BOOL #t) (REG 12))     <-- Supported (leaked registers).
 ; (IF (BOOL #t) (PC))         <-- Supported (leaked program counter).
 ; (if (BOOL #t) (...))        <-- In progress (leaked address of loads/stores).
 (define-grammar (cexpr)
- [expr (IF (pred) (bs))]
- [pred
-  (choose (BOOL (?? boolean?)) (NOT (pred)) (AND (pred) (pred)) (OR (pred) (pred)) (EQ (bs) (bs)))]
- [bs
-  (choose (BS (?? (bitvector (?? integer?))))
-          (SLIDE (?? integer?) (?? integer?) (bs))
-          (REG (?? integer?))
-          INSTR)])
+  [expr (IF (pred) (bs))]
+  [pred (choose (BOOL (?? boolean?))
+                (NOT (pred))
+                (AND (pred) (pred))
+                (OR (pred) (pred))
+                (EQ (bs) (bs))
+                )]
+  [bs (choose (BS (?? (bitvector (?? integer?))))
+              (SLIDE (?? integer?) (?? integer?) (bs))
+              (REG (?? integer?))
+              (INSTR)
+              (ADDR (?? integer?))
+              )]
+  )
 
 (define EMPTY (list '()))
 
+; Evaluation function for expressions.
 (define (eval e x)
   (destruct e [(IF pred bs) (if (eval-pred pred x) (list (eval-bs bs x)) EMPTY)]))
 
+; Evaluation function for predicates.
 (define (eval-pred p x)
   (destruct p
             [(BOOL b) b]
@@ -68,6 +77,7 @@
             [(OR p1 p2) (or (eval-pred p1 x) (eval-pred p2 x))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 x) (eval-bs bs2 x))]))
 
+; Evaluation function for bit sequences.
 (define (eval-bs bs x)
   (destruct bs
             [(BS b) b]
@@ -75,11 +85,14 @@
             [(REG reg) (eval-reg reg x)]
             [INSTR (eval-reg PC x)]))
 
-; Read register value as bitvector.
+; Evaluation function for addresses.
+(define (eval-addr addr x)
+  (list-ref x addr))
+
+; Evaluation function for registers.
 (define (eval-reg reg x)
   (list-ref x reg))
 
-; Auxiliary functions
 ; obs() takes an expression and a xstate
 ;       returns its observation
 (define (obs expr state)
@@ -126,5 +139,14 @@
               (and (not (empty-obs expr (list-ref r i)))
                    (not (empty-obs expr (list-ref r_ i_)))
                    (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
+
+; ------------- Memory Components ------------------ ;
+
+(define memory-state
+  (struct memory-state
+    (address-value-mapping) ; Mapping of memory address to corresponding value.
+    (memory-size)))         ; Size of memory.
+
+; ----------- End Memory Components ---------------- ;
 
 ; ------------- END-CORE ------------------ ;
