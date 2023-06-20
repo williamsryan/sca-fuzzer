@@ -485,7 +485,10 @@ class UnicornModel(Model, ABC):
                 model.tracer.run.observations[-1].append(Observation(res))
 
         elif (bs.keyword == 'PC'):
-            print(f"[+] Got PC")
+            model.tracer.trace.append(-1)
+
+            if model.traceable:
+                model.tracer.run.observations[-1].append(Observation(-1))
 
     def handle_fault(self, errno: int) -> int:
         next_addr = self.speculate_fault(errno)
