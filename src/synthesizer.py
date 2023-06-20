@@ -51,7 +51,7 @@ class Synthesizer:
             for mem in xstate.mems.values():
                 if mems != '':
                     mems += indentation
-                mems += "(bv {0} (bitvector 64))\n".format(str(mem))
+                mems += "(bv {0} (bitvector 64))\n".format(int(mem, 16))
             if xstate.pc is not None:
                 mems += indentation + \
                     "(bv {0} (bitvector 64))".format(str(xstate.pc))
