@@ -21,6 +21,15 @@ class Reg(Node):
 
     def __str__(self) -> str:
         return str(self.val)
+
+class Pc(Node):
+    keyword: str
+
+    def __init__(self, tokens):
+        self.keyword = tokens[0]
+    
+    def __str__(self) -> str:
+        return self.keyword
     
 class Bs(Node):
     keyword: str
@@ -81,7 +90,7 @@ expr = LBRACE + IF + pred + (reg_bs | pc) + RBRACE
 boolval.addParseAction(Bool)
 regval.addParseAction(Reg)
 reg_bs.addParseAction(Bs)
-pc.addParseAction(Bs)
+pc.addParseAction(Pc)
 pred.addParseAction(Pred)
 expr.addParseAction(Expr)
 
