@@ -321,7 +321,7 @@ def main() -> int:
                         raise
                     except subprocess.CalledProcessError:
                         print(f"[-] Got an unsat model from Racket")
-                        break
+                        raise
 
                 with open(args.working_directory + "/" + expr_fname, "w") as file:
                     file.write(stdout.decode("UTF-8"))
