@@ -40,7 +40,7 @@ class Synthesizer:
             indentation = ''
             for i in range(0, header):
                 indentation += ' '
-            regs = ''
+            mems = ''
             # TODO: Similar to parsing each register value to generate constraints, do
             #       this for instructions + operands too (memory instructions).
             #       Run objects have list of instructions, and instruction objects have
@@ -48,23 +48,21 @@ class Synthesizer:
             #       all we use currently. How can we specify that a load/store leaks?
             #       On top of register differences, let's try memory differences.
             #       E.g., archstate.mems values.
-            for reg in xstate.regs.values():
-                if regs != '':
-                    regs += indentation
-                # regs += ";; Testing comment - RPW."
-                regs += "(bv {0} (bitvector 64))\n".format(str(reg)) # Each of these is the value of the register (16 regs?).
+            for mem in xstate.mems.values():
+                if mems != '':
+                    mems += indentation
+                mems += "(bv {0} (bitvector 64))\n".format(str(mem))
             if xstate.pc is not None:
-                regs += indentation + \
+                mems += indentation + \
                     "(bv {0} (bitvector 64))".format(str(xstate.pc))
             else:
                 # Meaning this is the final state; end with -1.
-                regs += indentation + "(bv {0} (bitvector 64))".format(str(-1))
-            return "(define {0} (list {1}))\n\n".format(xstate_name, regs)
+                mems += indentation + "(bv {0} (bitvector 64))".format(str(-1))
+            return "(define {0} (list {1}))\n\n".format(xstate_name, mems)
 
         with open(self.work_dir + "/" + self.filename, "a") as f:
             xstates = ''
             for i, xstate in enumerate(run.archstates):
-                # print(f"[+] Writing states: {model(run.id, i, xstate)}")
                 f.write(model(run.id, i, xstate))
                 if xstates == '':
                     xstates += self.get_xstate_name(run.id, i)
@@ -84,17 +82,9 @@ class Synthesizer:
             for i in range(0, header):
                 indentation += ' '
             regs = ''
-            # TODO: Similar to parsing each register value to generate constraints, do
-            #       this for instructions + operands too (memory instructions).
-            #       Run objects have list of instructions, and instruction objects have
-            #       operands/etc. Archstate has all register + register values, which is
-            #       all we use currently. How can we specify that a load/store leaks?
-            #       On top of register differences, let's try memory differences.
-            #       E.g., archstate.mems values.
             for reg in xstate.regs.values():
                 if regs != '':
                     regs += indentation
-                # regs += ";; Testing comment - RPW."
                 regs += "(bv {0} (bitvector 64))\n".format(str(reg)) # Each of these is the value of the register (16 regs?).
             if xstate.pc is not None:
                 regs += indentation + \
@@ -107,7 +97,6 @@ class Synthesizer:
         with open(self.work_dir + "/" + self.filename, "a") as f:
             xstates = ''
             for i, xstate in enumerate(run.archstates):
-                # print(f"[+] Writing states: {model(run.id, i, xstate)}")
                 f.write(model(run.id, i, xstate))
                 if xstates == '':
                     xstates += self.get_xstate_name(run.id, i)

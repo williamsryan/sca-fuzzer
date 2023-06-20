@@ -300,9 +300,12 @@ def main() -> int:
                 synth = Synthesizer(theory_fname, args.working_directory, 1)
                 # Each run object corresponds to an execution of a same program with different inputs
                 # that produce the same contract trace and different hardware trace.
-                synth.map_regs(run1)
-                synth.map_regs(run2)
-                synth.generate_constraints(pairs, run1, run2)
+                # synth.map_regs(run1)
+                # synth.map_regs(run2)
+                # synth.generate_constraints(pairs, run1, run2)
+                synth.map_mems(run1)
+                synth.map_mems(run2)
+                return
 
                 import subprocess
                 import signal
