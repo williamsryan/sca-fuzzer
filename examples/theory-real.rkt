@@ -137,8 +137,17 @@
                                   (not (empty-obs expr (list-ref r_ i_)))
                                   (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
 
-(define (diff_new r r_ expr)
-  (println "Checking if r and r_ are distinguishable..."))
+(define (diff_new i j r i_ j_ r_ expr)
+  (println "Checking if r and r_ are distinguishable...")
+  (if (equal? i j)            ; Are we looking at the same states? E.g., i=j=0.
+      (if (equal? i_ j_) #f   ; If i=j=i_=j_ traces are identical, return false.
+        (println "[-] No distinguishable observable from traces"))
+      (if (equal? i_ j_) (or (not (empty-obs expr (list-ref r i)))
+                             (diff (+ i 1) j r j_ j_ r_ expr))
+                         (or (and (empty-obs expr (list-ref r i))
+                                  (diff (+ i 1) j r i_ j_ r_ expr)))))
+    (assert #t) ; Should be true at this point, traces are distinguishable.
+    (println "End of diff_new"))
   
 ; ------------- END-CORE ------------------ ;
 (define r0_0 (list (bv 760209211569 (bitvector 64))
@@ -399,7 +408,7 @@
 
 (define myexpr (cexpr #:depth 1))
 
-(define sol (solve (assert (or (diff_new r0 r1 myexpr)))))
+(define sol (solve (assert (diff_new 0 0 r0 0 1 r1 myexpr))))
 
 ; (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
 ;                                (diff 1 2 r0 1 2 r1 myexpr)
