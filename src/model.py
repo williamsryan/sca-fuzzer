@@ -460,7 +460,8 @@ class UnicornModel(Model, ABC):
     def evaluateExpr(model: UnicornModel, emulator: Uc, address: int, size: int, expr: Expr):
         if (expr.keyword == 'IF'):
             pred = expr.pred
-            res = model.evaluatePred(emulator, address, size, pred)
+            res = model.evaluatePred(emulator, address, size, pred) # #t/#f
+
             if (res):
                 bs = expr.bs
                 model.capture_bs(emulator, address, size, bs)
@@ -470,6 +471,7 @@ class UnicornModel(Model, ABC):
             return pred.val
 
     def capture_bs(model: UnicornModel, emulator: Uc, address: int, size: int, bs: Bs):
+        print(f"[+] Testing clause parse: {bs.keyword}")
         if (bs.keyword == 'REG'):
             val = bs.val
             # TODO: if this is Dict[str, int], use reg_decode.

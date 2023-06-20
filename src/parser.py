@@ -1,10 +1,8 @@
-from pyparsing import Keyword, Word, nums, oneOf, Suppress, Literal, Optional
-
+from pyparsing import Keyword, Word, nums, oneOf, Suppress, Literal
 
 class Node(object):
     def __init__(self, tokens):
         self._tokens = tokens
-
 
 class Bool(Node):
     val: bool
@@ -15,7 +13,6 @@ class Bool(Node):
     def __str__(self) -> str:
         return '#t' if self.val else '#f'
 
-
 class Reg(Node):
     val: int
 
@@ -25,18 +22,6 @@ class Reg(Node):
     def __str__(self) -> str:
         return str(self.val)
 
-
-class Bs(Node):
-    keyword: str
-    val: Reg
-
-    def __init__(self, tokens):
-        self.keyword = tokens[0]
-        self.val = int(tokens[1].val)
-
-    def __str__(self) -> str:
-        return "({0} {1})".format(self.keyword, self.val)
-    
 class Pc(Node):
     keyword: str
 
@@ -45,7 +30,20 @@ class Pc(Node):
 
     def __str__(self) -> str:
         return str(self.keyword)
+    
+class Bs(Node):
+    keyword: str
+    val: (Reg | Pc)
 
+    def __init__(self, tokens):
+        self.keyword = tokens[0]
+        self.val = int(tokens[1].val)
+
+    def __str__(self) -> str:
+        if type(self.val) is Reg:
+            return "({0} {1})".format(self.keyword, self.val)
+        elif type(self.val) is Pc:
+            return str(self.val)
 
 class Pred(Node):
     keyword: str
@@ -57,7 +55,6 @@ class Pred(Node):
 
     def __str__(self) -> str:
         return "({0} {1})".format(self.keyword, self.val)
-
 
 class Expr(Node):
     keyword: str
@@ -71,7 +68,6 @@ class Expr(Node):
 
     def __str__(self) -> str:
         return "({0} {1} {2})".format(self.keyword, self.pred, self.bs)
-
 
 LBRACE, RBRACE = map(Suppress, "()")
 
@@ -100,7 +96,6 @@ reg_bs.addParseAction(Bs)
 pc.addParseAction(Pc)
 pred.addParseAction(Pred)
 expr.addParseAction(Expr)
-
 
 class Parser:
     expr_str: str
