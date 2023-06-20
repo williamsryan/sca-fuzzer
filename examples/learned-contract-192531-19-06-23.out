@@ -1,0 +1,6 @@
+(IF (BOOL True) PC)
+(IF (BOOL True) (REG 6))
+(IF (BOOL True) (REG 0))
+(IF (BOOL True) (REG 4))
+(IF (BOOL True) (REG 3))
+(IF (BOOL True) (REG 5))
