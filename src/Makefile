@@ -1,6 +1,6 @@
 .PHONY : clean
 
 clean :
-	rm -rf *.o *.asm theory*.rkt
+	rm -rf generated.o *.asm theory*.rkt
 	git clean -f
 
