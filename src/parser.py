@@ -29,7 +29,10 @@ class Bs(Node):
 
     def __init__(self, tokens):
         self.keyword = tokens[0]
-        self.val = int(tokens[1].val)
+        if self.val:
+            self.val = int(tokens[1].val)
+        else:
+            self.val = None
 
     def __str__(self) -> str:
         if self.val:
