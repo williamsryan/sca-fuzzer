@@ -43,7 +43,7 @@ class Bs(Node):
         if type(self.val) is Reg:
             return "({0} {1})".format(self.keyword, self.val)
         elif type(self.val) is Pc:
-            return str(self.val)
+            return str(self.val.keyword)
 
 class Pred(Node):
     keyword: str
