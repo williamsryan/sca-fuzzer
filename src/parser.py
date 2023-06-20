@@ -41,7 +41,7 @@ class Bs(Node):
 
     def __str__(self) -> str:
         if type(self.val) is Reg:
-            return "({0} {1})".format(self.keyword, self.val)
+            return "({0} {1})".format(self.keyword, self.val.val)
         elif type(self.val) is Pc:
             return str(self.val.keyword)
 
