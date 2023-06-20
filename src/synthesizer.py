@@ -70,7 +70,6 @@ class Synthesizer:
 
     # TODO: update to look at sequential traces, and ignore silent steps for now.
     def generate_constraints(self, pairs, run1, run2):
-        print(f"[synthesizer] Pairs: {pairs}")
         with open(self.work_dir + "/" + self.filename, "a") as f:
             f.write("(define myexpr (cexpr #:depth {0}))\n\n".format(
                 str(self.depth)))

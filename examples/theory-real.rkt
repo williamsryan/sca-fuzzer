@@ -42,6 +42,7 @@
 (struct BOOL (b))
 (struct BS (bs))
 (struct REG (r) #:transparent)
+(struct ADDR (a) #:transparent)
 
 ; Grammar for the actual contract.
 ; (IF (BOOL #f) (REG 12))
@@ -56,7 +57,8 @@
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
               (REG (?? integer?))
-              INSTR
+              (INSTR)
+              (ADDR (?? integer?))
               )]
   )
 
@@ -81,7 +83,11 @@
      [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
      [(REG reg) (eval-reg reg x)]
      [INSTR (eval-reg PC x)]
+     [(ADDR address) (eval-addr address x)]
      ))
+
+(define (eval-addr addr x)
+  (list-ref x addr))
 
 (define (eval-reg reg x)
   (list-ref x reg))
