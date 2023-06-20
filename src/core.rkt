@@ -136,10 +136,10 @@
 ;
 ;        returns true if the traces produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable
 ;                false otherwise
-(define (diff_no_silent_steps i j r i_ j_ r_ expr)
-  (if (equal? i j)
-      (if (equal? i_ j_)
-          #f
-          (or (not (empty-obs expr (list-ref r_ i_))) (diff j j r (+ i_ 1) j_ r_ expr)))))
+; (define (diff_no_silent_steps i j r i_ j_ r_ expr)
+;   (if (equal? i j)
+;       (if (equal? i_ j_)
+;           #f
+;           (or (not (empty-obs expr (list-ref r_ i_))) (diff j j r (+ i_ 1) j_ r_ expr)))))
 
 ; ------------- END-CORE ------------------ ;
