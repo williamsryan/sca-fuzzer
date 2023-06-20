@@ -1,4 +1,4 @@
-from pyparsing import Keyword, Word, nums, oneOf, Suppress, Literal
+from pyparsing import Keyword, Word, nums, oneOf, Suppress, Literal, Optional
 
 class Node(object):
     def __init__(self, tokens):
@@ -21,26 +21,21 @@ class Reg(Node):
 
     def __str__(self) -> str:
         return str(self.val)
-
-class Pc(Node):
-    keyword: str
-
-    def __init__(self, tokens):
-        self.keyword = tokens[0]
-
-    def __str__(self) -> str:
-        return str(self.keyword)
     
 class Bs(Node):
     keyword: str
-    val: Reg
+    val: Optional(Reg)  # Keep Bs as one class for simplicity; making val optional.
+                        # This can parse `REG <num>` or `PC`.
 
     def __init__(self, tokens):
         self.keyword = tokens[0]
         self.val = int(tokens[1].val)
 
     def __str__(self) -> str:
-        return "({0} {1})".format(self.keyword, self.val)
+        if self.val:
+            return "({0} {1})".format(self.keyword, self.val)
+        else:
+            return self.keyword # Might need to change this part later (working on PC now).
 
 class Pred(Node):
     keyword: str
@@ -90,7 +85,7 @@ expr = LBRACE + IF + pred + (reg_bs | pc) + RBRACE
 boolval.addParseAction(Bool)
 regval.addParseAction(Reg)
 reg_bs.addParseAction(Bs)
-pc.addParseAction(Pc)
+pc.addParseAction(Bs)
 pred.addParseAction(Pred)
 expr.addParseAction(Expr)
 
