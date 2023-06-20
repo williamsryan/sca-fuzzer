@@ -305,6 +305,7 @@ def main() -> int:
                 # synth.generate_constraints(pairs, run1, run2)
                 synth.map_mems(run1)
                 synth.map_mems(run2)
+                synth.generate_constraints(pairs, run1, run2)
                 return
 
                 import subprocess
