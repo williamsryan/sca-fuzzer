@@ -140,13 +140,4 @@
                    (not (empty-obs expr (list-ref r_ i_)))
                    (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
 
-; ------------- Memory Components ------------------ ;
-
-(define memory-state
-  (struct memory-state
-    (address-value-mapping) ; Mapping of memory address to corresponding value.
-    (memory-size)))         ; Size of memory.
-
-; ----------- End Memory Components ---------------- ;
-
 ; ------------- END-CORE ------------------ ;
