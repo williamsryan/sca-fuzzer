@@ -24,8 +24,8 @@ class Reg(Node):
     
 class Bs(Node):
     keyword: str
-    val: Optional(Reg)  # Keep Bs as one class for simplicity; making val optional.
-                        # This can parse `REG <num>` or `PC`.
+    val: Reg    # Keep Bs as one class for simplicity; making val optional.
+                # This can parse `REG <num>` or `PC`.
 
     def __init__(self, tokens):
         self.keyword = tokens[0]
