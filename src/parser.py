@@ -33,17 +33,14 @@ class Pc(Node):
     
 class Bs(Node):
     keyword: str
-    val: (Reg | Pc)
+    val: Reg
 
     def __init__(self, tokens):
         self.keyword = tokens[0]
         self.val = int(tokens[1].val)
 
     def __str__(self) -> str:
-        if type(self.val) is Reg:
-            return "({0} {1})".format(self.keyword, self.val.val)
-        elif type(self.val) is Pc:
-            return str(self.val.keyword)
+        return "({0} {1})".format(self.keyword, self.val)
 
 class Pred(Node):
     keyword: str

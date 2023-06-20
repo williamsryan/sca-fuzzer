@@ -484,6 +484,9 @@ class UnicornModel(Model, ABC):
                 # Add observations that correspond to the contract clauses.
                 model.tracer.run.observations[-1].append(Observation(res))
 
+        elif (bs.keyword == 'PC'):
+            print(f"[+] Got PC")
+
     def handle_fault(self, errno: int) -> int:
         next_addr = self.speculate_fault(errno)
         if next_addr:
