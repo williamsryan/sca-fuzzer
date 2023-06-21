@@ -477,7 +477,7 @@ class UnicornModel(Model, ABC):
             reg = CONF.map_reg(val)
             res = emulator.reg_read(reg)
             # Just testing this now.
-            model.tracer.add_mem_address_to_trace()
+            model.tracer.add_mem_address_to_trace(address, model)
             # print(f"[+] Read value: {res} from register: {reg}")
             model.tracer.trace.append(res)
             
