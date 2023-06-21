@@ -146,27 +146,30 @@ class ConfCls:
     # ==============================================================================================
     # Registers.
     registers = {
-        UC_X86_REG_RAX: 'rax',  # 64b a extended: General purpose reg
-        UC_X86_REG_RBP: 'rbp',  # 64b base pointer: General purpose reg
-        UC_X86_REG_RBX: 'rbx',  # 64b b extended: General purpose reg
-        UC_X86_REG_RCX: 'rcx',  # 64b c extended: General purpose reg
-        UC_X86_REG_RDI: 'rdi',  # 64b destination index: General purpose reg
-        UC_X86_REG_RDX: 'rdx',  # 64b d extended: General purpose reg
-        UC_X86_REG_RSI: 'rsi',  # 64b source index: General purpose reg
-        UC_X86_REG_RSP: 'rsp',  # 64b stack pointer: General purpose reg
-        UC_X86_REG_R8: 'r8',    # 64b general purpose reg 8
-        UC_X86_REG_R9: 'r9',    # 64b general purpose reg 9
-        UC_X86_REG_R10: 'r10',  # 64b general purpose reg 10
-        UC_X86_REG_R11: 'r11',  # 64b general purpose reg 11
-        UC_X86_REG_R12: 'r12',  # 64b general purpose reg 12
-        UC_X86_REG_R13: 'r13',  # 64b general purpose reg 13
-        UC_X86_REG_R14: 'r14',  # 64b general purpose reg 14
-        UC_X86_REG_R15: 'r15',  # 64b general purpose reg 15
+        UC_X86_REG_RAX: 'rax',          # 64b a extended: General purpose reg
+        # UC_X86_REG_RBP: 'rbp',  # 64b base pointer: General purpose reg
+        UC_X86_REG_RBX: 'rbx',          # 64b b extended: General purpose reg
+        UC_X86_REG_RCX: 'rcx',          # 64b c extended: General purpose reg
+        UC_X86_REG_RDI: 'rdi',          # 64b destination index: General purpose reg
+        UC_X86_REG_RDX: 'rdx',          # 64b d extended: General purpose reg
+        UC_X86_REG_RSI: 'rsi',          # 64b source index: General purpose reg
+        UC_X86_REG_EFLAGS: 'eflags',    # 32b status register: current state of CPU
+        # UC_X86_REG_RSP: 'rsp',  # 64b stack pointer: General purpose reg
+        # UC_X86_REG_R8: 'r8',    # 64b general purpose reg 8
+        # UC_X86_REG_R9: 'r9',    # 64b general purpose reg 9
+        # UC_X86_REG_R10: 'r10',  # 64b general purpose reg 10
+        # UC_X86_REG_R11: 'r11',  # 64b general purpose reg 11
+        # UC_X86_REG_R12: 'r12',  # 64b general purpose reg 12
+        # UC_X86_REG_R13: 'r13',  # 64b general purpose reg 13
+        # UC_X86_REG_R14: 'r14',  # 64b general purpose reg 14
+        # UC_X86_REG_R15: 'r15',  # 64b general purpose reg 15
     }
 
     def map_reg(self, i: int):
-        regs = [UC_X86_REG_RAX, UC_X86_REG_RBP, UC_X86_REG_RBX, UC_X86_REG_RCX, UC_X86_REG_RDI, UC_X86_REG_RDX, UC_X86_REG_RSI, UC_X86_REG_RSP,
-                UC_X86_REG_R8, UC_X86_REG_R9, UC_X86_REG_R10, UC_X86_REG_R11, UC_X86_REG_R12, UC_X86_REG_R13, UC_X86_REG_R14, UC_X86_REG_R15]
+        # regs = [UC_X86_REG_RAX, UC_X86_REG_RBP, UC_X86_REG_RBX, UC_X86_REG_RCX, UC_X86_REG_RDI, UC_X86_REG_RDX, UC_X86_REG_RSI, UC_X86_REG_RSP,
+        #         UC_X86_REG_R8, UC_X86_REG_R9, UC_X86_REG_R10, UC_X86_REG_R11, UC_X86_REG_R12, UC_X86_REG_R13, UC_X86_REG_R14, UC_X86_REG_R15]
+        regs = [UC_X86_REG_RAX, UC_X86_REG_RBX, UC_X86_REG_RCX,
+                UC_X86_REG_RDI, UC_X86_REG_RDX, UC_X86_REG_RSI, UC_X86_REG_EFLAGS]
         return regs[i]
 
     # Implementation of singleton
