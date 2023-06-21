@@ -144,7 +144,7 @@ class ConfCls:
     _default_instruction_blocklist: List[str] = []
 
     # ==============================================================================================
-    # Registers (WIP).
+    # Registers.
     registers = {
         UC_X86_REG_RAX: 'rax',  # 64b a extended: General purpose reg
         UC_X86_REG_RBP: 'rbp',  # 64b base pointer: General purpose reg
@@ -154,8 +154,8 @@ class ConfCls:
         UC_X86_REG_RDX: 'rdx',  # 64b d extended: General purpose reg
         UC_X86_REG_RSI: 'rsi',  # 64b source index: General purpose reg
         UC_X86_REG_RSP: 'rsp',  # 64b stack pointer: General purpose reg
-        UC_X86_REG_R8: 'r8',  # 64b general purpose reg 8
-        UC_X86_REG_R9: 'r9',  # 64b general purpose reg 9
+        UC_X86_REG_R8: 'r8',    # 64b general purpose reg 8
+        UC_X86_REG_R9: 'r9',    # 64b general purpose reg 9
         UC_X86_REG_R10: 'r10',  # 64b general purpose reg 10
         UC_X86_REG_R11: 'r11',  # 64b general purpose reg 11
         UC_X86_REG_R12: 'r12',  # 64b general purpose reg 12
