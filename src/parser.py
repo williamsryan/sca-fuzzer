@@ -22,6 +22,15 @@ class Reg(Node):
     def __str__(self) -> str:
         return str(self.val)
 
+class Addr(Node):
+    val: int
+
+    def __init__(self, tokens):
+        self.val = tokens[0]
+
+    def __str__(self) -> str:
+        return str(self.val)
+    
 class Pc(Node):
     keyword: str
 
@@ -33,7 +42,7 @@ class Pc(Node):
     
 class Bs(Node):
     keyword: str
-    val: Reg
+    val: Reg | Addr
 
     def __init__(self, tokens):
         self.keyword = tokens[0]
@@ -71,6 +80,7 @@ LBRACE, RBRACE = map(Suppress, "()")
 IF = Keyword('IF')
 BOOL = Keyword('BOOL')
 REG = Keyword('REG')
+ADDR = Keyword('ADDR')
 PC = Literal('PC')
 
 boolval = oneOf("#t #f")
@@ -78,11 +88,13 @@ boolval = oneOf("#t #f")
 # I did find a result that showed a negative value, then this failed. Not sure if the issue is here
 # or with the value that was synthesized.
 regval = Word(nums)
+addrval = Word(nums)
 
 reg_bs = LBRACE + REG + regval + RBRACE
 pc = LBRACE + PC + RBRACE
+addr = LBRACE + ADDR + addrval + RBRACE
 pred = LBRACE + BOOL + boolval + RBRACE
-expr = LBRACE + IF + pred + (reg_bs | pc) + RBRACE
+expr = LBRACE + IF + pred + (reg_bs | pc | addr) + RBRACE
 
 # This expects the form:
 # (IF (BOOL #f) (REG 12))
