@@ -470,7 +470,7 @@ class UnicornModel(Model, ABC):
             return pred.val
 
     def eval_bs(model: UnicornModel, emulator: Uc, address: int, size: int, bs: Bs):
-        print(f"[model.capture_bs] bs: {bs.__dict__}")
+        # print(f"[model.capture_bs] bs: {bs.__dict__}")
         if (bs.keyword == 'REG'):
             val = bs.val
             # TODO: if this is Dict[str, int], use reg_decode.
