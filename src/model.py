@@ -70,7 +70,6 @@ class UnicornTracer(Tracer):
         return self.execution_trace
 
     def add_mem_address_to_trace(self, address: int, model):
-        print(f"[model] Adding address to trace: {address}")
         self.trace.append(address)
         self.run.observations[-1].append(Observation(address))
         model.taint_tracker.taint_memory_access_address()
