@@ -83,6 +83,7 @@
             [(BS b) b]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
             [(REG reg) (eval-reg reg x)]
+            [(ADDR addr) (eval-addr addr x)]
             [INSTR (eval-reg PC x)]))
 
 ; Evaluation function for addresses.
