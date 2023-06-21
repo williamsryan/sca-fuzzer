@@ -454,22 +454,23 @@ class UnicornModel(Model, ABC):
 
         # print(f"[+] Current contract: {model.contract}")
         for expr in model.contract:
-            model.evaluateExpr(emulator, address, size, expr)
+            model.eval_expr(emulator, address, size, expr)
 
-    def evaluateExpr(model: UnicornModel, emulator: Uc, address: int, size: int, expr: Expr):
+    def eval_expr(model: UnicornModel, emulator: Uc, address: int, size: int, expr: Expr):
         if (expr.keyword == 'IF'):
             pred = expr.pred
-            res = model.evaluatePred(emulator, address, size, pred) # #t/#f
+            res = model.eval_pred(emulator, address, size, pred) # #t/#f
 
             if (res):
                 bs = expr.bs
-                model.capture_bs(emulator, address, size, bs)
+                model.eval_bs(emulator, address, size, bs)
     
-    def evaluatePred(model: UnicornModel, emulator: Uc, address: int, size: int, pred: Pred):
+    def eval_pred(model: UnicornModel, emulator: Uc, address: int, size: int, pred: Pred):
         if (pred.keyword == 'BOOL'):
             return pred.val
 
-    def capture_bs(model: UnicornModel, emulator: Uc, address: int, size: int, bs: Bs):
+    def eval_bs(model: UnicornModel, emulator: Uc, address: int, size: int, bs: Bs):
+        print(f"[model.capture_bs] bs: {bs.__dict__}")
         if (bs.keyword == 'REG'):
             val = bs.val
             # TODO: if this is Dict[str, int], use reg_decode.
