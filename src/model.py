@@ -483,7 +483,12 @@ class UnicornModel(Model, ABC):
             if model.traceable:
                 # Add observations that correspond to the contract clauses.
                 model.tracer.run.observations[-1].append(Observation(res))
+        elif (bs.keyword == 'ADDR'):
+            addr = bs.val
+            model.tracer.trace.append(addr)
 
+            if model.traceable:
+                model.tracer.run.observations[-1].append(Observation(addr))
         # elif (bs.keyword == 'PC'):
         #     model.tracer.trace.append(-1)
 
