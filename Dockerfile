@@ -2,9 +2,9 @@ FROM ubuntu:18.04
 
 RUN DEBIAN_FRONTEND="noninteractive" apt-get update -y
 
-RUN apt-get install -y && apt-get update -y \
+RUN apt-get update -y && apt-get install -y \
         build-essential \
-        linux-headers-$(uname -r) \
+        # linux-headers-$(uname -r) \
         python3.9 python3.9-venv python3.9-distutils \
         unicorn \
         git \
