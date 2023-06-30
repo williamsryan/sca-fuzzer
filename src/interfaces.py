@@ -225,6 +225,9 @@ class Instruction:
             self.implicit_operands.append(op)
         return self
 
+    # TODO: come back to use this for our synthesizer to try and "learn" addresses that leak.
+    #       E.g., exposing addresses is equivalent to the value of one of the operands
+    #       (src-operand for LOADs and dst-operand for STOREs).
     def has_mem_operand(self, include_implicit: bool = False):
         for o in self.operands:
             if o.type == OT.MEM:
