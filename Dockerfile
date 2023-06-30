@@ -23,4 +23,4 @@ WORKDIR /src/x86/executor
 RUN make uninstall && make clean && make && make install
 
 WORKDIR /src
-RUN ./cli.py fuzz -s x86/isa_spec/base.json -i 50 -n 100 -c tests/test-nondetection.yaml -w .
+ENTRYPOINT ./cli.py fuzz -s x86/isa_spec/base.json -i 50 -n 100 -c tests/test-nondetection.yaml -w .
