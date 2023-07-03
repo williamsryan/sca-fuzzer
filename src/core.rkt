@@ -61,28 +61,7 @@
               (ADDR (?? integer?))
               )]
   )
-
-; TODO: extending the base contract grammar to include
-;       constructs for cache/memory access so we can learn
-;       addresses from memory accesses.
-(define-grammar (cexpr-ext)
-  [expr (IF (pred) (bs))]
-  [pred (choose (BOOL (?? boolean?))
-                (NOT (pred))
-                (AND (pred) (pred))
-                (OR (pred) (pred))
-                (EQ (bs) (bs))
-                )]
-  [bs (choose (BS (?? (bitvector (?? integer?))))
-              (SLIDE (?? integer?) (?? integer?) (bs))
-              (REG (?? integer?))
-              (INSTR)
-              (ADDR (?? integer?))
-              (MEMORY-ACCESS (?? integer?) (bs))
-              (CACHE-ACCESS (?? integer?) (bs))
-              )]
-  )
-
+  
 (define EMPTY (list '()))
 
 ; Evaluation function for expressions.
