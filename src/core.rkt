@@ -141,21 +141,4 @@
                    (not (empty-obs expr (list-ref r_ i_)))
                    (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
 
-; Diff function with no silent steps. Just check every register value incrementally.
-; diff_noss() takes the following arguments:
-;              i,j,i_,j_  : natural numbers such that i <= j and i_ <= j_
-;              r, r_      : two run objects
-;              expr       : our grammar expression
-;
-;        returns true if the trace produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable
-;                false otherwise
-(define (diff_noss i j r i_ j_ r_ expr)
-  (if (>= i (length r))
-    #f
-    (let* ((reg (list-ref r i))
-            (reg_ (list-ref r_ i_)))
-        (if (not (eq? reg reg_))
-          expr
-          (diff (+ i 1) j r (+ i_ 1) j_ r_ expr)))))
-
 ; ------------- END-CORE ------------------ ;
