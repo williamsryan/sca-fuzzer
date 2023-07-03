@@ -42,6 +42,12 @@
 (struct REG (r) #:transparent)          ; Register value.
 (struct ADDR (a) #:transparent)         ; Address value.
 
+; (define-struct SystemState (registers))
+
+; (define (register-diff reg1 reg2)
+;   (not (equal? (REG-r reg1)
+;                (REG-r reg2))))
+
 ; Grammar for the actual contract.
 ; (IF (BOOL #t) (REG 12))     <-- Supported (leaked registers).
 ; (IF (BOOL #t) (PC))         <-- Supported (leaked program counter).
