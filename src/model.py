@@ -442,7 +442,7 @@ class UnicornModel(Model, ABC):
                 instr += " #instrumentation"
             model.tracer.run.instructions.append(instr)
             model.tracer.run.mem_instrs.append(instr_obj)
-            
+
             archstate = model.capture_state()
             archstate.pc = address
             model.tracer.run.archstates.append(archstate)
@@ -483,7 +483,7 @@ class UnicornModel(Model, ABC):
             if model.traceable:
                 # Add observations that correspond to the contract clauses.
                 model.tracer.run.observations[-1].append(Observation(res))
-        elif (bs.keyword == 'ADDR'):
+        elif (bs.keyword == 'MEM-LOAD'):
             addr = bs.val
             model.tracer.trace.append(addr)
 
