@@ -81,7 +81,8 @@ LBRACE, RBRACE = map(Suppress, "()")
 IF = Keyword('IF')
 BOOL = Keyword('BOOL')
 REG = Keyword('REG')
-ADDR = Keyword('ADDR')
+LOAD = Keyword('MEM-LOAD')
+STORE = Keyword('MEM-STORE')
 PC = Literal('PC')
 
 boolval = oneOf("#t #f")
@@ -89,16 +90,14 @@ boolval = oneOf("#t #f")
 # I did find a result that showed a negative value, then this failed. Not sure if the issue is here
 # or with the value that was synthesized.
 regval = Word(nums)
-addrval = Word(nums)
+memval = Word(nums)
 
 reg_bs = LBRACE + REG + regval + RBRACE
 pc = LBRACE + PC + RBRACE
-addr = LBRACE + ADDR + addrval + RBRACE
 pred = LBRACE + BOOL + boolval + RBRACE
-expr = LBRACE + IF + pred + (reg_bs | pc | addr) + RBRACE
-
-# This expects the form:
-# (IF (BOOL #f) (REG 12))
+mem_load = LBRACE + LOAD + memval + RBRACE
+mem_store = LBRACE + STORE + memval + regval + RBRACE
+expr = LBRACE + IF + pred + (reg_bs | mem_load | mem_store | pc) + RBRACE
 
 boolval.addParseAction(Bool)
 regval.addParseAction(Reg)
