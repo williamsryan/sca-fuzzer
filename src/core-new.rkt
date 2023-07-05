@@ -80,26 +80,26 @@
 
 ; Evaluation function for expressions.
 (define (eval e x)
-  (destruct e [(IF pred bs) (if (eval-pred pred x) (list (eval-bs bs x)) EMPTY)]))
+  (destruct e [(IF pred bs) (if (eval-pred pred xstate) (list (eval-bs bs xstate)) EMPTY)]))
 
 ; Evaluation function for predicates.
 (define (eval-pred p x)
   (destruct p
             [(BOOL b) b]
-            [(NOT some-p) (not (eval-pred some-p x))]
-            [(AND p1 p2) (and (eval-pred p1 x) (eval-pred p2 x))]
-            [(OR p1 p2) (or (eval-pred p1 x) (eval-pred p2 x))]
-            [(EQ bs1 bs2) (bveq (eval-bs bs1 x) (eval-bs bs2 x))]))
+            [(NOT some-p) (not (eval-pred some-p xstate))]
+            [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
+            [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
+            [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]))
 
 ; Evaluation function for bit sequences.
 (define (eval-bs bs x)
   (destruct bs
             [(BS b) b]
-            [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
-            [(REG reg) (eval-reg reg x)]
-            [(MEM-LOAD addr) (eval-addr addr x)]
-            [(MEM-STORE addr b) (eval-addr addr x) (eval-bs b x)]
-            [(INSTR instr) (eval-reg PC x)] ; New instruction handling test.
+            [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b xstate))]
+            [(REG reg) (eval-reg reg xstate)]
+            [(MEM-LOAD addr) (eval-addr addr xstate)]
+            [(MEM-STORE addr b) (eval-addr addr xstate) (eval-bs b xstate)]
+            [(INSTR instr) (eval-reg PC xstate)] ; New instruction handling test.
             ; [INSTR (eval-reg PC x)]
             ))
 
@@ -109,29 +109,29 @@
     [(instruction opcode _) opcode])) ; Ignoring operands for now.
 
 ; Evaluation function for addresses.
-(define (eval-addr addr x)
-  (list-ref x addr))
+(define (eval-addr addr xstate)
+  (list-ref xstate addr))
 
 ; Evaluation function for registers.
-(define (eval-reg reg x)
-  (list-ref x reg))
+(define (eval-reg reg xstate)
+  (list-ref xstate reg))
 
 ; obs() takes an expression and a xstate
 ;       returns its observation
-(define (obs expr state)
-  (eval expr state))
+(define (obs expr xstate)
+  (eval expr xstate))
 
 ; obs() takes an expression and a xstate
 ;       returns true if there is some observations produced
 ;               false otherwise
-(define (empty-obs expr state)
-  (empty? (eval expr state)))
+(define (empty-obs expr xstate)
+  (empty? (eval expr xstate)))
 
 ; obs-equal() takes an expression and two xstates
 ;             returns true if the two xstates produces same observations
 ;                     false otherwise
-(define (obs-equal expr state1 state2)
-  (listbv-equal (obs expr state1) (obs expr state2)))
+(define (obs-equal expr xstate1 xstate2)
+  (listbv-equal (obs expr xstate1) (obs expr xstate2)))
 
 ; listbv-equal() takes two observations
 ;                returns true if they are the same
