@@ -92,15 +92,18 @@ regval = Word(nums)
 memval = Word(nums)
 
 reg_bs = LBRACE + REG + regval + RBRACE
+mem_bs = LBRACE + (LOAD | STORE) + memval + RBRACE
 pc = LBRACE + PC + RBRACE
 pred = LBRACE + BOOL + boolval + RBRACE
-mem_load = LBRACE + LOAD + memval + RBRACE
-mem_store = LBRACE + STORE + memval + regval + RBRACE
-expr = LBRACE + IF + pred + (reg_bs | mem_load | mem_store | pc) + RBRACE
+# mem_load = LBRACE + LOAD + memval + RBRACE
+# mem_store = LBRACE + STORE + memval + regval + RBRACE
+expr = LBRACE + IF + pred + (reg_bs | mem_bs | pc) + RBRACE
 
 boolval.addParseAction(Bool)
 regval.addParseAction(Reg)
 reg_bs.addParseAction(Bs)
+memval.addParseAction(Mem)
+mem_bs.addParseAction(Bs)
 pc.addParseAction(Pc)
 pred.addParseAction(Pred)
 expr.addParseAction(Expr)

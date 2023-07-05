@@ -1,2 +1,2 @@
-/home/ryan/git/sca-fuzzer/examples/theory-real.rkt:397:0
-(define myexpr (IF (BOOL #t) (REG 2)))
+/Users/ryanwilliams/git/sca-fuzzer/examples/theory-debug.rkt:682:0
+'(define myexpr (IF (BOOL #t) (MEM-LOAD 5)))
