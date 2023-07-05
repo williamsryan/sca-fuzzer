@@ -30,7 +30,7 @@
 ; Struct definitions for our contract language.
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
 (struct OPCODE ())                      ; An opcode.
-(struct INSTR (instr))            ; An instruction.
+(struct INSTR (instr) #:transparent)    ; An instruction.
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
 (struct RS1 ())                         ; Register RS1.
 (struct RS2 ())                         ; Register RS2.
@@ -99,7 +99,7 @@
             [(REG reg) (eval-reg reg x)]
             [(MEM-LOAD addr) (eval-addr addr x)]
             [(MEM-STORE addr b) (eval-addr addr x) (eval-bs b x)]
-            [(INSTR instr) (eval-instr instr)] ; New instruction handling test.
+            [(INSTR instr) (eval-reg PC x)] ; New instruction handling test.
             ; [INSTR (eval-reg PC x)]
             ))
 

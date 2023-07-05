@@ -31,7 +31,7 @@ class Synthesizer:
         return "r{0}".format(str(rid))
     
     """
-        Start using a trace of instructions alone with the register values.
+        Start using a trace of instructions along with the register values.
 
         E.g.,
             (define trace
