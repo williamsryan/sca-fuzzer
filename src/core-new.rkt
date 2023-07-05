@@ -43,8 +43,8 @@
 (struct REG (r) #:transparent)          ; Register value.
 (struct MEM-LOAD (a) #:transparent)
 (struct MEM-STORE (a bs) #:transparent)
-(struct ADDR-CONST (a))
-(struct ADDR-REG (r))
+; (struct ADDR-CONST (a))
+; (struct ADDR-REG (r))
 ; Testing new instruction type for more precision.
 (struct instruction (opcode operands) #:transparent)
 ; (struct ADDR (a) #:transparent)         ; Address value.
@@ -110,7 +110,7 @@
 
 ; Evaluation function for addresses.
 (define (eval-addr addr xstate)
-  (list-ref xstate addr))
+  (eval-bs addr xstate))
 
 ; Evaluation function for registers.
 (define (eval-reg reg xstate)
@@ -164,3 +164,14 @@
                    (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
 
 ; ------------- END-CORE ------------------ ;
+
+
+; ----------- TESTS (rm later) ------------ ;
+(define xstate '(#f #t 42 #\a))
+
+(define reg-idx 2)
+(define reg-val (eval-reg reg-idx xstate))
+
+(println reg-val)
+
+; ------------- END-TESTS ----------------- ;
