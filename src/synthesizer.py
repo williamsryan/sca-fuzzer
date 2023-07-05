@@ -62,7 +62,7 @@ class Synthesizer:
         with open(self.work_dir + "/" + self.filename, "a") as f:
             xstates = ''
             for i, xstate in enumerate(run.archstates):
-                f.write(model(run.id, i, xstate, run.instructions[i]))
+                f.write(model(run.id, i, xstate, run.instructions))
                 if xstates == '':
                     xstates += self.get_xstate_name(run.id, i)
                 else:
