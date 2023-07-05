@@ -52,13 +52,14 @@ class Synthesizer:
     def map_regs(self, run):
         def model(rid, xid, xstate):
             xstate_name = self.get_xstate_name(rid, xid)
+            regs += ""
+            regs += "; Register state @ execution"
+            regs += ""
             header = len('(define {0} (list '.format(xstate_name))
             indentation = ''
             for i in range(0, header):
                 indentation += ' '
             regs = ''
-            regs += "; Register state @ execution"
-            regs += ""
             for reg in xstate.regs.values():
                 if regs != '':
                     regs += indentation
