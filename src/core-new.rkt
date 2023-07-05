@@ -110,7 +110,9 @@
 
 ; Evaluation function for addresses.
 (define (eval-addr addr xstate)
-  (eval-bs addr xstate))
+  (destruct addr
+    [(MEM-LOAD a) (eval-bs a xstate)]
+    [(MEM-STORE a _) (eval-bs a xstate)]))
 
 ; Evaluation function for registers.
 (define (eval-reg reg xstate)
