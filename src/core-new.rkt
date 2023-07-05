@@ -63,13 +63,14 @@
               (REG (?? integer?))
               (INSTR)
               ; (ADDR (?? integer?))
-              (MEM-LOAD (a))
-              (MEM-STORE (a) (bs))
+              (MEM-LOAD (?? integer?))
+              (MEM-STORE (?? integer?) (bs))
               )]
-  [a (choose (ADDR-CONST (?? integer?))
-             (ADDR-REG (?? integer?))
-        )]
+  ; [a (choose (ADDR-CONST (?? integer?))
+  ;            (ADDR-REG (?? integer?))
+  ;       )]
   )
+
 
 (define EMPTY (list '()))
 
