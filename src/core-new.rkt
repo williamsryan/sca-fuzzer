@@ -41,6 +41,8 @@
 (struct BS (bs))                        ; Bitstring value.
 (struct REG (r) #:transparent)          ; Register value.
 ; (struct ADDR (a) #:transparent)         ; Address value.
+(struct MEM-LOAD (a))
+(struct MEM-STORE (a) (bs))
 
 ; Grammar for the actual contract.
 ; (IF (BOOL #t) (REG 12))     <-- Supported (leaked registers).
