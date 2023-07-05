@@ -95,8 +95,7 @@
 (define (eval-bs bs x)
   (destruct bs
             [(BS b) b]
-            ; [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
-            [(SLIDE i1 i2 b) (bv-extract (eval-bs b x) i2 i1)] ; Testing.
+            [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
             [(REG reg) (eval-reg reg x)]
             [(MEM-LOAD addr) (eval-addr addr x)]
             [(MEM-STORE addr b) (eval-addr addr x) (eval-bs b x)]
