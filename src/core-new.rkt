@@ -79,11 +79,11 @@
 (define EMPTY (list '()))
 
 ; Evaluation function for expressions.
-(define (eval e x)
+(define (eval e xstate)
   (destruct e [(IF pred bs) (if (eval-pred pred xstate) (list (eval-bs bs xstate)) EMPTY)]))
 
 ; Evaluation function for predicates.
-(define (eval-pred p x)
+(define (eval-pred p xstate)
   (destruct p
             [(BOOL b) b]
             [(NOT some-p) (not (eval-pred some-p xstate))]
@@ -92,7 +92,7 @@
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]))
 
 ; Evaluation function for bit sequences.
-(define (eval-bs bs x)
+(define (eval-bs bs xstate)
   (destruct bs
             [(BS b) b]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b xstate))]
@@ -166,14 +166,3 @@
                    (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
 
 ; ------------- END-CORE ------------------ ;
-
-
-; ----------- TESTS (rm later) ------------ ;
-(define xstate '(#f #t 42 #\a))
-
-(define reg-idx 2)
-(define reg-val (eval-reg reg-idx xstate))
-
-(println reg-val)
-
-; ------------- END-TESTS ----------------- ;
