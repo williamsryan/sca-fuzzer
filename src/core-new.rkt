@@ -99,7 +99,7 @@
             [(REG reg) (eval-reg reg xstate)]
             [(MEM-LOAD addr) (eval-addr addr xstate)]
             [(MEM-STORE addr b) (eval-addr addr xstate) (eval-bs b xstate)]
-            [(INSTR instr) (eval-reg PC xstate)] ; New instruction handling test.
+            [(INSTR instr) (eval-reg PC xstate)] ; Get instr location from program counter.
             ; [INSTR (eval-reg PC x)]
             ))
 
