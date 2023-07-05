@@ -303,8 +303,6 @@ def main() -> int:
                 synth.map_regs(run1)
                 synth.map_regs(run2)
                 # TODO: implement the instructions into run object.
-                synth.map_instrs(run1)
-                synth.map_instrs(run2)
                 synth.generate_constraints(pairs, run1, run2)
 
                 import subprocess

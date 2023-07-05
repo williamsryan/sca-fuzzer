@@ -29,22 +29,6 @@ class Synthesizer:
 
     def get_run_name(self, rid):
         return "r{0}".format(str(rid))
-    
-    """
-        Start using a trace of instructions along with the register values.
-
-        E.g.,
-            (define trace
-                (list
-                    (instruction 'ADD (list 'R1 'R2 'R3))
-                    (instruction 'SUB (list 'R4 'R1 'R5))
-                    (instruction 'LOAD (list 'R2 (addr 100)))
-                    ;; ... additional instructions
-                    ))
-    """
-    def map_instrs(self, run):
-        pass
-
 
     """
         Separate method for generating Rosette structures for register values.
@@ -67,14 +51,18 @@ class Synthesizer:
             else:
                 # Meaning this is the final state; end with -1.
                 regs += indentation + "(bv {0} (bitvector 64))".format(str(-1))
-            # Just a test.
-            run_info = "; Register state @ execution"
+
+            # Annotate each register state object with the observed instruction.
+            # Depending on results, we may actually use it in the tuple to help
+            # guide the synthesizer to learning instructions vs. registers.
+            instr = "PLACEHOLDER"
+            run_info = f"; Register state @ instruction: {instr}"
             return "{0}\n(define {1} (list {2}))\n\n".format(run_info, xstate_name, regs)
 
         with open(self.work_dir + "/" + self.filename, "a") as f:
             xstates = ''
             for i, xstate in enumerate(run.archstates):
-                f.write(model(run.id, i, xstate))
+                f.write(model(run.id, i, xstate, run.instructions[i]))
                 if xstates == '':
                     xstates += self.get_xstate_name(run.id, i)
                 else:
