@@ -52,9 +52,6 @@ class Synthesizer:
     def map_regs(self, run):
         def model(rid, xid, xstate):
             xstate_name = self.get_xstate_name(rid, xid)
-            regs += ""
-            regs += "; Register state @ execution"
-            regs += ""
             header = len('(define {0} (list '.format(xstate_name))
             indentation = ''
             for i in range(0, header):
@@ -70,7 +67,9 @@ class Synthesizer:
             else:
                 # Meaning this is the final state; end with -1.
                 regs += indentation + "(bv {0} (bitvector 64))".format(str(-1))
-            return "(define {0} (list {1}))\n\n".format(xstate_name, regs)
+            # Just a test.
+            run_info = "; Register state @ execution"
+            return "{0}\n(define {1} (list {2}))\n\n".format(run_info, xstate_name, regs)
 
         with open(self.work_dir + "/" + self.filename, "a") as f:
             xstates = ''
