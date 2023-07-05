@@ -303,8 +303,6 @@ def main() -> int:
                 synth.map_regs(run1)
                 synth.map_regs(run2)
                 synth.generate_constraints(pairs, run1, run2)
-                # synth.map_mems(run1)
-                # synth.map_mems(run2)
 
                 import subprocess
                 import signal

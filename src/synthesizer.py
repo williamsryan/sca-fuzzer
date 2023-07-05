@@ -29,47 +29,22 @@ class Synthesizer:
 
     def get_run_name(self, rid):
         return "r{0}".format(str(rid))
-
+    
     """
-        Method for generating Rosette structures for archstate memories.
-    """
-    def map_mems(self, run):
-        def model(rid, xid, xstate):
-            xstate_name = self.get_xstate_name(rid, xid)
-            header = len('(define {0} (list '.format(xstate_name))
-            indentation = ''
-            for i in range(0, header):
-                indentation += ' '
-            mems = ''
-            # TODO: Similar to parsing each register value to generate constraints, do
-            #       this for instructions + operands too (memory instructions).
-            #       Run objects have list of instructions, and instruction objects have
-            #       operands/etc. Archstate has all register + register values, which is
-            #       all we use currently. How can we specify that a load/store leaks?
-            #       On top of register differences, let's try memory differences.
-            #       E.g., archstate.mems values.
-            for mem in xstate.mems.values():
-                if mems != '':
-                    mems += indentation
-                mems += "(bv {0} (bitvector 64))\n".format(int(mem, 16))
-            if xstate.pc is not None:
-                mems += indentation + \
-                    "(bv {0} (bitvector 64))".format(str(xstate.pc))
-            else:
-                # Meaning this is the final state; end with -1.
-                mems += indentation + "(bv {0} (bitvector 64))".format(str(-1))
-            return "(define {0} (list {1}))\n\n".format(xstate_name, mems)
+        Start using a trace of instructions alone with the register values.
 
-        with open(self.work_dir + "/" + self.filename, "a") as f:
-            xstates = ''
-            for i, xstate in enumerate(run.archstates):
-                f.write(model(run.id, i, xstate))
-                if xstates == '':
-                    xstates += self.get_xstate_name(run.id, i)
-                else:
-                    xstates += ' ' + self.get_xstate_name(run.id, i)
-            f.write("(define {0} (list {1}))\n\n".format(
-                self.get_run_name(run.id), xstates))
+        E.g.,
+            (define trace
+                (list
+                    (instruction 'ADD (list 'R1 'R2 'R3))
+                    (instruction 'SUB (list 'R4 'R1 'R5))
+                    (instruction 'LOAD (list 'R2 (addr 100)))
+                    ;; ... additional instructions
+                    ))
+    """
+    def map_instrs(self, run):
+        pass
+
 
     """
         Separate method for generating Rosette structures for register values.

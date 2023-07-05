@@ -6,6 +6,7 @@
 ; ----------------- CORE ------------------ ;
 (require rosette/lib/destruct) ; Value destructuring library.
 (require rosette/lib/synthax) ; Synthesis library.
+(require racket/match)
 
 ; General purpose register encoding.
 (define RAX 0)  ; A eXtended
@@ -29,7 +30,7 @@
 ; Struct definitions for our contract language.
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
 (struct OPCODE ())                      ; An opcode.
-(struct INSTR ())                       ; An instruction.
+(struct INSTR (instr))            ; An instruction.
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
 (struct RS1 ())                         ; Register RS1.
 (struct RS2 ())                         ; Register RS2.
@@ -44,12 +45,14 @@
 (struct MEM-STORE (a bs) #:transparent)
 (struct ADDR-CONST (a))
 (struct ADDR-REG (r))
+; Testing new instruction type for more precision.
+(struct instruction (opcode operands) #:transparent)
 ; (struct ADDR (a) #:transparent)         ; Address value.
 
 ; Grammar for the actual contract.
 ; (IF (BOOL #t) (REG 12))     <-- Supported (leaked registers).
 ; (IF (BOOL #t) (PC))         <-- Supported (leaked program counter).
-; (if (BOOL #t) (...))        <-- In progress (leaked address of loads/stores).
+; (if (BOOL #t) (...))        <-- In progress (leaked address from loads/stores).
 (define-grammar (cexpr)
   [expr (IF (pred) (bs))]
   [pred (choose (BOOL (?? boolean?))
@@ -61,7 +64,8 @@
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
               (REG (?? integer?))
-              (INSTR)
+              ; (INSTR)
+              (INSTR (?? instruction?)) ; New instruction.
               ; (ADDR (?? integer?))
               (MEM-LOAD (?? integer?))
               (MEM-STORE (?? integer?) (bs))
@@ -95,7 +99,14 @@
             [(REG reg) (eval-reg reg x)]
             [(MEM-LOAD addr) (eval-addr addr x)]
             [(MEM-STORE addr b) (eval-addr addr x) (eval-bs b x)]
-            [INSTR (eval-reg PC x)]))
+            [(INSTR instr) (eval-instr instr)] ; New instruction handling test.
+            ; [INSTR (eval-reg PC x)]
+            ))
+
+; Evaluation function for instructions.
+(define (eval-instr instr)
+  (match instr
+    [(instruction opcode _) opcode])) ; Ignoring operands for now.
 
 ; Evaluation function for addresses.
 (define (eval-addr addr x)
