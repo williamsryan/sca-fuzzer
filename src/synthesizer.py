@@ -127,6 +127,7 @@ class Synthesizer:
                 str(i_), str(j_), self.get_run_name(rid2)
             )
             i, i_ = j, j_
+            # TODO: test without below constraints.
             while (k < len(pairs)):
                 j, j_ = pairs[k]
                 constraints += indentation + "(diff {0} {1} {2} {3} {4} {5} myexpr)\n".format(
