@@ -57,12 +57,11 @@ class Synthesizer:
             for i in range(0, header):
                 indentation += ' '
             regs = ''
+            regs += "; Register state @ execution"
+            regs += ""
             for reg in xstate.regs.values():
                 if regs != '':
                     regs += indentation
-                regs += ""
-                regs += "; Just a quick test - RPW."
-                regs += ""
                 regs += "(bv {0} (bitvector 64))\n".format(str(reg)) # Each of these is the value of a given register.
             if xstate.pc is not None:
                 regs += indentation + \
