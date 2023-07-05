@@ -1,0 +1,5 @@
+(IF (BOOL True) PC)
+(IF (BOOL True) (REG 1))
+(IF (BOOL True) (MEM-LOAD 0))
+(IF (BOOL True) (REG 5))
+(IF (BOOL True) (MEM-LOAD 2))
