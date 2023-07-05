@@ -42,7 +42,8 @@ class Pc(Node):
     
 class Bs(Node):
     keyword: str
-    val: Reg | Addr
+    # val: Reg | Addr
+    val: Reg
 
     def __init__(self, tokens):
         self.keyword = tokens[0]
