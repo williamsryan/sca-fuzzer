@@ -42,7 +42,9 @@
 (struct REG (r) #:transparent)          ; Register value.
 ; (struct ADDR (a) #:transparent)         ; Address value.
 (struct MEM-LOAD (a))
-(struct MEM-STORE (a) (bs))
+(struct MEM-STORE (a bs))
+(struct ADDR-CONST (a))
+(struct ADDR-REG (r))
 
 ; Grammar for the actual contract.
 ; (IF (BOOL #t) (REG 12))     <-- Supported (leaked registers).
@@ -90,6 +92,8 @@
             [(BS b) b]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
             [(REG reg) (eval-reg reg x)]
+            [(MEM-LOAD addr) (eval-addr addr x)]
+            [(MEM-STORE addr b) (eval-addr addr x) (eval-bs b x)]
             ; [(ADDR addr) (eval-addr addr x)]
             [INSTR (eval-reg PC x)]))
 
