@@ -4,9 +4,8 @@
 ; ----------------------------------------- ;
 
 ; ----------------- CORE ------------------ ;
-(require rosette/lib/destruct)  ; Value destructuring library.
-(require rosette/lib/synthax)   ; Synthesis library.
-; (require syntax/parse)
+(require rosette/lib/destruct) ; Value destructuring library.
+(require rosette/lib/synthax) ; Synthesis library.
 
 ; General purpose register encoding.
 (define RAX 0)  ; A eXtended
@@ -41,11 +40,12 @@
 (struct BOOL (b))
 (struct BS (bs))                        ; Bitstring value.
 (struct REG (r) #:transparent)          ; Register value.
-(struct ADDR (a) #:transparent)         ; Address value.
+; (struct ADDR (a) #:transparent)         ; Address value.
 
-; TODO: extending the base contract grammar to include
-;       constructs for cache/memory access so we can learn
-;       addresses from memory accesses.
+; Grammar for the actual contract.
+; (IF (BOOL #t) (REG 12))     <-- Supported (leaked registers).
+; (IF (BOOL #t) (PC))         <-- Supported (leaked program counter).
+; (if (BOOL #t) (...))        <-- In progress (leaked address of loads/stores).
 (define-grammar (cexpr)
   [expr (IF (pred) (bs))]
   [pred (choose (BOOL (?? boolean?))
@@ -58,53 +58,92 @@
               (SLIDE (?? integer?) (?? integer?) (bs))
               (REG (?? integer?))
               (INSTR)
-              (ADDR (?? integer?))
-              ; (MEMORY-ACCESS (?? integer?) (bs))
-              ; (CACHE-ACCESS (?? integer?) (bs))
+              ; (ADDR (?? integer?))
+              (MEM-LOAD (addr))
+              (MEM-STORE (addr) (bs))
               )]
-)
+  [addr (choose (ADDR-CONST (?? integer?))
+                (ADDR-REG (?? integer?))
+        )]
+  )
 
-(define-struct RegisterValue (value))
-
-(define-struct SystemState (registers))
-
-; --------------- AUX-FUNCS ------------------ ;
 (define EMPTY (list '()))
 
-; Check for differences between two register values.
-(define (register-diff reg1 reg2)
-  (not (equal? (RegisterValue-value reg1)
-               (RegisterValue-value reg2))))
+; Evaluation function for expressions.
+(define (eval e x)
+  (destruct e [(IF pred bs) (if (eval-pred pred x) (list (eval-bs bs x)) EMPTY)]))
 
-; Check if observables of two runs are distinguishable, return #t if so.
-(define (obs-diff? run1 run2)
-  (define (check-registers regs1 regs2)
-    (cond
-      [(and (null? regs1) (null? regs2)) #f]              ; Both runs have ended
-      [(or (null? regs1) (null? regs2)) #t]               ; One run has ended while the other continues
-      [(register-diff (car regs1) (car regs2)) #t]        ; Register values differ
-      [else (check-registers (cdr regs1) (cdr regs2))]    ; Continue checking the remaining registers
-    ))
+; Evaluation function for predicates.
+(define (eval-pred p x)
+  (destruct p
+            [(BOOL b) b]
+            [(NOT some-p) (not (eval-pred some-p x))]
+            [(AND p1 p2) (and (eval-pred p1 x) (eval-pred p2 x))]
+            [(OR p1 p2) (or (eval-pred p1 x) (eval-pred p2 x))]
+            [(EQ bs1 bs2) (bveq (eval-bs bs1 x) (eval-bs bs2 x))]))
 
-  (check-registers (SystemState-registers run1) (SystemState-registers run2)))
-  
-; --------------- TESTS ------------------ ;
+; Evaluation function for bit sequences.
+(define (eval-bs bs x)
+  (destruct bs
+            [(BS b) b]
+            [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
+            [(REG reg) (eval-reg reg x)]
+            [(ADDR addr) (eval-addr addr x)]
+            [INSTR (eval-reg PC x)]))
 
-; Example usage for comparing two runs.
-(define register1 (make-RegisterValue "foo"))
-(define register2 (make-RegisterValue "bar"))
-(define register3 (make-RegisterValue 42))
+; Evaluation function for addresses.
+(define (eval-addr addr x)
+  (list-ref x addr))
 
-(define system-state1 (make-SystemState (list register1 register2 register3)))
-(define system-state2 (make-SystemState (list register2 register1 register3)))
+; Evaluation function for registers.
+(define (eval-reg reg x)
+  (list-ref x reg))
 
-(define result (obs-diff? system-state1 system-state2))
-(printf "Registers are distinguishable: ~a\n" result)
+; obs() takes an expression and a xstate
+;       returns its observation
+(define (obs expr state)
+  (eval expr state))
 
-(define myexpr (cexpr #:depth 1))
+; obs() takes an expression and a xstate
+;       returns true if there is some observations produced
+;               false otherwise
+(define (empty-obs expr state)
+  (empty? (eval expr state)))
 
-(define sol (solve (assert(obs-diff? system-state1 system-state2))))
+; obs-equal() takes an expression and two xstates
+;             returns true if the two xstates produces same observations
+;                     false otherwise
+(define (obs-equal expr state1 state2)
+  (listbv-equal (obs expr state1) (obs expr state2)))
 
-(print-forms sol)
+; listbv-equal() takes two observations
+;                returns true if they are the same
+;                        false otherwise
+(define (listbv-equal bvs1 bvs2)
+  (if (empty? bvs1)
+      (if (empty? bvs2) #t #f)
+      (if (empty? bvs2)
+          #f
+          (and (bveq (first bvs1) (first bvs2)) (listbv-equal (rest bvs1) (rest bvs2))))))
+
+; diff() takes the following arguments:
+;              i,j,i_,j_  : natural numbers such that i <= j and i_ <= j_
+;              r, r_      : two run objects
+;              expr       : our grammar expression
+;
+;        returns true if the trace produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable
+;                false otherwise
+(define (diff i j r i_ j_ r_ expr)
+  (if (equal? i j)
+      (if (equal? i_ j_)
+          #f
+          (or (not (empty-obs expr (list-ref r_ i_))) (diff j j r (+ i_ 1) j_ r_ expr)))
+      (if (equal? i_ j_)
+          (or (not (empty-obs expr (list-ref r i))) (diff (+ i 1) j r j_ j_ r_ expr))
+          (or (and (empty-obs expr (list-ref r i)) (diff (+ i 1) j r i_ j_ r_ expr))
+              (and (empty-obs expr (list-ref r_ i_)) (diff i j r (+ i_ 1) j_ r_ expr))
+              (and (not (empty-obs expr (list-ref r i)))
+                   (not (empty-obs expr (list-ref r_ i_)))
+                   (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
 
 ; ------------- END-CORE ------------------ ;
