@@ -22,7 +22,7 @@ class Reg(Node):
     def __str__(self) -> str:
         return str(self.val)
 
-class Addr(Node):
+class Mem(Node):
     val: int
 
     def __init__(self, tokens):
@@ -42,8 +42,7 @@ class Pc(Node):
     
 class Bs(Node):
     keyword: str
-    # val: Reg | Addr
-    val: Reg
+    val: Reg | Mem
 
     def __init__(self, tokens):
         self.keyword = tokens[0]
