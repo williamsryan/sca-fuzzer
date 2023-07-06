@@ -1,2 +1,0 @@
-/Users/ryanwilliams/git/sca-fuzzer/examples/theory-debug.rkt:682:0
-'(define myexpr (IF (BOOL #t) (MEM-LOAD 5)))
