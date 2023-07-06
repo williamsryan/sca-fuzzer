@@ -27,10 +27,4 @@ install:
 
 uninstall:
 	sudo rmmod $(NAME)
-
-docker_install:
-	insmod $(NAME).ko
-
-docker_uninstall:
-	rmmod $(NAME)
 	
