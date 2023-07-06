@@ -43,8 +43,12 @@
 (struct REG (r) #:transparent)          ; Register value.
 ; (struct MEM-LOAD (a) #:transparent)
 ; (struct MEM-STORE (a bs) #:transparent)
-; Testing new instruction type.
 (struct ADDR (a) #:transparent)         ; Address value.
+
+; New object that holds register values and instruction together.
+(struct run-step (regs instr)
+  #:constructor-name make-run-step
+  #:transparent)
 
 ; Grammar for the actual contract.
 ; (IF (BOOL #t) (REG 12))               <-- Supported (leaked registers).
@@ -60,7 +64,7 @@
                 (INSTR (name) (operand))  ; Testing still.
                 )]
   [name (choose 'LOAD
-                 'STORE)]
+                'STORE)]
   [operand (?? integer?)]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
@@ -186,19 +190,15 @@
                    (bv 134 (bitvector 64))
                    (bv 18446630612648439811 (bitvector 64))))
 
-(struct run-step (regs instr-name)
-  #:constructor-name make-run-step
-  #:transparent)
-
 (define run1 (list (make-run-step r0_0 'LOAD)
                    (make-run-step r0_1 'STORE)))
 
 (define (print-run run)
   (for-each (lambda (step)
-              (display "Register State: ")
+              (display "[+] Register State: ")
               (display (run-step-regs step))
               (display ", Instruction: ")
-              (display (run-step-instr-name step))
+              (display (run-step-instr step))
               (newline))
             run))
 
