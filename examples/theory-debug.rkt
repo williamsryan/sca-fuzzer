@@ -159,14 +159,19 @@
   (if (equal? i j)
       (if (equal? i_ j_)
           #f
-          (or (not (empty-obs expr (list-ref r_ i_))) (diff j j r (+ i_ 1) j_ r_ expr)))
+          (or (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
+              (diff j j r (+ i_ 1) j_ r_ expr)))
       (if (equal? i_ j_)
-          (or (not (empty-obs expr (list-ref r i))) (diff (+ i 1) j r j_ j_ r_ expr))
-          (or (and (empty-obs expr (list-ref r i)) (diff (+ i 1) j r i_ j_ r_ expr))
-              (and (empty-obs expr (list-ref r_ i_)) (diff i j r (+ i_ 1) j_ r_ expr))
-              (and (not (empty-obs expr (list-ref r i)))
-                   (not (empty-obs expr (list-ref r_ i_)))
-                   (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
+          (or (not (empty-obs expr (run-step-regs (list-ref r i))))
+              (diff (+ i 1) j r j_ j_ r_ expr))
+          (or (and (empty-obs expr (run-step-regs (list-ref r i)))
+                  (diff (+ i 1) j r i_ j_ r_ expr))
+              (and (empty-obs expr (run-step-regs (list-ref r_ i_)))
+                  (diff i j r (+ i_ 1) j_ r_ expr))
+              (and (not (empty-obs expr (run-step-regs (list-ref r i))))
+                   (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
+                   (not (obs-equal expr (run-step-regs (list-ref r i))
+                                        (run-step-regs (list-ref r_ i_)))))))))
 
 ; ------------- END-CORE ------------------ ;
 
