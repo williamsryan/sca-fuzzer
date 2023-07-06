@@ -30,7 +30,7 @@
 ; Struct definitions for our contract language.
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
 (struct OPCODE ())                      ; An opcode.
-(struct INSTR (instr) #:transparent)
+(struct INSTR (instr op) #:transparent)
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
 (struct RS1 ())                         ; Register RS1.
 (struct RS2 ())                         ; Register RS2.
@@ -47,9 +47,9 @@
 (struct ADDR (a) #:transparent)         ; Address value.
 
 ; Grammar for the actual contract.
-; (IF (BOOL #t) (REG 12))     <-- Supported (leaked registers).
-; (IF (BOOL #t) (PC))         <-- Supported (leaked program counter).
-; (if (BOOL #t) (...))        <-- In progress (leaked address from loads/stores).
+; (IF (BOOL #t) (REG 12))               <-- Supported (leaked registers).
+; (IF (BOOL #t) (PC))                   <-- Supported (leaked program counter).
+; (IF (INSTR == `LOAD) REG[OPERAND2])   <-- In progress (leaked address from loads/stores).
 (define-grammar (cexpr)
   [expr (IF (pred) (bs))]
   [pred (choose (BOOL (?? boolean?))
