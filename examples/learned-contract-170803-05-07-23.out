@@ -7,3 +7,15 @@
 (IF (BOOL True) (REG 1))
 (IF (BOOL True) (REG 4))
 (IF (BOOL True) (MEM-LOAD 5))
+
+
+
+########### Notes. ###########
+
+(IF (INSTR == `LOAD) REG[OPERAND2])
+
+(IF (INSTR == `STORE) REG[OPERAND2])
+
+(IF (True) PC)
+
+(IF (INSTR == `LOAD) Mem[REG[OPERAND2]])
