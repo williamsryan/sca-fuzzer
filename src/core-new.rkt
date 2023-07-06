@@ -30,7 +30,7 @@
 ; Struct definitions for our contract language.
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
 (struct OPCODE ())                      ; An opcode.
-(struct INSTR (instr) #:transparent)
+(struct INSTR (name operand) #:transparent)
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
 (struct RS1 ())                         ; Register RS1.
 (struct RS2 ())                         ; Register RS2.
@@ -57,11 +57,11 @@
                 (AND (pred) (pred))
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
-                (INSTR (instr) (operand))  ; Testing still.
+                (INSTR (name) (operand))  ; Testing still.
                 )]
-  [instr (choose 'LOAD
+  [name (choose 'LOAD
                  'STORE)]
-  [operand (?? (bitvector (?? integer?)))]
+  [operand (?? integer?)]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
               (REG (?? integer?))
@@ -86,7 +86,7 @@
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
-            [(INSTR instr) (eval-instr instr xstate)]))
+            [(INSTR name operand) (eval-instr name operand xstate)]))
 
 ; Evaluation function for bit sequences.
 (define (eval-bs bs xstate)
