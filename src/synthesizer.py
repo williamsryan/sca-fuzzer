@@ -63,12 +63,18 @@ class Synthesizer:
             xstates = ''
             for i, xstate in enumerate(run.archstates):
                 f.write(model(run.id, i, xstate, run.instructions))
+
                 if xstates == '':
+                    # Implement logic for making xstate look like:
+                    # (make-run-step r0_0 'LOAD).
                     xstates += self.get_xstate_name(run.id, i)
                 else:
                     xstates += ' ' + self.get_xstate_name(run.id, i)
+
             # This is where the run (r0, r1) objects are defined (as a list of registers).
             # TODO: update to match new struct where instruction is included too.
+            new_obj = f"(define {self.get_run_name(run.id)} (list {xstates}))\n\n"
+            
             f.write("(define {0} (list {1}))\n\n".format(
                 self.get_run_name(run.id), xstates))
 
