@@ -67,8 +67,10 @@ class Synthesizer:
                     xstates += self.get_xstate_name(run.id, i)
                 else:
                     xstates += ' ' + self.get_xstate_name(run.id, i)
-            f.write("{3}(define {0} (list {1}))\n\n".format(
-                self.get_run_name(run.id), xstates, "TEST"))
+            # This is where the run (r0, r1) objects are defined (as a list of registers).
+            # TODO: update to match new struct where instruction is included too.
+            f.write("(define {0} (list {1}))\n\n".format(
+                self.get_run_name(run.id), xstates))
 
     # TODO: update to look at sequential traces, and ignore silent steps for now.
     def generate_constraints(self, pairs, run1, run2):
