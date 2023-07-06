@@ -30,7 +30,7 @@
 ; Struct definitions for our contract language.
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
 (struct OPCODE ())                      ; An opcode.
-(struct INSTR (instr op) #:transparent)
+(struct INSTR (instr) #:transparent)
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
 (struct RS1 ())                         ; Register RS1.
 (struct RS2 ())                         ; Register RS2.
