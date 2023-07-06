@@ -67,8 +67,8 @@ class Synthesizer:
                     xstates += self.get_xstate_name(run.id, i)
                 else:
                     xstates += ' ' + self.get_xstate_name(run.id, i)
-            f.write("(define {0} (list {1}))\n\n".format(
-                self.get_run_name(run.id), xstates))
+            f.write("{3}(define {0} (list {1}))\n\n".format(
+                self.get_run_name(run.id), xstates, "TEST"))
 
     # TODO: update to look at sequential traces, and ignore silent steps for now.
     def generate_constraints(self, pairs, run1, run2):
