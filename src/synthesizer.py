@@ -67,7 +67,8 @@ class Synthesizer:
                 if xstates == '':
                     # Implement logic for making xstate look like:
                     # (make-run-step r0_0 'LOAD).
-                    xstates += self.get_xstate_name(run.id, i)
+                    # xstates += self.get_xstate_name(run.id, i)
+                    xstates += f"(make-run-step {self.get_xstate_name(run.id, i)} 'LOAD)"
                 else:
                     xstates += ' ' + self.get_xstate_name(run.id, i)
 
