@@ -30,7 +30,7 @@
 ; Struct definitions for our contract language.
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
 (struct OPCODE ())                      ; An opcode.
-(struct INSTR (instr1 instr2) #:transparent)
+(struct INSTR (instr) #:transparent)
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
 (struct RS1 ())                         ; Register RS1.
 (struct RS2 ())                         ; Register RS2.
@@ -57,8 +57,10 @@
                 (AND (pred) (pred))
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
-                (INSTR (?? symbol?) (?? symbol?))
+                (INSTR (instr))  ; Hardcode these for now.
                 )]
+  [instr (choose 'LOAD
+                 'STORE)]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
               (REG (?? integer?))
@@ -83,7 +85,7 @@
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
-            [(INSTR instr1 instr2) (eq? instr1 instr2)]))
+            [(INSTR instr) (eval-instr instr xstate)]))
 
 ; Evaluation function for bit sequences.
 (define (eval-bs bs xstate)
@@ -94,9 +96,8 @@
             ))
 
 ; Evaluation function for instructions.
-; (define (eval-instr instr)
-;   (match instr
-;     [(instruction opcode _) opcode])) ; Ignoring operands for now.
+(define (eval-instr instr xstate)
+  (equal? instr (eval-bs (INSTR (REG PC)) xstate)))
 
 ; Evaluation function for addresses.
 (define (eval-addr addr xstate)
