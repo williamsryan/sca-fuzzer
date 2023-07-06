@@ -16,6 +16,6 @@
 
 (IF (INSTR == `STORE) REG[OPERAND2])
 
-(IF (True) PC)
+(IF (BOOL True) PC)
 
 (IF (INSTR == `LOAD) Mem[REG[OPERAND2]])
