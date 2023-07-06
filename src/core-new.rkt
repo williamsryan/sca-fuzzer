@@ -97,8 +97,12 @@
             ))
 
 ; Evaluation function for instructions.
-(define (eval-instr instr xstate)
-  (equal? instr (eval-bs (INSTR (REG PC)) xstate)))
+(define (eval-instr name operand xstate)
+  (match name
+    ['LOAD
+      (eval-reg operand xstate)]
+    ['STORE
+      (println "Got a 'STORE; not yet implemented.")]))
 
 ; Evaluation function for addresses.
 (define (eval-addr addr xstate)
