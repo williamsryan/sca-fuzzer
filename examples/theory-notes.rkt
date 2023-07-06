@@ -5,12 +5,10 @@
 ; ----------------------------------------- ;
 
 ; ----------------- CORE ------------------ ;
-; packages
 (require rosette/lib/destruct) ; Value destructuring library.
 (require rosette/lib/synthax)  ; Synthesis library.
 
 ; General purpose register encoding.
-; These aren't used?
 (define RAX  0)  ; A eXtended
 (define RBP  1)  ; Base Pointer
 (define RBX  2)  ; B eXtended

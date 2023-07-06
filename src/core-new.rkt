@@ -30,7 +30,7 @@
 ; Struct definitions for our contract language.
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
 (struct OPCODE ())                      ; An opcode.
-(struct INSTR (instr) #:transparent)    ; An instruction.
+(struct INSTR (instr1 instr2) #:transparent)
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
 (struct RS1 ())                         ; Register RS1.
 (struct RS2 ())                         ; Register RS2.
@@ -43,11 +43,8 @@
 (struct REG (r) #:transparent)          ; Register value.
 (struct MEM-LOAD (a) #:transparent)
 (struct MEM-STORE (a bs) #:transparent)
-; (struct ADDR-CONST (a))
-; (struct ADDR-REG (r))
-; Testing new instruction type for more precision.
-(struct instruction (opcode operands) #:transparent)
-; (struct ADDR (a) #:transparent)         ; Address value.
+; Testing new instruction type.
+(struct ADDR (a) #:transparent)         ; Address value.
 
 ; Grammar for the actual contract.
 ; (IF (BOOL #t) (REG 12))     <-- Supported (leaked registers).
@@ -60,19 +57,15 @@
                 (AND (pred) (pred))
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
+                (INSTR (?? symbol?) (?? symbol?))
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
               (REG (?? integer?))
-              ; (INSTR)
-              (INSTR (?? instruction?)) ; New instruction.
-              ; (ADDR (?? integer?))
-              (MEM-LOAD (?? integer?))
-              (MEM-STORE (?? integer?) (bs))
+              (ADDR (?? integer?))
+              (MEM-LOAD (bs))
+              (MEM-STORE (bs) (bs))
               )]
-  ; [a (choose (ADDR-CONST (?? integer?))
-  ;            (ADDR-REG (?? integer?))
-  ;       )]
   )
 
 
@@ -89,7 +82,8 @@
             [(NOT some-p) (not (eval-pred some-p xstate))]
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
-            [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]))
+            [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
+            [(INSTR instr1 instr2) (eq? instr1 instr2)]))
 
 ; Evaluation function for bit sequences.
 (define (eval-bs bs xstate)
@@ -97,16 +91,12 @@
             [(BS b) b]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b xstate))]
             [(REG reg) (eval-reg reg xstate)]
-            [(MEM-LOAD addr) (eval-addr addr xstate)]
-            [(MEM-STORE addr b) (eval-addr addr xstate) (eval-bs b xstate)]
-            [(INSTR instr) (eval-reg PC xstate)] ; Get instr location from program counter.
-            ; [INSTR (eval-reg PC x)]
             ))
 
 ; Evaluation function for instructions.
-(define (eval-instr instr)
-  (match instr
-    [(instruction opcode _) opcode])) ; Ignoring operands for now.
+; (define (eval-instr instr)
+;   (match instr
+;     [(instruction opcode _) opcode])) ; Ignoring operands for now.
 
 ; Evaluation function for addresses.
 (define (eval-addr addr xstate)
