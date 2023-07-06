@@ -70,7 +70,7 @@ class Synthesizer:
                     # xstates += self.get_xstate_name(run.id, i)
                     xstates += f"(make-run-step {self.get_xstate_name(run.id, i)} 'LOAD)"
                 else:
-                    xstates += ' ' + self.get_xstate_name(run.id, i)
+                    xstates += ' ' + f"(make-run-step {self.get_xstate_name(run.id, i)} 'LOAD)"
 
             # This is where the run (r0, r1) objects are defined (as a list of registers).
             # TODO: update to match new struct where instruction is included too.
