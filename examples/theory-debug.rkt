@@ -170,6 +170,8 @@
                   (diff i j r (+ i_ 1) j_ r_ expr))
               (and (not (empty-obs expr (run-step-regs (list-ref r i))))
                    (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
+                   (equal? (run-step-instr (list-ref r i))
+                              (run-step-instr (list-ref r_ i_)))
                    (not (obs-equal expr (run-step-regs (list-ref r i))
                                         (run-step-regs (list-ref r_ i_)))))))))
 
