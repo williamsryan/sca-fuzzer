@@ -57,10 +57,11 @@
                 (AND (pred) (pred))
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
-                (INSTR (instr))  ; Hardcode these for now.
+                (INSTR (instr) (operand))  ; Hardcode these for now.
                 )]
   [instr (choose 'LOAD
                  'STORE)]
+  [operand (choose 'TODO)]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
               (REG (?? integer?))
