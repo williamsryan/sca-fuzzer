@@ -1,11 +1,11 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
-RUN DEBIAN_FRONTEND="noninteractive" apt-get update -y
+ENV DEBIAN_FRONTEND="noninteractive"
 
 RUN apt-get update -y && apt-get install -y \
         build-essential \
         # linux-headers-$(uname -r) \
-        python3.9 python3.9-venv python3.9-distutils \
+        python3.9 python3.9-venv python3.9-distutils python3-pip \
         unicorn \
         git \
         vim \
@@ -23,4 +23,4 @@ WORKDIR /src/x86/executor
 RUN make uninstall && make clean && make && make install
 
 WORKDIR /src
-ENTRYPOINT ./cli.py fuzz -s x86/isa_spec/base.json -i 50 -n 100 -c tests/test-nondetection.yaml -w .
+ENTRYPOINT ./cli.py fuzz -s x86/isa_spec/base.json -i 50 -n 100 -c tests/test-nondetection.yaml -w . --empty-synth
