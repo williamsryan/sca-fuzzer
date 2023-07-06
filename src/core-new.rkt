@@ -165,3 +165,41 @@
                    (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
 
 ; ------------- END-CORE ------------------ ;
+
+; Some new run object tests + parsing.
+; Once working, update in synthesizer.py
+(define r0_0 (list (bv 880468295885 (bitvector 64))
+                   (bv 1563368096108 (bitvector 64))
+                   (bv 2156073583094 (bitvector 64))
+                   (bv 167503724583 (bitvector 64))
+                   (bv 468151435373 (bitvector 64))
+                   (bv 1726576853394 (bitvector 64))
+                   (bv 134 (bitvector 64))
+                   (bv 18446630612648439808 (bitvector 64))))
+
+(define r0_1 (list (bv 880468295885 (bitvector 64))
+                   (bv 1563368096108 (bitvector 64))
+                   (bv 2156073583094 (bitvector 64))
+                   (bv 167503724583 (bitvector 64))
+                   (bv 468151435373 (bitvector 64))
+                   (bv 1726576853394 (bitvector 64))
+                   (bv 134 (bitvector 64))
+                   (bv 18446630612648439811 (bitvector 64))))
+
+(struct run-step (regs instr-name)
+  #:constructor-name make-run-step
+  #:transparent)
+
+(define run1 (list (make-run-step r0_0 'LOAD)
+                   (make-run-step r0_1 'STORE)))
+
+(define (print-run run)
+  (for-each (lambda (step)
+              (display "Register State: ")
+              (display (run-step-regs step))
+              (display ", Instruction: ")
+              (display (run-step-instr-name step))
+              (newline))
+            run))
+
+(print-run run1)
