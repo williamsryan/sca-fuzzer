@@ -9,18 +9,19 @@ RUN apt-get update -y && apt-get install -y \
         unicorn \
         git \
         vim \
+        wget \
     && apt-get clean
 
 RUN pip install virtualenv unicorn pyyaml types-pyyaml numpy iced_x86
 # RUN virtualenv ~/venv-revizor
 # RUN source ~/venv-revizor/bin/activate
 
-WORKDIR /src/x86/isa_spec
-RUN ./get_spec.py --extensions BASE SSE SSE2 CLFLUSHOPT CLFSH
-
 COPY ./src src/
+WORKDIR /src/x86/isa_spec
+RUN python3.9 get_spec.py --extensions BASE SSE SSE2 CLFLUSHOPT CLFSH
+
 WORKDIR /src/x86/executor
-RUN make uninstall && make clean && make && make install
+RUN make docker_uninstall && make clean && make && make docker_install
 
 WORKDIR /src
-ENTRYPOINT ./cli.py fuzz -s x86/isa_spec/base.json -i 50 -n 100 -c tests/test-nondetection.yaml -w . --empty-synth
+ENTRYPOINT python3.9 cli.py fuzz -s x86/isa_spec/base.json -i 50 -n 100 -c tests/test-nondetection.yaml -w . --empty-synth
