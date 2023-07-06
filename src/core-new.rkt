@@ -41,8 +41,8 @@
 (struct BOOL (b))
 (struct BS (bs))                        ; Bitstring value.
 (struct REG (r) #:transparent)          ; Register value.
-(struct MEM-LOAD (a) #:transparent)
-(struct MEM-STORE (a bs) #:transparent)
+; (struct MEM-LOAD (a) #:transparent)
+; (struct MEM-STORE (a bs) #:transparent)
 ; Testing new instruction type.
 (struct ADDR (a) #:transparent)         ; Address value.
 
@@ -66,8 +66,8 @@
               (SLIDE (?? integer?) (?? integer?) (bs))
               (REG (?? integer?))
               (ADDR (?? integer?))
-              (MEM-LOAD (bs))
-              (MEM-STORE (bs) (bs))
+              ; (MEM-LOAD (bs))
+              ; (MEM-STORE (bs) (bs))
               )]
   )
 
@@ -100,6 +100,7 @@
 (define (eval-instr name operand xstate)
   (match name
     ['LOAD
+      (println "Got a 'LOAD; just testing for now.")
       (eval-reg operand xstate)]
     ['STORE
       (println "Got a 'STORE; not yet implemented.")]))
