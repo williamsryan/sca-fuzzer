@@ -141,22 +141,24 @@
        #f))))
 
 (define (get-opcode bs)
-  (cond
-    ((bv-eq? bs #b00000000) 'LOAD)
-    ((bv-eq? bs #b00000001) 'STORE)
-    ; Add more cases for other opcodes
-    (else (println "Unknown opcode"))))
+  (bvextract 0 3 bs))     ; Extract bits 0 to 3 (inclusive) as opcode.
 
 (define (extract-op1 bs)
-  (extract-integer bs 4 7))  ; Extract bits 4 to 7 (inclusive) as op1
+  (extract-bits bs 4 7))  ; Extract bits 4 to 7 (inclusive) as operand1.
 
 (define (extract-op2 bs)
-  (extract-integer bs 8 11))  ; Extract bits 8 to 11 (inclusive) as op2
+  (extract-bits bs 8 11))  ; Extract bits 8 to 11 (inclusive) as operand2.
 
 (define (extract-integer value)
   (match value
     [(bv i _) i]
     [_ (println "Invalid value for extracting integer")]))
+
+(define (extract-bits bs start-bit end-bit)
+  (bvextract start-bit (+ 1 (- end-bit start-bit)) bs))
+
+(define (bvextract start-bit width bs)
+  (bvlshr (bvand bs (bvneg (bvshl (bvneg (bvlshr (bvneg #b0) start-bit)) width))) start-bit))
 
 (define (bv-eq? bv1 bv2)
   (bveq bv1 bv2))
