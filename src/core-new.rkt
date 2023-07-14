@@ -121,9 +121,9 @@
             ; [(INSTR name operand) (eval-instr name operand xstate)]))
 
 ; Format notes:
-; (IF (OPCODE #b0000001010) (REG[operand1])) : 
+; (IF (OPCODE #b0000001010) (REG[operand2])) : 
 ; This clause represents the condition where a memory load opcode (#b0000001010) is encountered,
-; and the value stored in the register specified by operand1 is leaked.
+; and the value stored in the register specified by operand2 is leaked.
 ;
 ; (IF (OPCODE #b0000010101) ADDR[operand1]) : 
 ; This clause represents the condition where a memory store opcode (#b0000010101) is encountered,
