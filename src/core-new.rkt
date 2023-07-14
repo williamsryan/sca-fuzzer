@@ -116,8 +116,35 @@
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
-            ; [(OPCODE bs op1 op2) (opcode-equal? bs op1 op2 xstate)]))
-            [(INSTR name operand) (eval-instr name operand xstate)]))
+            [(OPCODE bs op1 op2) (eval-opcode bs op1 op2 xstate)]))
+            ; [(INSTR name operand) (eval-instr name operand xstate)]))
+
+(define (eval-opcode bs op1 op2 xstate)
+  (let ((opcode (get-opcode bs)))  ; Get the specific opcode based on the bitvector bs
+    (cond
+      ((eq? opcode 'LOAD)
+       ; Retrieve the values of registers or operands based on op1 and op2.
+       ; Perform the evaluation or comparison using the retrieved values.
+       ; Return the result of the evaluation.
+       ...)
+      ((eq? opcode 'STORE)
+       ; Handle the STORE opcode case similarly.
+       ...)
+      (else
+       ; Handle other opcode cases, if any.
+       ...))))
+
+; Get opcode value; assuming it is first element in xstate list.
+(define (get-opcode xstate)
+  (car xstate))
+
+; (define (get-opcode bs)
+;   (destruct bs
+;     [(bv 0 4) 'LOAD]
+;     [(bv 1 4) 'STORE]
+;     [(bv 2 4) 'ADD]
+;     ; Add more patterns later.
+;     [else (error "Unknown opcode")]))
 
 (define (get-instr xstate)
   (cdr xstate))
