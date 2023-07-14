@@ -120,22 +120,33 @@
             [(OPCODE bs) (eval-opcode bs xstate)]))
             ; [(INSTR name operand) (eval-instr name operand xstate)]))
 
+; Format notes:
+; (IF (OPCODE #b0000001010) (REG[operand1])) : 
+; This clause represents the condition where a memory load opcode (#b0000001010) is encountered,
+; and the value stored in the register specified by operand1 is leaked.
+;
+; (IF (OPCODE #b0000010101) ADDR[operand1]) : 
+; This clause represents the condition where a memory store opcode (#b0000010101) is encountered,
+; and the address referenced by operand1 is considered leaked based on the leakage-expression function.
 (define (eval-opcode bs xstate)
   (let* ((opcode (get-opcode bs))
          (op1 (extract-op1 bs))
          (op2 (extract-op2 bs)))
     (cond
-      ((eq? opcode #b0000001010) ; Example opcode value
+      ((eq? opcode #b0000001010) ; Example opcode value for memory load.
        ; Retrieve the values of registers or operands based on the opcode.
        ; Perform the evaluation or comparison using the retrieved values.
        ; Return the result of the evaluation.
        (let* ((reg-index (extract-integer op1))
               (register (list-ref xstate reg-index))
               (operand-value (extract-integer op2)))
-         (eq? register operand-value)))
-      ((eq? opcode #b0000001100) ; Another example opcode value
+         (eq? register operand-value))) ; If register value == op2 value -> op2 value is leaked.
+      ((eq? opcode #b0000001100) ; Another example opcode value for memory store.
        ; Handle the specific behavior for this opcode value.
-       #t)
+       (let* ((addr-index (extract-integer op1))
+              (address (list-ref xstate addr-index)))
+              #t) ; Just return that the address is leaked. Later we will likely want to constrain this.
+       )
       (else
        ; Handle other opcode values, if any.
        #f))))
