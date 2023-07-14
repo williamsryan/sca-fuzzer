@@ -225,10 +225,7 @@
 ;                     false otherwise
 ; TODO: this is just operating on registers currently, so opcode-equal is ignored.
 (define (obs-equal expr xstate1 xstate2)
-  (println "obs-equal:")
-  (println xstate1)
-  (and (listbv-equal (obs expr xstate1) (obs expr xstate2))
-       (opcode-equal (get-opcode (obs expr xstate1)) (get-opcode (obs expr xstate2)))))
+  (listbv-equal (obs expr xstate1) (obs expr xstate2)))
 
 ; listbv-equal() takes two observations
 ;                returns true if they are the same
@@ -264,6 +261,9 @@
 ;        returns true if the trace produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
+  (println "Checking opcode:")
+  (println (run-step-opcode (list-ref r i)))
+  (newline)
   (if (equal? i j)
       (if (equal? i_ j_)
           #f
@@ -336,8 +336,3 @@
 ))))
 
 (print-forms sol)
-
-(newline)
-(println "Testing:")
-(run-step-opcode (list-ref r0 0))
-(run-step-opcode (list-ref r0 1))
