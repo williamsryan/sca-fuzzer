@@ -29,7 +29,7 @@
 
 ; Struct definitions for our contract language.
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
-(struct OPCODE (bs op1 op2) #:transparent)
+(struct OPCODE (bs) #:transparent)
 (struct INSTR (name operand) #:transparent)
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
 (struct RS1 ())                         ; Register RS1.
@@ -80,7 +80,7 @@
 ; (IF (BOOL #t) (PC))                   <-- Supported (leaked program counter).
 ; (IF (INSTR == `LOAD) REG[OPERAND2])   <-- In progress (leaked address from loads/stores).
 ; (IF (OPCODE (bs?)) REG[OPERAND2])     <-- Instead of INSTR, get the opcode and map back to INSTR later.
-; (IF (OPCODE #b00000000 (REG[op2])))
+; (IF (OPCODE #b0000010011 (REG[op2])))
 (define-grammar (cexpr)
   [expr (IF (pred) (bs))]
   [pred (choose (BOOL (?? boolean?))
@@ -88,7 +88,7 @@
                 (AND (pred) (pred))
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
-                (OPCODE (bs) (bs) (bs))
+                (OPCODE (bs))
                 ; (INSTR (name))
                 )]
   ; [name (choose 'LOAD
@@ -117,25 +117,22 @@
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
-            [(OPCODE bs op1 op2) (eval-opcode bs op1 op2 xstate)]))
+            [(OPCODE bs) (eval-opcode bs xstate)]))
             ; [(INSTR name operand) (eval-instr name operand xstate)]))
 
-(define (eval-opcode bs op1 op2 xstate)
-  (let ((opcode (get-opcode bs)))  ; Get the specific opcode based on the bitvector bs
+(define (eval-opcode bs xstate)
+  (let ((opcode-value bs))
     (cond
-      ((eq? opcode 'LOAD)
-       ; Retrieve the values of registers or operands based on op1 and op2.
+      ((eq? opcode-value #b0000001010) ; Example opcode value
+       ; Retrieve the values of registers or operands based on the opcode.
        ; Perform the evaluation or comparison using the retrieved values.
        ; Return the result of the evaluation.
-       (let ((reg-value (eval-reg op2 xstate)))  ; Evaluate the register value specified by op2.
-         (not (empty? reg-value)))) ; Return true if the register value is not empty (i.e., leaked).
-      ((eq? opcode 'STORE)
-       ; Handle the STORE opcode case similarly.
-       (let ((reg-value (eval-reg op1 xstate))
-             (addr-value (eval-addr op2 xstate)))
-         (and (not (empty? reg-value)) (not (empty? addr-value)))))
+       #t)
+      ((eq? opcode-value #b0000001100) ; Another example opcode value
+       ; Handle the specific behavior for this opcode value.
+       #t)
       (else
-       ; Handle other opcode cases, if any.
+       ; Handle other opcode values, if any.
        #f))))
 
 ; Get opcode value; assuming it is first element in xstate list.
