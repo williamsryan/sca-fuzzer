@@ -184,9 +184,8 @@
                (register-index (run-step-reg-index step))
                (register-name (get-register-name register-index)))
           (if (eq? instruction 'LOAD)
-              (let* ((operand2-reg-index RSI) ; Replace with the appropriate operand index for the register
-                     (reg-value (list-ref registers operand2-reg-index)))
-                (loop (cdr steps) (cons `(IF (INSTR == 'LOAD) REG[${operand2-reg-index}]), reg-value) observations)))
+              (let ((reg-value (list-ref registers register-index)))
+                (loop (cdr steps) (cons `(IF (INSTR == 'LOAD) REG[${register-name}]) ,reg-value) observations)))
               (loop (cdr steps) observations)))))
 
 ; diff() takes the following arguments:
