@@ -130,8 +130,8 @@
 ; and the address referenced by operand1 is considered leaked based on the leakage-expression function.
 (define (eval-opcode bs xstate)
   (let* ((opcode (get-opcode bs))
-         (op1 (extract-op1 bs))
-         (op2 (extract-op2 bs)))
+         (op1 (extract-op1 bs)) ; Address where data is being stored (for a store instr).
+         (op2 (extract-op2 bs))) ; Value/data being stored.
     (cond
       ((eq? opcode #b0000001010) ; Example opcode value for memory load.
        ; Retrieve the values of registers or operands based on the opcode.
