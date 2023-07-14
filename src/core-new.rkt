@@ -80,6 +80,7 @@
 ; (IF (BOOL #t) (PC))                   <-- Supported (leaked program counter).
 ; (IF (INSTR == `LOAD) REG[OPERAND2])   <-- In progress (leaked address from loads/stores).
 ; (IF (OPCODE (bs?)) REG[OPERAND2])     <-- Instead of INSTR, get the opcode and map back to INSTR later.
+; (IF (OPCODE #b00000000 (REG[op2])))
 (define-grammar (cexpr)
   [expr (IF (pred) (bs))]
   [pred (choose (BOOL (?? boolean?))
@@ -126,25 +127,27 @@
        ; Retrieve the values of registers or operands based on op1 and op2.
        ; Perform the evaluation or comparison using the retrieved values.
        ; Return the result of the evaluation.
-       ...)
+       (let ((reg-value (eval-reg op2 xstate)))  ; Evaluate the register value specified by op2.
+         (not (empty? reg-value)))) ; Return true if the register value is not empty (i.e., leaked).
       ((eq? opcode 'STORE)
        ; Handle the STORE opcode case similarly.
-       ...)
+       (let ((reg-value (eval-reg op1 xstate))
+             (addr-value (eval-addr op2 xstate)))
+         (and (not (empty? reg-value)) (not (empty? addr-value)))))
       (else
        ; Handle other opcode cases, if any.
-       ...))))
+       #f))))
 
 ; Get opcode value; assuming it is first element in xstate list.
 (define (get-opcode xstate)
   (car xstate))
 
 ; (define (get-opcode bs)
-;   (destruct bs
-;     [(bv 0 4) 'LOAD]
-;     [(bv 1 4) 'STORE]
-;     [(bv 2 4) 'ADD]
-;     ; Add more patterns later.
-;     [else (error "Unknown opcode")]))
+;   (match bs
+;     [(bv #b00000000 _) 'LOAD]
+;     [(bv #b00000001 _) 'STORE]
+;     ; Add more cases for other opcodes if needed.
+;     [_ #f]))
 
 (define (get-instr xstate)
   (cdr xstate))
