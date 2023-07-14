@@ -121,23 +121,45 @@
             ; [(INSTR name operand) (eval-instr name operand xstate)]))
 
 (define (eval-opcode bs xstate)
-  (let ((opcode-value bs))
+  (let* ((opcode (get-opcode bs))
+         (op1 (extract-op1 bs))
+         (op2 (extract-op2 bs)))
     (cond
-      ((eq? opcode-value #b0000001010) ; Example opcode value
+      ((eq? opcode #b0000001010) ; Example opcode value
        ; Retrieve the values of registers or operands based on the opcode.
        ; Perform the evaluation or comparison using the retrieved values.
        ; Return the result of the evaluation.
-       #t)
-      ((eq? opcode-value #b0000001100) ; Another example opcode value
+       (let* ((reg-index (extract-integer op1))
+              (register (list-ref xstate reg-index))
+              (operand-value (extract-integer op2)))
+         (eq? register operand-value)))
+      ((eq? opcode #b0000001100) ; Another example opcode value
        ; Handle the specific behavior for this opcode value.
        #t)
       (else
        ; Handle other opcode values, if any.
        #f))))
 
-; Get opcode value; assuming it is first element in xstate list.
-(define (get-opcode xstate)
-  (car xstate))
+(define (get-opcode bs)
+  (cond
+    ((bv-eq? bs #b00000000) 'LOAD)
+    ((bv-eq? bs #b00000001) 'STORE)
+    ; Add more cases for other opcodes
+    (else (println "Unknown opcode"))))
+
+(define (extract-op1 bs)
+  (extract-integer bs 4 7))  ; Extract bits 4 to 7 (inclusive) as op1
+
+(define (extract-op2 bs)
+  (extract-integer bs 8 11))  ; Extract bits 8 to 11 (inclusive) as op2
+
+(define (extract-integer value)
+  (match value
+    [(bv i _) i]
+    [_ (println "Invalid value for extracting integer")]))
+
+(define (bv-eq? bv1 bv2)
+  (bveq bv1 bv2))
 
 ; (define (get-opcode bs)
 ;   (match bs
