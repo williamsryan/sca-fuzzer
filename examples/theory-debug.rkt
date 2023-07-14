@@ -368,6 +368,8 @@
 
 (define r0 (list (make-run-step r0_0 'LOAD) (make-run-step r0_1 'LOAD) (make-run-step r0_2 'LOAD) (make-run-step r0_3 'LOAD) (make-run-step r0_4 'LOAD) (make-run-step r0_5 'LOAD) (make-run-step r0_6 'LOAD) (make-run-step r0_7 'LOAD) (make-run-step r0_8 'LOAD) (make-run-step r0_9 'LOAD) (make-run-step r0_10 'LOAD) (make-run-step r0_11 'LOAD) (make-run-step r0_12 'LOAD) (make-run-step r0_13 'LOAD) (make-run-step r0_14 'LOAD) (make-run-step r0_15 'LOAD) (make-run-step r0_16 'LOAD) (make-run-step r0_17 'LOAD) (make-run-step r0_18 'LOAD)))
 
+;(define r0 (list (make-run-step r0_0 (OPCODE (bv #b00000011000000 (bitvector 8)))) ; Example memory store opcode
+
 ; Register state @ instruction: PLACEHOLDER
 (define r1_0 (list (bv 176093659177 (bitvector 64))
                    (bv 1142461301002 (bitvector 64))
