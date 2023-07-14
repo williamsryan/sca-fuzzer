@@ -29,7 +29,7 @@
 
 ; Struct definitions for our contract language.
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
-(struct OPCODE ())                      ; An opcode.
+(struct OPCODE (bs op1 op2) #:transparent)
 (struct INSTR (name operand) #:transparent)
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
 (struct RS1 ())                         ; Register RS1.
@@ -79,6 +79,7 @@
 ; (IF (BOOL #t) (REG 12))               <-- Supported (leaked registers).
 ; (IF (BOOL #t) (PC))                   <-- Supported (leaked program counter).
 ; (IF (INSTR == `LOAD) REG[OPERAND2])   <-- In progress (leaked address from loads/stores).
+; (IF (OPCODE (bs?)) REG[OPERAND2])     <-- Instead of INSTR, get the opcode and map back to INSTR later.
 (define-grammar (cexpr)
   [expr (IF (pred) (bs))]
   [pred (choose (BOOL (?? boolean?))
@@ -86,11 +87,12 @@
                 (AND (pred) (pred))
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
-                (INSTR (name) (operand))  ; Testing still.
+                (OPCODE (bs) (bs) (bs))
+                ; (INSTR (name))
                 )]
-  [name (choose 'LOAD
-                'STORE)]
-  [operand (?? integer?)]
+  ; [name (choose 'LOAD
+  ;               'STORE)]
+  ; [operand (?? integer?)]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
               (REG (?? integer?))
@@ -114,7 +116,11 @@
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
+            ; [(OPCODE bs op1 op2) (opcode-equal? bs op1 op2 xstate)]))
             [(INSTR name operand) (eval-instr name operand xstate)]))
+
+(define (get-instr xstate)
+  (cdr xstate))
 
 ; Evaluation function for bit sequences.
 (define (eval-bs bs xstate)
@@ -174,19 +180,19 @@
 
 ; extract-observation() takes a run object
 ; This is just a test function for now.
-(define (extract-observations run)
-  (let loop ((steps run) (observations '()))
-    (if (null? steps)
-        observations
-        (let* ((step (car steps))
-               (instruction (run-step-instr step))
-               (registers (run-step-regs step))
-               (register-index (run-step-reg-index step))
-               (register-name (get-register-name register-index)))
-          (if (eq? instruction 'LOAD)
-              (let ((reg-value (list-ref registers register-index)))
-                (loop (cdr steps) (cons `(IF (INSTR == 'LOAD) REG[${register-name}]) ,reg-value) observations)))
-              (loop (cdr steps) observations)))))
+; (define (extract-observations run)
+;   (let loop ((steps run) (observations '()))
+;     (if (null? steps)
+;         observations
+;         (let* ((step (car steps))
+;                (instruction (run-step-instr step))
+;                (registers (run-step-regs step))
+;                (register-index (run-step-reg-index step))
+;                (register-name (get-register-name register-index)))
+;           (if (eq? instruction '(LOAD))
+;               (let ((reg-value (list-ref registers register-index)))
+;                 (loop (cdr steps) (cons `(IF (INSTR == 'LOAD) (REG ${register-name})) ,reg-value) observations)))
+;               (loop (cdr steps) observations)))))
 
 ; diff() takes the following arguments:
 ;              i,j,i_,j_  : natural numbers such that i <= j and i_ <= j_
