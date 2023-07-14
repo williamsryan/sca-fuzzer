@@ -45,6 +45,27 @@
 ; (struct MEM-STORE (a bs) #:transparent)
 (struct ADDR (a) #:transparent)         ; Address value.
 
+;; Helper function to get the register name from the register index.
+(define (get-register-name reg-index registers)
+  (case reg-index
+    ((0) 'RAX)
+    ((1) 'RBP)
+    ((2) 'RBX)
+    ((3) 'RCX)
+    ((4) 'RDI)
+    ((5) 'RDX)
+    ((6) 'RSI)
+    ((7) 'RSP)
+    ((8) 'R8)
+    ((9) 'R9)
+    ((10) 'R10)
+    ((11) 'R11)
+    ((12) 'R12)
+    ((13) 'R13)
+    ((14) 'R14)
+    ((15) 'R15)
+    (else #f)))
+
 ; New object that holds register values and instruction together.
 (struct run-step (regs instr)
   #:constructor-name make-run-step
@@ -157,9 +178,9 @@
                (instruction (run-step-instr step))
                (registers (run-step-regs step)))
           (if (eq? instruction 'LOAD)
-              (let* ((operand2-reg-index 2)  ; Replace with the appropriate operand index for the register
+              (let* ((operand2-reg-index RSI) ; Replace with the appropriate operand index for the register
                      (reg-value (list-ref registers operand2-reg-index)))
-                (loop (cdr steps) (cons `(IF (INSTR == 'LOAD) REG[${operand2-reg-index}]) ,reg-value) observations)))
+                (loop (cdr steps) (cons `(IF (INSTR == 'LOAD) REG[${operand2-reg-index}]), reg-value) observations)))
               (loop (cdr steps) observations)))))
 
 ; diff() takes the following arguments:
