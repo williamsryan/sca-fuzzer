@@ -63,6 +63,10 @@
 
 (define EMPTY (list '()))
 
+(define my-pair (cons 'apple 'banana))
+(car my-pair) ; Returns 'apple
+(cdr my-pair) ; Returns 'banana
+
 ; Debug note: e: c-expression (grammar), x: state (bv).
 ;   returns the observation.
 (define (eval e x)

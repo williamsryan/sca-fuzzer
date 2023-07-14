@@ -72,6 +72,9 @@
   #:constructor-name make-run-step
   #:transparent)
 
+(define (run-step-reg-index step)
+  (cdr step))
+
 ; Grammar for the actual contract.
 ; (IF (BOOL #t) (REG 12))               <-- Supported (leaked registers).
 ; (IF (BOOL #t) (PC))                   <-- Supported (leaked program counter).
@@ -177,7 +180,9 @@
         observations
         (let* ((step (car steps))
                (instruction (run-step-instr step))
-               (registers (run-step-regs step)))
+               (registers (run-step-regs step))
+               (register-index (run-step-reg-index step))
+               (register-name (get-register-name register-index)))
           (if (eq? instruction 'LOAD)
               (let* ((operand2-reg-index RSI) ; Replace with the appropriate operand index for the register
                      (reg-value (list-ref registers operand2-reg-index)))
