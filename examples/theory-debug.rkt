@@ -176,16 +176,9 @@
 
 (define (opcode-equal opcode1 opcode2)
   (bv-eq? opcode1 opcode2))
-  
-; (define (get-opcode bs)
-;   (match bs
-;     [(bv #b00000000 _) 'LOAD]
-;     [(bv #b00000001 _) 'STORE]
-;     ; Add more cases for other opcodes if needed.
-;     [_ #f]))
 
-(define (get-instr xstate)
-  (cdr xstate))
+; (define (get-instr xstate)
+;   (cdr xstate))
 
 ; Evaluation function for bit sequences.
 (define (eval-bs bs xstate)
@@ -230,7 +223,10 @@
 ; obs-equal() takes an expression and two xstates
 ;             returns true if the two xstates produces same observations
 ;                     false otherwise
+; TODO: this is just operating on registers currently, so opcode-equal is ignored.
 (define (obs-equal expr xstate1 xstate2)
+  (println "obs-equal:")
+  (println xstate1)
   (and (listbv-equal (obs expr xstate1) (obs expr xstate2))
        (opcode-equal (get-opcode (obs expr xstate1)) (get-opcode (obs expr xstate2)))))
 
@@ -340,3 +336,8 @@
 ))))
 
 (print-forms sol)
+
+(newline)
+(println "Testing:")
+(run-step-opcode (list-ref r0 0))
+(run-step-opcode (list-ref r0 1))
