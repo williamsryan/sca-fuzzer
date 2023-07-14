@@ -75,7 +75,6 @@
               )]
   )
 
-
 (define EMPTY (list '()))
 
 ; Evaluation function for expressions.
@@ -147,6 +146,21 @@
       (if (empty? bvs2)
           #f
           (and (bveq (first bvs1) (first bvs2)) (listbv-equal (rest bvs1) (rest bvs2))))))
+
+; extract-observation() takes a run object
+; This is just a test function for now.
+(define (extract-observations run)
+  (let loop ((steps run) (observations '()))
+    (if (null? steps)
+        observations
+        (let* ((step (car steps))
+               (instruction (run-step-instr step))
+               (registers (run-step-regs step)))
+          (if (eq? instruction 'LOAD)
+              (let* ((operand2-reg-index 2)  ; Replace with the appropriate operand index for the register
+                     (reg-value (list-ref registers operand2-reg-index)))
+                (loop (cdr steps) (cons `(IF (INSTR == 'LOAD) REG[${operand2-reg-index}]) ,reg-value) observations)))
+              (loop (cdr steps) observations)))))
 
 ; diff() takes the following arguments:
 ;              i,j,i_,j_  : natural numbers such that i <= j and i_ <= j_
