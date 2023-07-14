@@ -68,7 +68,7 @@
     (else #f)))
 
 ; New object that holds register values and instruction together.
-(struct run-step (regs instr)
+(struct run-step (regs opcode)
   #:constructor-name make-run-step
   #:transparent)
 
@@ -174,6 +174,9 @@
 (define (bv-eq? bv1 bv2)
   (bveq bv1 bv2))
 
+(define (opcode-equal opcode1 opcode2)
+  (bv-eq? opcode1 opcode2))
+  
 ; (define (get-opcode bs)
 ;   (match bs
 ;     [(bv #b00000000 _) 'LOAD]
@@ -228,7 +231,8 @@
 ;             returns true if the two xstates produces same observations
 ;                     false otherwise
 (define (obs-equal expr xstate1 xstate2)
-  (listbv-equal (obs expr xstate1) (obs expr xstate2)))
+  (and (listbv-equal (obs expr xstate1) (obs expr xstate2))
+       (opcode-equal (get-opcode (obs expr xstate1)) (get-opcode (obs expr xstate2)))))
 
 ; listbv-equal() takes two observations
 ;                returns true if they are the same
@@ -278,8 +282,8 @@
                   (diff i j r (+ i_ 1) j_ r_ expr))
               (and (not (empty-obs expr (run-step-regs (list-ref r i))))
                    (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
-                   (equal? (run-step-instr (list-ref r i))
-                           (run-step-instr (list-ref r_ i_)))
+                   (equal? (run-step-opcode (list-ref r i))
+                           (run-step-opcode (list-ref r_ i_)))
                    (not (obs-equal expr (run-step-regs (list-ref r i))
                                         (run-step-regs (list-ref r_ i_)))))))))
 
@@ -304,7 +308,7 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439811 (bitvector 64))))
 
-(define r0 (list (make-run-step r0_0 (OPCODE (bv #b00000011000000 (bitvector 8)))) (make-run-step r0_1 (OPCODE (bv #b00000011000000 (bitvector 8))))))
+(define r0 (list (make-run-step r0_0 (OPCODE (bv #b0000001011 (bitvector 8)))) (make-run-step r0_1 (OPCODE (bv #b0000001100 (bitvector 8))))))
 
 ; Register state @ instruction: PLACEHOLDER
 (define r1_0 (list (bv 176093659177 (bitvector 64))
@@ -327,7 +331,7 @@
                    (bv 18446630612648439811 (bitvector 64))))
 
 
-(define r1 (list (make-run-step r1_0 (OPCODE (bv #b00000011000000 (bitvector 8)))) (make-run-step r1_1 (OPCODE (bv #b00000011000000 (bitvector 8))))))
+(define r1 (list (make-run-step r1_0 (OPCODE (bv #b0000001010 (bitvector 8)))) (make-run-step r1_1 (OPCODE (bv #b0000001100 (bitvector 8))))))
 
 (define myexpr (cexpr #:depth 1))
 
