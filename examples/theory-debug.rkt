@@ -278,7 +278,7 @@
                   (diff i j r (+ i_ 1) j_ r_ expr))
               (and (not (empty-obs expr (run-step-regs (list-ref r i))))
                    (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
-                   (equal? (run-step-opcode (list-ref r i))
+                   (equal? (run-step-opcode (list-ref r i)) ;; Update this equality clause later.
                            (run-step-opcode (list-ref r_ i_)))
                    (not (obs-equal expr (run-step-regs (list-ref r i))
                                         (run-step-regs (list-ref r_ i_)))))))))
