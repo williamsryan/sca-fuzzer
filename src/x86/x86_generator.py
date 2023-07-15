@@ -120,7 +120,7 @@ class X86Generator(ConfigurableGenerator, abc.ABC):
         for instruction in decoder:
             # Save instruction pointer mapped to actual instruction in test case.
             # E.g., 3 --> jmp short 5.
-            # print(f"[x86_generator] TEST MAPPING: {instruction.ip} --> {str(instruction)}")
+            print(f"[x86_generator] TEST MAPPING: {instruction.ip} --> {str(instruction)}")
             # address_list.append(instruction.ip)
             test_case.instructions_map[instruction.ip] = str(instruction)
 
