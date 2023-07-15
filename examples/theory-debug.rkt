@@ -278,10 +278,14 @@
                   (diff i j r (+ i_ 1) j_ r_ expr))
               (and (not (empty-obs expr (run-step-regs (list-ref r i))))
                    (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
-                   (equal? (run-step-opcode (list-ref r i)) ;; Update this equality clause later.
+                   (equal? (run-step-opcode (list-ref r i)) ; TODO: Shouldn't need this.
                            (run-step-opcode (list-ref r_ i_)))
                    (not (obs-equal expr (run-step-regs (list-ref r i))
                                         (run-step-regs (list-ref r_ i_)))))))))
+
+; TODO: implement a check to parse the opcode/instruction from each run step.
+;       If it is a load, get the second operand and check if that value is in any register.
+;       If so, we can say that load instructions leak their second operand via that register.
 
 ; ------------- END-CORE ------------------ ;
 ; Register state @ instruction: PLACEHOLDER
