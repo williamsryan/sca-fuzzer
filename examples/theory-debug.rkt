@@ -265,9 +265,9 @@
                   (diff (+ i 1) j r i_ j_ r_ expr))
               (and (empty-obs expr (run-step-regs (list-ref r_ i_)))
                   (diff i j r (+ i_ 1) j_ r_ expr))
+              (and (not (equal? (obs-opcode (list-ref r i)) (obs-opcode (list-ref r_ i_))))) ; Checking if second oeprand for instruciton at each step is equal between runs. If not, operand value is leaked.)
               (and (not (empty-obs expr (run-step-regs (list-ref r i))))
                    (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
-                   (not (equal? (obs-opcode (list-ref r i)) (obs-opcode (list-ref r_ i_)))) ; Checking if second oeprand for instruciton at each step is equal between runs. If not, operand value is leaked.
                    (not (obs-equal expr (run-step-regs (list-ref r i))
                                         (run-step-regs (list-ref r_ i_)))))))))
 
@@ -323,6 +323,10 @@
 ))))
 
 (print-forms sol)
+
+; (println "Test new constraints:")
+; (diff 0 1 r0 0 1 r1 myexpr)
+; (diff 1 2 r0 1 2 r1 myexpr)
 
 
 ; Some more tests.
