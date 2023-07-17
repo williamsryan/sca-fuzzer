@@ -29,7 +29,7 @@
 
 ; Struct definitions for our contract language.
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
-(struct OPCODE (bs) #:transparent)
+(struct OPCODE (bs op1 op2) #:transparent)
 (struct INSTR (name operand) #:transparent)
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
 (struct RS1 ())                         ; Register RS1.
@@ -41,8 +41,6 @@
 (struct BOOL (b))
 (struct BS (bs))                        ; Bitstring value.
 (struct REG (r) #:transparent)          ; Register value.
-; (struct MEM-LOAD (a) #:transparent)
-; (struct MEM-STORE (a bs) #:transparent)
 (struct ADDR (a) #:transparent)         ; Address value.
 
 ;; Helper function to get the register name from the register index.
@@ -91,15 +89,10 @@
                 (OPCODE (bs))
                 ; (INSTR (name))
                 )]
-  ; [name (choose 'LOAD
-  ;               'STORE)]
-  ; [operand (?? integer?)]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
               (REG (?? integer?))
               (ADDR (?? integer?))
-              ; (MEM-LOAD (bs))
-              ; (MEM-STORE (bs) (bs))
               )]
   )
 
@@ -117,7 +110,7 @@
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
-            [(OPCODE bs) (eval-opcode bs xstate)]))
+            [(OPCODE bs op1 op2) (eval-opcode bs op1 op2 xstate)]))
             ; [(INSTR name operand) (eval-instr name operand xstate)]))
 
 ; Format notes:
@@ -128,28 +121,8 @@
 ; (IF (OPCODE #b0000010101) ADDR[operand1]) : 
 ; This clause represents the condition where a memory store opcode (#b0000010101) is encountered,
 ; and the address referenced by operand1 is considered leaked based on the leakage-expression function.
-(define (eval-opcode bs xstate)
-  (let* ((opcode (get-opcode bs))
-         (op1 (extract-op1 bs)) ; Address where data is being stored (for a store instr).
-         (op2 (extract-op2 bs))) ; Value/data being stored.
-    (cond
-      ((eq? opcode #b0000001010) ; Example opcode value for memory load.
-       ; Retrieve the values of registers or operands based on the opcode.
-       ; Perform the evaluation or comparison using the retrieved values.
-       ; Return the result of the evaluation.
-       (let* ((reg-index (extract-integer op1))
-              (register (list-ref xstate reg-index))
-              (operand-value (extract-integer op2)))
-         (eq? register operand-value))) ; If register value == op2 value -> op2 value is leaked.
-      ((eq? opcode #b0000001100) ; Another example opcode value for memory store.
-       ; Handle the specific behavior for this opcode value.
-       (let* ((addr-index (extract-integer op1))
-              (address (list-ref xstate addr-index)))
-              #t) ; Just return that the address is leaked. Later we will likely want to constrain this.
-       )
-      (else
-       ; Handle other opcode values, if any.
-       #f))))
+(define (eval-opcode bs op1 op2 xstate)
+  (println "TODO"))
 
 (define (get-opcode bs)
   (bvextract 0 3 bs))     ; Extract bits 0 to 3 (inclusive) as opcode.
@@ -278,8 +251,8 @@
                   (diff i j r (+ i_ 1) j_ r_ expr))
               (and (not (empty-obs expr (run-step-regs (list-ref r i))))
                    (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
-                   (equal? (run-step-opcode (list-ref r i)) ; TODO: Shouldn't need this.
-                           (run-step-opcode (list-ref r_ i_)))
+                  ;  (equal? (run-step-opcode (list-ref r i)) ; Is this always equal? Should be since generated program is the same for two runs.
+                  ;          (run-step-opcode (list-ref r_ i_)))
                    (not (obs-equal expr (run-step-regs (list-ref r i))
                                         (run-step-regs (list-ref r_ i_)))))))))
 
@@ -308,7 +281,7 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439811 (bitvector 64))))
 
-(define r0 (list (make-run-step r0_0 (OPCODE (bv #b0000001011 (bitvector 8)))) (make-run-step r0_1 (OPCODE (bv #b0000001100 (bitvector 8))))))
+(define r0 (list (make-run-step r0_0 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0111 (bitvector 4)) (bv #b1101 (bitvector 4)))) (make-run-step r0_1 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0101 (bitvector 4)) (bv #b1100 (bitvector 4))))))
 
 ; Register state @ instruction: PLACEHOLDER
 (define r1_0 (list (bv 176093659177 (bitvector 64))
@@ -330,8 +303,7 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439811 (bitvector 64))))
 
-
-(define r1 (list (make-run-step r1_0 (OPCODE (bv #b0000001010 (bitvector 8)))) (make-run-step r1_1 (OPCODE (bv #b0000001100 (bitvector 8))))))
+(define r1 (list (make-run-step r1_0 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0110 (bitvector 4)) (bv #b1100 (bitvector 4)))) (make-run-step r1_1 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0100 (bitvector 4)) (bv #b1100 (bitvector 4))))))
 
 (define myexpr (cexpr #:depth 1))
 
