@@ -100,7 +100,10 @@
 
 ; Evaluation function for expressions.
 (define (eval e xstate)
-  (destruct e [(IF pred bs) (if (eval-pred pred xstate) (list (eval-bs bs xstate)) EMPTY)]))
+  (destruct e
+    [(IF pred bs) (if (eval-pred pred xstate) (list (eval-bs bs xstate)) EMPTY)]
+    [(OPCODE bs op1 op2) (eval-opcode bs op1 op2 xstate)]
+    [_ EMPTY]))
 
 ; Evaluation function for predicates.
 (define (eval-pred p xstate)
@@ -158,8 +161,8 @@
 (define (bv-eq? bv1 bv2)
   (bveq bv1 bv2))
 
-(define (opcode-equal opcode1 opcode2)
-  (bv-eq? opcode1 opcode2))
+; (define (opcode-equal opcode1 opcode2)
+;   (bv-eq? opcode1 opcode2))
 
 ; (define (get-instr xstate)
 ;   (cdr xstate))
@@ -170,7 +173,7 @@
             [(BS b) b]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b xstate))]
             [(REG reg) (eval-reg reg xstate)]
-            [(OPCODE bs op1 op2) (eval-opcode bs op1 op2 xstate)] ; This should probably not be here.
+            ; [(OPCODE bs op1 op2) (eval-opcode bs op1 op2 xstate)] ; This should probably not be here.
             ))
 
 ; Evaluation function for instructions.
@@ -205,6 +208,17 @@
 (define (empty-obs expr xstate)
   (empty? (eval expr xstate)))
 
+(define (opcode-equal expr xstate1 xstate2)
+  (println "[opcode-equal]")
+  (println (obs-opcode expr xstate1))
+  (println xstate1)
+  ; (let* ((opcode1 (obs-opcode expr xstate1))
+  ;       (opcode2 (obs-opcode expr xstate2)))
+  ;   (and (listbv-equal opcode1 opcode2)
+  ;       (not (empty-obs expr opcode1))
+  ;       (not (empty-obs expr opcode2))))
+  )
+
 ; obs-equal() takes an expression and two xstates
 ;             returns true if the two xstates produces same observations
 ;                     false otherwise
@@ -222,11 +236,12 @@
           #f
           (and (bveq (first bvs1) (first bvs2)) (listbv-equal (rest bvs1) (rest bvs2))))))
 
-(define (obs-opcode xstate)
-  (let* ((opcode (run-step-opcode xstate))    ; Get opcode from run step.
-          (op2 (OPCODE-op2 opcode)))          ; Get operand value from opcode.
-    ; (println op2)
-    op2))
+; Take our grammar expression and archstate as input.
+; Return a list of the operands for the run step.
+(define (obs-opcode expr xstate)
+  (println "[obs-opcode]")
+  (let* ((opcode (obs expr xstate)))
+    (list (OPCODE-op1 opcode) (OPCODE-op2 opcode))))
           
 
 ; extract-observation() takes a run object
@@ -244,7 +259,6 @@
 ;               (let ((reg-value (list-ref registers register-index)))
 ;                 (loop (cdr steps) (cons `(IF (INSTR == 'LOAD) (REG ${register-name})) ,reg-value) observations)))
 ;               (loop (cdr steps) observations)))))
-
 
 
 ; diff() takes the following arguments:
@@ -267,7 +281,7 @@
                   (diff (+ i 1) j r i_ j_ r_ expr))
               (and (empty-obs expr (run-step-regs (list-ref r_ i_)))
                   (diff i j r (+ i_ 1) j_ r_ expr))
-              (and (not (equal? (obs-opcode (list-ref r i)) (obs-opcode (list-ref r_ i_))))) ; Checking if second oeprand for instruciton at each step is equal between runs. If not, operand value is leaked.)
+              (and (not (opcode-equal expr (run-step-opcode (list-ref r i)) (run-step-opcode (list-ref r_ i_))))) ; Checking if second oeprand for instruciton at each step is equal between runs. If not, operand value is leaked.)
               (and (not (empty-obs expr (run-step-regs (list-ref r i))))
                    (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
                    (not (obs-equal expr (run-step-regs (list-ref r i))
@@ -294,7 +308,7 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439811 (bitvector 64))))
 
-(define r0 (list (make-run-step r0_0 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4)))) (make-run-step r0_1 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0101 (bitvector 4)) (bv #b1100 (bitvector 4))))))
+(define r0 (list (make-run-step r0_0 (OPCODE (bv #b0000001010 (bitvector 8)) (bv #b0111 (bitvector 4)) (bv #b1101 (bitvector 4)))) (make-run-step r0_1 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0101 (bitvector 4)) (bv #b1100 (bitvector 4))))))
 
 ; Register state @ instruction: PLACEHOLDER
 (define r1_0 (list (bv 176093659177 (bitvector 64))
@@ -308,7 +322,7 @@
 
 ; Register state @ instruction: PLACEHOLDER
 (define r1_1 (list (bv 176093659177 (bitvector 64))
-                   (bv 1662152343938 (bitvector 64))
+                   (bv 1662152343939 (bitvector 64))
                    (bv 1524713390435 (bitvector 64))
                    (bv 176093659177 (bitvector 64))
                    (bv 1984274891214 (bitvector 64))
@@ -316,16 +330,14 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439811 (bitvector 64))))
 
-(define r1 (list (make-run-step r1_0 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4)))) (make-run-step r1_1 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0101 (bitvector 4)) (bv #b1100 (bitvector 4))))))
+(define r1 (list (make-run-step r1_0 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4)))) (make-run-step r1_1 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0101 (bitvector 4)) (bv #b1101 (bitvector 4))))))
 
 (define myexpr (cexpr #:depth 1))
 
-(define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
-                               (diff 1 2 r0 1 2 r1 myexpr)
-))))
+; (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
+;                                (diff 1 2 r0 1 2 r1 myexpr)
+; ))))
 
-(print-forms sol)
+; (print-forms sol)
 
-; (println "Test new constraints:")
-; (diff 0 1 r0 0 1 r1 myexpr)
-; (diff 1 2 r0 1 2 r1 myexpr)
+(diff 0 1 r0 0 1 r1 myexpr)
