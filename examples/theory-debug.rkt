@@ -311,7 +311,7 @@
 ; (define r0 (list (make-run-step r0_0 (OPCODE #b0000001011 (list (#b0111 #b1101))))
 ;                  (make-run-step r0_1 (OPCODE #b0000001100 (list (#b0101 #b1010))))))
 
-(make-run-step r0_0 (OPCODE #b0000001011 (list (#b0111 #b1101))))
+(make-run-step r0_0 (OPCODE (bv #b0000001011 (bitvector 8)) (list ((bv #b0111 (bitvector 4)) (bv #b1101 (bitvector 4))))))
 
 ; Register state @ instruction: PLACEHOLDER
 (define r1_0 (list (bv 176093659177 (bitvector 64))
