@@ -209,15 +209,9 @@
   (empty? (eval expr xstate)))
 
 (define (opcode-equal expr xstate1 xstate2)
-  (println "[opcode-equal]")
-  (println (obs-opcode expr xstate1))
-  (println xstate1)
-  ; (let* ((opcode1 (obs-opcode expr xstate1))
-  ;       (opcode2 (obs-opcode expr xstate2)))
-  ;   (and (listbv-equal opcode1 opcode2)
-  ;       (not (empty-obs expr opcode1))
-  ;       (not (empty-obs expr opcode2))))
-  )
+  (and (equal? (OPCODE-bs xstate1) (OPCODE-bs xstate2))
+       (equal? (OPCODE-op1 xstate1) (OPCODE-op1 xstate2))
+       (equal? (OPCODE-op2 xstate2) (OPCODE-op2 xstate2))))
 
 ; obs-equal() takes an expression and two xstates
 ;             returns true if the two xstates produces same observations
@@ -338,6 +332,9 @@
 ;                                (diff 1 2 r0 1 2 r1 myexpr)
 ; ))))
 
+; (print-forms sol)
+
+; (define sol (solve (assert ((diff 0 1 r0 0 1 r1 myexpr)))))
 ; (print-forms sol)
 
 (diff 0 1 r0 0 1 r1 myexpr)
