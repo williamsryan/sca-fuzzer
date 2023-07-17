@@ -127,13 +127,9 @@
      ; Retrieve the values of registers or operands based on the opcode and operands.
      ; Perform the evaluation or comparison using the retrieved values.
      ; Return the result of the evaluation.
-     (let* ((op2-index (extract-integer op2))
-            (op2-value (list-ref xstate op2-index)))
-          op2-value)]
+     (OPCODE-op2)] ; Return the value of second operand.
     [(bv-eq? bs #b0000010101) ; Another example opcode value
-     (let* ((op1-index (extract-integer op1))
-            (op1-value (list-ref xstate op1-index)))
-          op1-value)]
+     (OPCODE-op1)]  ; Return value of first operand.
     [else
      ; Not an instruction we need to parse; return false.
      #f]))
