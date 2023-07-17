@@ -254,11 +254,13 @@
   (if (equal? i j)
       (if (equal? i_ j_)
           #f
-          (or (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
-              (diff j j r (+ i_ 1) j_ r_ expr)))
+          (or (not (empty-obs expr (run-step-regs (list-ref r_ i_)))
+              (obs-opcode (list-ref r_ i_))
+              (diff j j r (+ i_ 1) j_ r_ expr))))
       (if (equal? i_ j_)
-          (or (not (empty-obs expr (run-step-regs (list-ref r i))))
-              (diff (+ i 1) j r j_ j_ r_ expr))
+          (or (not (empty-obs expr (run-step-regs (list-ref r i)))
+              (obs-opcode (list-ref r i))
+              (diff (+ i 1) j r j_ j_ r_ expr)))
           (or (and (empty-obs expr (run-step-regs (list-ref r i)))
                   (diff (+ i 1) j r i_ j_ r_ expr))
               (and (empty-obs expr (run-step-regs (list-ref r_ i_)))
@@ -267,12 +269,22 @@
                    (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
                   ;  (equal? (run-step-opcode (list-ref r i)) ; Is this always equal? Should be since generated program is the same for two runs.
                   ;          (run-step-opcode (list-ref r_ i_)))
+                  ;  (obs-opcode run-step-opcode (list-ref r i))
                    (not (obs-equal expr (run-step-regs (list-ref r i))
                                         (run-step-regs (list-ref r_ i_)))))))))
 
-; TODO: implement a check to parse the opcode/instruction from each run step.
-;       If it is a load, get the second operand and check if that value is in any register.
-;       If so, we can say that load instructions leak their second operand via that register.
+; obs-opcode() takes an archstate object.
+; This converts register values in xstate to integers,
+; then checks if either operand is present in the list of
+; register values. Otherwise return false.
+(define (obs-opcode xstate)
+  (let* ((step (car xstate))
+         (opcode (run-step-opcode step))
+         (op1 (OPCODE-op1 opcode))
+         (op2 (OPCODE-op2 opcode))
+         (registers (run-step-regs step)))
+    (or (member op1 registers)
+        (member op2 registers))))
 
 ; ------------- END-CORE ------------------ ;
 ; Register state @ instruction: PLACEHOLDER
