@@ -308,8 +308,10 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439811 (bitvector 64))))
 
-(define r0 (list (make-run-step r0_0 (OPCODE #b0000001011 (list (#b0111 #b1101))))
-                 (make-run-step r0_1 (OPCODE #b0000001100 (list (#b0101 #b1010))))))
+; (define r0 (list (make-run-step r0_0 (OPCODE #b0000001011 (list (#b0111 #b1101))))
+;                  (make-run-step r0_1 (OPCODE #b0000001100 (list (#b0101 #b1010))))))
+
+(make-run-step r0_0 (OPCODE #b0000001011 (list (#b0111 #b1101))))
 
 ; Register state @ instruction: PLACEHOLDER
 (define r1_0 (list (bv 176093659177 (bitvector 64))
@@ -331,16 +333,16 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439811 (bitvector 64))))
 
-(define r1 (list (make-run-step r1_0 (OPCODE #b0000001011 (list (#b0111 #b1101))))
-                 (make-run-step r1_1 (OPCODE #b0000001100 (list (#b0101 #b1010))))))
+; (define r1 (list (make-run-step r1_0 (OPCODE #b0000001011 (list (#b0111 #b1101))))
+;                  (make-run-step r1_1 (OPCODE #b0000001100 (list (#b0101 #b1010))))))
 
-(define myexpr (cexpr #:depth 1))
+; (define myexpr (cexpr #:depth 1))
 
-(define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
-                               (diff 1 2 r0 1 2 r1 myexpr)
-))))
+; (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
+;                                (diff 1 2 r0 1 2 r1 myexpr)
+; ))))
 
-(print-forms sol)
+; (print-forms sol)
 
 ; (define sol (solve (assert ((diff 0 1 r0 0 1 r1 myexpr)))))
 ; (print-forms sol)
