@@ -435,8 +435,8 @@ class UnicornModel(Model, ABC):
             # print(f"[model] Instr name: {dbg_instr.name} Instr op: {dbg_instr.get_mem_operands()}")
             # print(f"[model] Instr name: {dbg_instr.name} Instr op: {dbg_instr.operands}")
 
-            # for op in dbg_instr.operands:
-            #     print(f"[model] operand: {op.value}")
+            for op in instr_obj.operands:
+                print(f"[model] operand: {op.value}")
 
             if (model.current_instruction.is_instrumentation):
                 instr += " #instrumentation"
