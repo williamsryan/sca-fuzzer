@@ -122,6 +122,7 @@
 ; This clause represents the condition where a memory store opcode (#b0000010101) is encountered,
 ; and the address referenced by operand1 is considered leaked based on the leakage-expression function.
 (define (eval-opcode bs op1 op2 xstate)
+  (println "Calling eval-opcode...")
   (cond
     [(bv-eq? bs #b0000001010) ; Example opcode value
      ; Retrieve the values of registers or operands based on the opcode and operands.
@@ -169,6 +170,7 @@
             [(BS b) b]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b xstate))]
             [(REG reg) (eval-reg reg xstate)]
+            [(OPCODE bs op1 op2) (eval-opcode bs op1 op2 xstate)] ; This should probably not be here.
             ))
 
 ; Evaluation function for instructions.
@@ -223,7 +225,7 @@
 (define (obs-opcode xstate)
   (let* ((opcode (run-step-opcode xstate))    ; Get opcode from run step.
           (op2 (OPCODE-op2 opcode)))          ; Get operand value from opcode.
-    (println op2)
+    ; (println op2)
     op2))
           
 
@@ -306,7 +308,7 @@
 
 ; Register state @ instruction: PLACEHOLDER
 (define r1_1 (list (bv 176093659177 (bitvector 64))
-                   (bv 1662152343939 (bitvector 64))
+                   (bv 1662152343938 (bitvector 64))
                    (bv 1524713390435 (bitvector 64))
                    (bv 176093659177 (bitvector 64))
                    (bv 1984274891214 (bitvector 64))
@@ -314,7 +316,7 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439811 (bitvector 64))))
 
-(define r1 (list (make-run-step r1_0 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0111 (bitvector 4)) (bv #b0001 (bitvector 4)))) (make-run-step r1_1 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0101 (bitvector 4)) (bv #b1101 (bitvector 4))))))
+(define r1 (list (make-run-step r1_0 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4)))) (make-run-step r1_1 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0101 (bitvector 4)) (bv #b1100 (bitvector 4))))))
 
 (define myexpr (cexpr #:depth 1))
 
@@ -327,11 +329,3 @@
 ; (println "Test new constraints:")
 ; (diff 0 1 r0 0 1 r1 myexpr)
 ; (diff 1 2 r0 1 2 r1 myexpr)
-
-
-; Some more tests.
-; (newline)
-; (println "TESTING")
-; (newline)
-
-; (obs-opcode r1)
