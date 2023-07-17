@@ -255,11 +255,11 @@
       (if (equal? i_ j_)
           #f
           (or (not (empty-obs expr (run-step-regs (list-ref r_ i_)))
-              (obs-opcode (list-ref r_ i_))
+              ; (obs-opcode (list-ref r_ i_))
               (diff j j r (+ i_ 1) j_ r_ expr))))
       (if (equal? i_ j_)
           (or (not (empty-obs expr (run-step-regs (list-ref r i)))
-              (obs-opcode (list-ref r i))
+              ; (obs-opcode (list-ref r i))
               (diff (+ i 1) j r j_ j_ r_ expr)))
           (or (and (empty-obs expr (run-step-regs (list-ref r i)))
                   (diff (+ i 1) j r i_ j_ r_ expr))
@@ -273,18 +273,11 @@
                    (not (obs-equal expr (run-step-regs (list-ref r i))
                                         (run-step-regs (list-ref r_ i_)))))))))
 
-; obs-opcode() takes an archstate object.
-; This converts register values in xstate to integers,
-; then checks if either operand is present in the list of
-; register values. Otherwise return false.
 (define (obs-opcode xstate)
-  (let* ((step (car xstate))
-         (opcode (run-step-opcode step))
-         (op1 (OPCODE-op1 opcode))
-         (op2 (OPCODE-op2 opcode))
-         (registers (run-step-regs step)))
-    (or (member op1 registers)
-        (member op2 registers))))
+  (let* ((r1 (car xstate))                ; Get first run step from archstate.
+          (opcode (run-step-opcode r1))   ; Get opcode from run step.
+          (op2 (OPCODE-op2 opcode)))      ; Get operand value from opcode.
+    op2))
 
 ; ------------- END-CORE ------------------ ;
 ; Register state @ instruction: PLACEHOLDER
@@ -338,3 +331,11 @@
 ))))
 
 (print-forms sol)
+
+
+; Some more tests.
+(newline)
+(println "TESTING")
+(newline)
+
+(obs-opcode r1)
