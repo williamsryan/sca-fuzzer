@@ -220,6 +220,13 @@
           #f
           (and (bveq (first bvs1) (first bvs2)) (listbv-equal (rest bvs1) (rest bvs2))))))
 
+(define (obs-opcode xstate)
+  (let* ((r1 (car xstate))                ; Get first run step from archstate.
+          (opcode (run-step-opcode r1))   ; Get opcode from run step.
+          (op2 (OPCODE-op2 opcode)))      ; Get operand value from opcode.
+    ; (println "Opcode test:")
+    (println op2)
+    op2))
           
 
 ; extract-observation() takes a run object
@@ -248,18 +255,20 @@
 ;        returns true if the trace produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
-  (println "Checking opcode:")
-  (println (run-step-opcode (list-ref r i)))
+  (println "Checking operand:")
+  ; (println (run-step-opcode (list-ref r i)))
+  (obs-opcode r)
+  (println "Against:")
+  ; (println (run-step-opcode (list-ref r_ i_)))
+  (obs-opcode r_)
   (newline)
   (if (equal? i j)
       (if (equal? i_ j_)
           #f
           (or (not (empty-obs expr (run-step-regs (list-ref r_ i_)))
-              ; (obs-opcode (list-ref r_ i_))
               (diff j j r (+ i_ 1) j_ r_ expr))))
       (if (equal? i_ j_)
           (or (not (empty-obs expr (run-step-regs (list-ref r i)))
-              ; (obs-opcode (list-ref r i))
               (diff (+ i 1) j r j_ j_ r_ expr)))
           (or (and (empty-obs expr (run-step-regs (list-ref r i)))
                   (diff (+ i 1) j r i_ j_ r_ expr))
@@ -267,17 +276,10 @@
                   (diff i j r (+ i_ 1) j_ r_ expr))
               (and (not (empty-obs expr (run-step-regs (list-ref r i))))
                    (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
-                  ;  (equal? (run-step-opcode (list-ref r i)) ; Is this always equal? Should be since generated program is the same for two runs.
+                  ;  (equal? (run-step-opcode (list-ref r i))
                   ;          (run-step-opcode (list-ref r_ i_)))
-                  ;  (obs-opcode run-step-opcode (list-ref r i))
                    (not (obs-equal expr (run-step-regs (list-ref r i))
                                         (run-step-regs (list-ref r_ i_)))))))))
-
-(define (obs-opcode xstate)
-  (let* ((r1 (car xstate))                ; Get first run step from archstate.
-          (opcode (run-step-opcode r1))   ; Get opcode from run step.
-          (op2 (OPCODE-op2 opcode)))      ; Get operand value from opcode.
-    op2))
 
 ; ------------- END-CORE ------------------ ;
 ; Register state @ instruction: PLACEHOLDER
@@ -334,8 +336,8 @@
 
 
 ; Some more tests.
-(newline)
-(println "TESTING")
-(newline)
+; (newline)
+; (println "TESTING")
+; (newline)
 
-(obs-opcode r1)
+; (obs-opcode r1)
