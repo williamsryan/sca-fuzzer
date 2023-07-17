@@ -29,7 +29,7 @@
 
 ; Struct definitions for our contract language.
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
-(struct OPCODE (opcode operands) #:transparent)
+(struct OPCODE (bs operands) #:transparent)
 (struct INSTR (name operand) #:transparent)
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
 (struct RS1 ())                         ; Register RS1.
@@ -210,7 +210,7 @@
 
 (define (opcode-equal opcode1 opcode2)
   (println "[opcode-equal]")
-  (and (equal? (OPCODE-opcode opcode1) (OPCODE-opcode opcode2))
+  (and (equal? (OPCODE-bs opcode1) (OPCODE-bs opcode2))
        (equal? (OPCODE-operands opcode1) (OPCODE-operands opcode2))))
     
 ; obs-equal() takes an expression and two xstates
@@ -308,8 +308,8 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439811 (bitvector 64))))
 
-(define r0 (list (make-run-step r0_0 (OPCODE #b0000001011 #b0111 #b1101))
-                 (make-run-step r0_1 (OPCODE #b0000001100 #b0101 #b1010))))
+(define r0 (list (make-run-step r0_0 (OPCODE #b0000001011 (list (#b0111 #b1101))))
+                 (make-run-step r0_1 (OPCODE #b0000001100 (list (#b0101 #b1010))))))
 
 ; Register state @ instruction: PLACEHOLDER
 (define r1_0 (list (bv 176093659177 (bitvector 64))
@@ -331,8 +331,8 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439811 (bitvector 64))))
 
-(define r1 (list (make-run-step r1_0 (OPCODE #b0000001011 #b0111 #b1101))
-                 (make-run-step r1_1 (OPCODE #b0000001100 #b0101 #b1010))))
+(define r1 (list (make-run-step r1_0 (OPCODE #b0000001011 (list (#b0111 #b1101))))
+                 (make-run-step r1_1 (OPCODE #b0000001100 (list (#b0101 #b1010))))))
 
 (define myexpr (cexpr #:depth 1))
 
