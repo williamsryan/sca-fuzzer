@@ -29,7 +29,7 @@
 
 ; Struct definitions for our contract language.
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
-(struct OPCODE (bs op1 op2) #:transparent)
+(struct OPCODE (opcode operands) #:transparent)
 (struct INSTR (name operand) #:transparent)
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
 (struct RS1 ())                         ; Register RS1.
@@ -102,7 +102,6 @@
 (define (eval e xstate)
   (destruct e
     [(IF pred bs) (if (eval-pred pred xstate) (list (eval-bs bs xstate)) EMPTY)]
-    [(OPCODE bs op1 op2) (eval-opcode bs op1 op2 xstate)]
     [_ EMPTY]))
 
 ; Evaluation function for predicates.
@@ -113,7 +112,7 @@
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
-            [(OPCODE bs op1 op2) (eval-opcode bs op1 op2 xstate)]))
+            [(OPCODE opcode operands) (eval-opcode opcode operands xstate)]))
             ; [(INSTR name operand) (eval-instr name operand xstate)]))
 
 ; Format notes:
@@ -124,19 +123,15 @@
 ; (IF (OPCODE #b0000010101) ADDR[operand1]) : 
 ; This clause represents the condition where a memory store opcode (#b0000010101) is encountered,
 ; and the address referenced by operand1 is considered leaked based on the leakage-expression function.
-(define (eval-opcode bs op1 op2 xstate)
+(define (eval-opcode xstate)
   (println "Calling eval-opcode...")
-  (cond
-    [(bv-eq? bs #b0000001010) ; Example opcode value
-     ; Retrieve the values of registers or operands based on the opcode and operands.
-     ; Perform the evaluation or comparison using the retrieved values.
+  (match xstate
+    [(OPCODE opcode operands)
+     ; Perform the evaluation or comparison using the opcode and operands.
      ; Return the result of the evaluation.
-     (OPCODE-op2)] ; Return the value of second operand.
-    [(bv-eq? bs #b0000010101) ; Another example opcode value
-     (OPCODE-op1)]  ; Return value of first operand.
-    [else
-     ; Not an instruction we need to parse; return false.
-     #f]))
+     (println "Got something")]
+    [_
+     (println "Invalid expression for evaluating opcode")]))
 
 ; (define (get-opcode bs)
 ;   (bvextract 0 3 bs))     ; Extract bits 0 to 3 (inclusive) as opcode.
@@ -208,17 +203,26 @@
 (define (empty-obs expr xstate)
   (empty? (eval expr xstate)))
 
-(define (opcode-equal expr xstate1 xstate2)
-  (and (equal? (OPCODE-bs xstate1) (OPCODE-bs xstate2))
-       (equal? (OPCODE-op1 xstate1) (OPCODE-op1 xstate2))
-       (equal? (OPCODE-op2 xstate2) (OPCODE-op2 xstate2))))
+; (define (opcode-equal expr xstate1 xstate2)
+;   (and (equal? (OPCODE-bs xstate1) (OPCODE-bs xstate2))
+;        (equal? (OPCODE-op1 xstate1) (OPCODE-op1 xstate2))
+;        (equal? (OPCODE-op2 xstate2) (OPCODE-op2 xstate2))))
 
+(define (opcode-equal opcode1 opcode2)
+  (println "[opcode-equal]")
+  (and (equal? (OPCODE-opcode opcode1) (OPCODE-opcode opcode2))
+       (equal? (OPCODE-operands opcode1) (OPCODE-operands opcode2))))
+    
 ; obs-equal() takes an expression and two xstates
 ;             returns true if the two xstates produces same observations
 ;                     false otherwise
 ; TODO: this is just operating on registers currently, so opcode-equal is ignored.
 (define (obs-equal expr xstate1 xstate2)
-  (listbv-equal (obs expr xstate1) (obs expr xstate2)))
+  (println "[obs-equal]")
+  (println (obs expr xstate1)))
+  ; (listbv-equal (obs expr xstate1) (obs expr xstate2)))
+  ; (or (listbv-equal (obs expr xstate1) (obs expr xstate2))
+      ; (opcode-equal (obs-opcode xstate1) (obs-opcode xstate2))))
 
 ; listbv-equal() takes two observations
 ;                returns true if they are the same
@@ -232,10 +236,12 @@
 
 ; Take our grammar expression and archstate as input.
 ; Return a list of the operands for the run step.
-(define (obs-opcode expr xstate)
-  (println "[obs-opcode]")
-  (let* ((opcode (obs expr xstate)))
-    (list (OPCODE-op1 opcode) (OPCODE-op2 opcode))))
+(define (obs-opcode xstate)
+  (match xstate
+    [(OPCODE opcode operands)
+     (list opcode operands)]
+    [_
+     (println "Invalid expression for opcode observation")]))
           
 
 ; extract-observation() takes a run object
@@ -275,7 +281,7 @@
                   (diff (+ i 1) j r i_ j_ r_ expr))
               (and (empty-obs expr (run-step-regs (list-ref r_ i_)))
                   (diff i j r (+ i_ 1) j_ r_ expr))
-              (and (not (opcode-equal expr (run-step-opcode (list-ref r i)) (run-step-opcode (list-ref r_ i_))))) ; Checking if second oeprand for instruciton at each step is equal between runs. If not, operand value is leaked.)
+              (and (not (obs-equal expr (run-step-opcode (list-ref r i)) (run-step-opcode (list-ref r_ i_))))) ; Checking if second oeprand for instruciton at each step is equal between runs. If not, operand value is leaked.)
               (and (not (empty-obs expr (run-step-regs (list-ref r i))))
                    (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
                    (not (obs-equal expr (run-step-regs (list-ref r i))
@@ -302,7 +308,8 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439811 (bitvector 64))))
 
-(define r0 (list (make-run-step r0_0 (OPCODE (bv #b0000001010 (bitvector 8)) (bv #b0111 (bitvector 4)) (bv #b1101 (bitvector 4)))) (make-run-step r0_1 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0101 (bitvector 4)) (bv #b1100 (bitvector 4))))))
+(define r0 (list (make-run-step r0_0 (OPCODE #b0000001011 #b0111 #b1101))
+                 (make-run-step r0_1 (OPCODE #b0000001100 #b0101 #b1010))))
 
 ; Register state @ instruction: PLACEHOLDER
 (define r1_0 (list (bv 176093659177 (bitvector 64))
@@ -324,17 +331,18 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439811 (bitvector 64))))
 
-(define r1 (list (make-run-step r1_0 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4)))) (make-run-step r1_1 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0101 (bitvector 4)) (bv #b1101 (bitvector 4))))))
+(define r1 (list (make-run-step r1_0 (OPCODE #b0000001011 #b0111 #b1101))
+                 (make-run-step r1_1 (OPCODE #b0000001100 #b0101 #b1010))))
 
 (define myexpr (cexpr #:depth 1))
 
-; (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
-;                                (diff 1 2 r0 1 2 r1 myexpr)
-; ))))
+(define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
+                               (diff 1 2 r0 1 2 r1 myexpr)
+))))
 
-; (print-forms sol)
+(print-forms sol)
 
 ; (define sol (solve (assert ((diff 0 1 r0 0 1 r1 myexpr)))))
 ; (print-forms sol)
 
-(diff 0 1 r0 0 1 r1 myexpr)
+; (diff 0 1 r0 0 1 r1 myexpr)
