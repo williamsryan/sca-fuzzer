@@ -122,21 +122,35 @@
 ; This clause represents the condition where a memory store opcode (#b0000010101) is encountered,
 ; and the address referenced by operand1 is considered leaked based on the leakage-expression function.
 (define (eval-opcode bs op1 op2 xstate)
-  (println "TODO"))
+  (cond
+    [(bv-eq? bs #b0000001010) ; Example opcode value
+     ; Retrieve the values of registers or operands based on the opcode and operands.
+     ; Perform the evaluation or comparison using the retrieved values.
+     ; Return the result of the evaluation.
+     (let* ((op2-index (extract-integer op2))
+            (op2-value (list-ref xstate op2-index)))
+          op2-value)]
+    [(bv-eq? bs #b0000010101) ; Another example opcode value
+     (let* ((op1-index (extract-integer op1))
+            (op1-value (list-ref xstate op1-index)))
+          op1-value)]
+    [else
+     ; Not an instruction we need to parse; return false.
+     #f]))
 
-(define (get-opcode bs)
-  (bvextract 0 3 bs))     ; Extract bits 0 to 3 (inclusive) as opcode.
+; (define (get-opcode bs)
+;   (bvextract 0 3 bs))     ; Extract bits 0 to 3 (inclusive) as opcode.
 
-(define (extract-op1 bs)
-  (extract-bits bs 4 7))  ; Extract bits 4 to 7 (inclusive) as operand1.
+; (define (extract-op1 bs)
+;   (extract-bits bs 4 7))  ; Extract bits 4 to 7 (inclusive) as operand1.
 
-(define (extract-op2 bs)
-  (extract-bits bs 8 11))  ; Extract bits 8 to 11 (inclusive) as operand2.
+; (define (extract-op2 bs)
+;   (extract-bits bs 8 11))  ; Extract bits 8 to 11 (inclusive) as operand2.
 
 (define (extract-integer value)
   (match value
     [(bv i _) i]
-    [_ (println "Invalid value for extracting integer")]))
+    [_ (println "Invalid integer value from bitvector")]))
 
 (define (extract-bits bs start-bit end-bit)
   (bvextract start-bit (+ 1 (- end-bit start-bit)) bs))
@@ -162,13 +176,13 @@
             ))
 
 ; Evaluation function for instructions.
-(define (eval-instr name operand xstate)
-  (match name
-    ['LOAD
-      (println "Got a 'LOAD; just testing for now.")
-      (eval-reg operand xstate)]
-    ['STORE
-      (println "Got a 'STORE; not yet implemented.")]))
+; (define (eval-instr name operand xstate)
+;   (match name
+;     ['LOAD
+;       (println "Got a 'LOAD; just testing for now.")
+;       (eval-reg operand xstate)]
+;     ['STORE
+;       (println "Got a 'STORE; not yet implemented.")]))
 
 ; Evaluation function for addresses.
 (define (eval-addr addr xstate)
@@ -210,6 +224,8 @@
           #f
           (and (bveq (first bvs1) (first bvs2)) (listbv-equal (rest bvs1) (rest bvs2))))))
 
+          
+
 ; extract-observation() takes a run object
 ; This is just a test function for now.
 ; (define (extract-observations run)
@@ -225,6 +241,8 @@
 ;               (let ((reg-value (list-ref registers register-index)))
 ;                 (loop (cdr steps) (cons `(IF (INSTR == 'LOAD) (REG ${register-name})) ,reg-value) observations)))
 ;               (loop (cdr steps) observations)))))
+
+
 
 ; diff() takes the following arguments:
 ;              i,j,i_,j_  : natural numbers such that i <= j and i_ <= j_
