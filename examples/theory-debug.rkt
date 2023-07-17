@@ -221,10 +221,8 @@
           (and (bveq (first bvs1) (first bvs2)) (listbv-equal (rest bvs1) (rest bvs2))))))
 
 (define (obs-opcode xstate)
-  (let* ((r1 (car xstate))                ; Get first run step from archstate.
-          (opcode (run-step-opcode r1))   ; Get opcode from run step.
-          (op2 (OPCODE-op2 opcode)))      ; Get operand value from opcode.
-    ; (println "Opcode test:")
+  (let* ((opcode (run-step-opcode xstate))    ; Get opcode from run step.
+          (op2 (OPCODE-op2 opcode)))          ; Get operand value from opcode.
     (println op2)
     op2))
           
@@ -255,13 +253,6 @@
 ;        returns true if the trace produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
-  (println "Checking operand:")
-  ; (println (run-step-opcode (list-ref r i)))
-  (obs-opcode r)
-  (println "Against:")
-  ; (println (run-step-opcode (list-ref r_ i_)))
-  (obs-opcode r_)
-  (newline)
   (if (equal? i j)
       (if (equal? i_ j_)
           #f
@@ -276,8 +267,7 @@
                   (diff i j r (+ i_ 1) j_ r_ expr))
               (and (not (empty-obs expr (run-step-regs (list-ref r i))))
                    (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
-                  ;  (equal? (run-step-opcode (list-ref r i))
-                  ;          (run-step-opcode (list-ref r_ i_)))
+                   (not (equal? (obs-opcode (list-ref r i)) (obs-opcode (list-ref r_ i_)))) ; Checking if second oeprand for instruciton at each step is equal between runs. If not, operand value is leaked.
                    (not (obs-equal expr (run-step-regs (list-ref r i))
                                         (run-step-regs (list-ref r_ i_)))))))))
 
@@ -302,7 +292,7 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439811 (bitvector 64))))
 
-(define r0 (list (make-run-step r0_0 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0111 (bitvector 4)) (bv #b1101 (bitvector 4)))) (make-run-step r0_1 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0101 (bitvector 4)) (bv #b1100 (bitvector 4))))))
+(define r0 (list (make-run-step r0_0 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4)))) (make-run-step r0_1 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0101 (bitvector 4)) (bv #b1100 (bitvector 4))))))
 
 ; Register state @ instruction: PLACEHOLDER
 (define r1_0 (list (bv 176093659177 (bitvector 64))
@@ -324,7 +314,7 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439811 (bitvector 64))))
 
-(define r1 (list (make-run-step r1_0 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0110 (bitvector 4)) (bv #b1100 (bitvector 4)))) (make-run-step r1_1 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0100 (bitvector 4)) (bv #b1100 (bitvector 4))))))
+(define r1 (list (make-run-step r1_0 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0111 (bitvector 4)) (bv #b0001 (bitvector 4)))) (make-run-step r1_1 (OPCODE (bv #b0000001011 (bitvector 8)) (bv #b0101 (bitvector 4)) (bv #b1101 (bitvector 4))))))
 
 (define myexpr (cexpr #:depth 1))
 
