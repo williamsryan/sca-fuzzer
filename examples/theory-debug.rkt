@@ -296,7 +296,7 @@
 
 ; Register state @ instruction: PLACEHOLDER
 (define r1_0 (list (bv 176093659177 (bitvector 64))
-                   (bv 1142461301002 (bitvector 64))
+                   (bv 1662152343939 (bitvector 64))
                    (bv 1524713390435 (bitvector 64))
                    (bv 176093659177 (bitvector 64))
                    (bv 1984274891214 (bitvector 64))
@@ -306,7 +306,7 @@
 
 ; Register state @ instruction: PLACEHOLDER
 (define r1_1 (list (bv 176093659177 (bitvector 64))
-                   (bv 1142461301002 (bitvector 64))
+                   (bv 1662152343939 (bitvector 64))
                    (bv 1524713390435 (bitvector 64))
                    (bv 176093659177 (bitvector 64))
                    (bv 1984274891214 (bitvector 64))
