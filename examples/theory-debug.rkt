@@ -159,8 +159,10 @@
 
 ; TODO: update this with our desired constraints for instruction operands.
 (define (eval-operands op1 op2 xstate)
-  (list ((list-ref xstate op2)
-         (list-ref xstate op1))))
+  (list-ref xstate op2)
+  (list-ref xstate op1))
+  ; (list ((list-ref xstate op2)
+  ;        (list-ref xstate op1))))
 
 ; Evaluation function for bit sequences.
 (define (eval-bs bs xstate)
@@ -317,7 +319,7 @@
 (define r0 (list (make-run-step r0_0 (OPCODE (bv #b0000001011 (bitvector 8)))
                                      (list (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4))))
                  (make-run-step r0_1 (OPCODE (bv #b0000001010 (bitvector 8)))
-                                     (list (bv #b0110 (bitvector 4)) (bv #b1101 (bitvector 4))))))
+                                     (list (bv #b0110 (bitvector 4)) (bv #b0011 (bitvector 4))))))
 
 ; Register state @ instruction: PLACEHOLDER
 (define r1_0 (list (bv 176093659177 (bitvector 64))
@@ -342,7 +344,7 @@
 (define r1 (list (make-run-step r1_0 (OPCODE (bv #b0000001011 (bitvector 8)))
                                      (list (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4))))
                  (make-run-step r1_1 (OPCODE (bv #b0000001000 (bitvector 8)))
-                                     (list (bv #b1000 (bitvector 4)) (bv #b0011 (bitvector 4))))))
+                                     (list (bv #b0110 (bitvector 4)) (bv #b0010 (bitvector 4))))))
 
 (define myexpr (cexpr #:depth 1))
 
