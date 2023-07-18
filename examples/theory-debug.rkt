@@ -45,6 +45,9 @@
 (struct REG (r) #:transparent)          ; Register value.
 (struct ADDR (a) #:transparent)         ; Address value.
 
+; Aux structs.
+(struct INTEGER (value) #:transparent)
+
 ;; Helper function to get the register name from the register index.
 (define (get-register-name reg-index registers)
   (case reg-index
@@ -104,9 +107,9 @@
 
 ; Evaluation function for expressions.
 (define (eval e xstate)
-  (match e
+  (destruct e
     [(IF pred bs) (if (eval-pred pred xstate) (list (eval-bs bs xstate)) EMPTY)]
-    [(OPCODE bs) (eval-opcode bs xstate)]
+    ; [(OPCODE bs) (eval-opcode bs xstate)]
     [_ EMPTY]))
 
 ; Evaluation function for predicates.
@@ -162,10 +165,18 @@
 
 ; TODO: update this with our desired constraints for instruction operands.
 (define (eval-operands op1 op2 xstate)
+  ; (println "[eval-operands]")
   (list-ref xstate op2)
   (list-ref xstate op1))
   ; (list ((list-ref xstate op2)
   ;        (list-ref xstate op1))))
+
+(define (eval-operand op xstate)
+  (println "[eval-operand]")
+  (match op
+    [(INTEGER value) value]
+    [(REG reg) (extract-integer (list-ref xstate reg))]
+    ))
 
 ; Evaluation function for bit sequences.
 (define (eval-bs bs xstate)
@@ -174,6 +185,7 @@
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b xstate))]
             [(REG reg) (eval-reg reg xstate)]
             [(OPERANDS op1 op2) (eval-operands op1 op2 xstate)]
+            [(OPERAND op) (eval-operand op xstate)]
             ; [_ (println "Invalid expression for bitstring observation")]
             ))
 
