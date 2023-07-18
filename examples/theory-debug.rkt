@@ -108,9 +108,9 @@
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
               (ADDR (?? integer?))
-              (OPERANDS (?? integer?) (?? integer?))  ; This could be int or bv.
+              ; (OPERANDS (?? integer?) (?? integer?)) ; Moving OPERANDS to part of INSTR.
               (REG (choose (?? integer?)
-                           (?? (bitvector (?? integer?)))))
+                           (?? (bitvector (?? integer?))))) ; Make this option an OPERAND?
               )]
   )
 
@@ -168,9 +168,9 @@
 
 ; TODO: update this with our desired constraints for instruction operands.
 (define (eval-operands op1 op2 xstate)
-  ; (println "[eval-operands]")
-  (list-ref xstate op2)
-  (list-ref xstate op1))
+  (log-debug "[eval-operands] TODO"))
+  ; (list-ref xstate op2)
+  ; (list-ref xstate op1))
   ; (list ((list-ref xstate op2)
   ;        (list-ref xstate op1))))
 
@@ -187,7 +187,7 @@
             [(BS b) b]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b xstate))]
             [(REG reg) (eval-reg reg xstate)]
-            [(OPERANDS op1 op2) (eval-operands op1 op2 xstate)]
+            ; [(OPERANDS op1 op2) (eval-operands op1 op2 xstate)]
             [(OPERAND op) (eval-operand op xstate)]
             ; [_ (log-error "Invalid expression for bitstring observation")]
             ))
