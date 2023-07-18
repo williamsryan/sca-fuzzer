@@ -30,8 +30,9 @@
 ; Struct definitions for our contract language.
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
 (struct OPCODE (bs) #:transparent)
+(struct OPERAND (bs) #:transparent)
 (struct OPERANDS (op1 op2) #:transparent)
-(struct INSTR (name operand) #:transparent)
+(struct INSTR (opcode op1 op2) #:transparent) ; TODO: use INSTR for opcode + operands (pred + bs).
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
 (struct RS1 ())                         ; Register RS1.
 (struct RS2 ())                         ; Register RS2.
@@ -88,13 +89,14 @@
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
                 (OPCODE (bs))
-                ; (INSTR (name))
+                (INSTR (bs) (bs) (bs))
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
-              (REG (?? integer?))
               (ADDR (?? integer?))
               (OPERANDS (?? integer?) (?? integer?)) ; integer or bv int?
+              (REG (choose (?? integer?)
+                           (OPERAND (?? integer?))))
               )]
   )
 
@@ -102,8 +104,9 @@
 
 ; Evaluation function for expressions.
 (define (eval e xstate)
-  (destruct e
+  (match e
     [(IF pred bs) (if (eval-pred pred xstate) (list (eval-bs bs xstate)) EMPTY)]
+    [(OPCODE bs) (eval-opcode bs xstate)]
     [_ EMPTY]))
 
 ; Evaluation function for predicates.
@@ -114,7 +117,7 @@
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
-            [(OPCODE opcode) (eval-opcode opcode xstate)]))
+            [(OPCODE bs) (eval-opcode bs xstate)]))
             ; [(INSTR name operand) (eval-instr name operand xstate)]))
 
 ; Format notes:
@@ -244,7 +247,11 @@
 ; Take our grammar expression and archstate as input.
 ; Return a list of the operands for the run step.
 (define (obs-opcode xstate)
-  (println "TODO"))
+  (println "[obs-opcode] TODO")
+  (match xstate
+    [(INSTR opcode op1 op2)
+     `(INSTR ,(obs opcode) ,(obs op1) ,(obs op2))]
+    [_ (println "Invalid expression for opcode observation")]))
   ; (match xstate
   ;   [(OPCODE opcode operands)
   ;    (list opcode operands)]
