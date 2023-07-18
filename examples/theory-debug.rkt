@@ -220,7 +220,7 @@
   ; (println "[obs-equal]")
   ; (println xstate1)
   ; (println xstate2)
-  (println (listbv-equal (obs expr xstate1) (obs expr xstate2)))
+  ; (println (listbv-equal (obs expr xstate1) (obs expr xstate2)))
   (listbv-equal (obs expr xstate1) (obs expr xstate2)))
   ; (listbv-equal (obs expr xstate1) (obs expr xstate2)))
   ; (or (listbv-equal (obs expr xstate1) (obs expr xstate2))
@@ -343,14 +343,11 @@
 
 (define myexpr (cexpr #:depth 1))
 
-; (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
-;                                (diff 1 2 r0 1 2 r1 myexpr)
-; ))))
+(define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
+                               (diff 1 2 r0 1 2 r1 myexpr)
+))))
 
-; (print-forms sol)
+(print-forms sol)
 
-; (define sol (solve (assert ((diff 0 1 r0 0 1 r1 myexpr)))))
-; (print-forms sol)
-
-(diff 0 1 r0 0 1 r1 myexpr)
+; (diff 0 1 r0 0 1 r1 myexpr)
 ; (diff 1 2 r0 1 2 r1 myexpr)
