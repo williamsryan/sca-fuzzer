@@ -120,8 +120,8 @@
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
-            [(OPCODE bs) (eval-opcode bs xstate)]))
-            ; [(INSTR name operand) (eval-instr name operand xstate)]))
+            [(OPCODE bs) (eval-opcode bs xstate)]
+            [(INSTR opcode op1 op2) (eval-instr opcode op1 op2 xstate)]))
 
 ; Format notes:
 ; (IF (OPCODE #b0000001010) (REG[operand2])) : 
@@ -190,13 +190,15 @@
             ))
 
 ; Evaluation function for instructions.
-; (define (eval-instr name operand xstate)
-;   (match name
-;     ['LOAD
-;       (println "Got a 'LOAD; just testing for now.")
-;       (eval-reg operand xstate)]
-;     ['STORE
-;       (println "Got a 'STORE; not yet implemented.")]))
+(define (eval-instr opcode op1 op2 xstate)
+  (println "[eval-instr]")
+  (let* ((opcode-value (eval-bs opcode xstate))
+         (op1-value (eval-bs op1 xstate))
+         (op2-value (eval-bs op2 xstate)))
+    ; Perform the evaluation or comparison using the opcode and operand values
+    ; Return the result of the evaluation
+    op2-value ; Dummy return for now.
+  ))
 
 ; Evaluation function for addresses.
 (define (eval-addr addr xstate)
