@@ -59,6 +59,13 @@ class Synthesizer:
                 print(f"[synthesizer] Test instrs: {instr}: ")
                 for op in instr.operands:
                     print(f"[synthesizer]\toperands: {op.value}")
+
+            # (define r1 (list (make-run-step r1_0 (INSTR (OPCODE (bv #b0000001011 (bitvector 8)))
+                                                        # (OPERANDS (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4)))))
+            test_constraint = f"\n(define {xstate_name} (list make-run-step {regs}))"
+            print(f"[synthesizer] {test_constraint}")
+
+            # (define r1 (list (make-run-step r1_0 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))))))).
             return "\n(define {0} (list {1}))\n\n".format(xstate_name, regs)
 
         with open(self.work_dir + "/" + self.filename, "a") as f:
