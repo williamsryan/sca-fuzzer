@@ -29,7 +29,8 @@
 
 ; Struct definitions for our contract language.
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
-(struct OPCODE (bs operands) #:transparent)
+(struct OPCODE (bs) #:transparent)
+(struct OPERANDS (op1 op2) #:transparent)
 (struct INSTR (name operand) #:transparent)
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
 (struct RS1 ())                         ; Register RS1.
@@ -66,7 +67,7 @@
     (else #f)))
 
 ; New object that holds register values and instruction together.
-(struct run-step (regs opcode)
+(struct run-step (regs opcode operands)
   #:constructor-name make-run-step
   #:transparent)
 
@@ -93,6 +94,7 @@
               (SLIDE (?? integer?) (?? integer?) (bs))
               (REG (?? integer?))
               (ADDR (?? integer?))
+              (OPERANDS (?? integer?) (?? integer?))
               )]
   )
 
@@ -112,7 +114,7 @@
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
-            [(OPCODE opcode operands) (eval-opcode opcode operands xstate)]))
+            [(OPCODE opcode) (eval-opcode opcode xstate)]))
             ; [(INSTR name operand) (eval-instr name operand xstate)]))
 
 ; Format notes:
@@ -123,15 +125,8 @@
 ; (IF (OPCODE #b0000010101) ADDR[operand1]) : 
 ; This clause represents the condition where a memory store opcode (#b0000010101) is encountered,
 ; and the address referenced by operand1 is considered leaked based on the leakage-expression function.
-(define (eval-opcode xstate)
-  (println "Calling eval-opcode...")
-  (match xstate
-    [(OPCODE opcode operands)
-     ; Perform the evaluation or comparison using the opcode and operands.
-     ; Return the result of the evaluation.
-     (println "Got something")]
-    [_
-     (println "Invalid expression for evaluating opcode")]))
+(define (eval-opcode opcode xstate)
+  (println "TODO"))
 
 ; (define (get-opcode bs)
 ;   (bvextract 0 3 bs))     ; Extract bits 0 to 3 (inclusive) as opcode.
@@ -209,9 +204,10 @@
 ;        (equal? (OPCODE-op2 xstate2) (OPCODE-op2 xstate2))))
 
 (define (opcode-equal opcode1 opcode2)
-  (println "[opcode-equal]")
-  (and (equal? (OPCODE-bs opcode1) (OPCODE-bs opcode2))
-       (equal? (OPCODE-operands opcode1) (OPCODE-operands opcode2))))
+  (println "TODO"))
+  ; (println "[opcode-equal]")
+  ; (and (equal? (OPCODE-bs opcode1) (OPCODE-bs opcode2))
+  ;      (equal? (OPCODE-operands opcode1) (OPCODE-operands opcode2))))
     
 ; obs-equal() takes an expression and two xstates
 ;             returns true if the two xstates produces same observations
@@ -219,7 +215,8 @@
 ; TODO: this is just operating on registers currently, so opcode-equal is ignored.
 (define (obs-equal expr xstate1 xstate2)
   (println "[obs-equal]")
-  (println (obs expr xstate1)))
+  (println xstate1)
+  (println xstate2))
   ; (listbv-equal (obs expr xstate1) (obs expr xstate2)))
   ; (or (listbv-equal (obs expr xstate1) (obs expr xstate2))
       ; (opcode-equal (obs-opcode xstate1) (obs-opcode xstate2))))
@@ -237,11 +234,12 @@
 ; Take our grammar expression and archstate as input.
 ; Return a list of the operands for the run step.
 (define (obs-opcode xstate)
-  (match xstate
-    [(OPCODE opcode operands)
-     (list opcode operands)]
-    [_
-     (println "Invalid expression for opcode observation")]))
+  (println "TODO"))
+  ; (match xstate
+  ;   [(OPCODE opcode operands)
+  ;    (list opcode operands)]
+  ;   [_
+  ;    (println "Invalid expression for opcode observation")]))
           
 
 ; extract-observation() takes a run object
@@ -283,9 +281,9 @@
                   (diff i j r (+ i_ 1) j_ r_ expr))
               (and (not (obs-equal expr (run-step-opcode (list-ref r i)) (run-step-opcode (list-ref r_ i_))))) ; Checking if second oeprand for instruciton at each step is equal between runs. If not, operand value is leaked.)
               (and (not (empty-obs expr (run-step-regs (list-ref r i))))
-                   (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
-                   (not (obs-equal expr (run-step-regs (list-ref r i))
-                                        (run-step-regs (list-ref r_ i_)))))))))
+                   (not (empty-obs expr (run-step-regs (list-ref r_ i_)))))))))
+                  ;  (not (obs-equal expr (run-step-regs (list-ref r i))
+                                        ; (run-step-regs (list-ref r_ i_)))))))))
 
 ; ------------- END-CORE ------------------ ;
 ; Register state @ instruction: PLACEHOLDER
@@ -308,10 +306,8 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439811 (bitvector 64))))
 
-; (define r0 (list (make-run-step r0_0 (OPCODE #b0000001011 (list (#b0111 #b1101))))
-;                  (make-run-step r0_1 (OPCODE #b0000001100 (list (#b0101 #b1010))))))
-
-(make-run-step r0_0 (OPCODE (bv #b0000001011 (bitvector 8)) (list (bv #b0111 (bitvector 4)) (bv #b1101 (bitvector 4)))))
+(define r0 (list (make-run-step r0_0 (OPCODE (bv #b0000001011 (bitvector 8)))
+                                     (OPERANDS (bv #b0111 (bitvector 4)) (bv #b1101 (bitvector 4))))))
 
 ; Register state @ instruction: PLACEHOLDER
 (define r1_0 (list (bv 176093659177 (bitvector 64))
@@ -333,10 +329,10 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439811 (bitvector 64))))
 
-; (define r1 (list (make-run-step r1_0 (OPCODE #b0000001011 (list (#b0111 #b1101))))
-;                  (make-run-step r1_1 (OPCODE #b0000001100 (list (#b0101 #b1010))))))
+(define r1 (list (make-run-step r1_0 (OPCODE (bv #b0000001011 (bitvector 8)))
+                                     (OPERANDS (bv #b0111 (bitvector 4)) (bv #b1101 (bitvector 4))))))
 
-; (define myexpr (cexpr #:depth 1))
+(define myexpr (cexpr #:depth 1))
 
 ; (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
 ;                                (diff 1 2 r0 1 2 r1 myexpr)
@@ -347,4 +343,4 @@
 ; (define sol (solve (assert ((diff 0 1 r0 0 1 r1 myexpr)))))
 ; (print-forms sol)
 
-; (diff 0 1 r0 0 1 r1 myexpr)
+(diff 0 1 r0 0 1 r1 myexpr)
