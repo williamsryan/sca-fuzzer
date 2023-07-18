@@ -94,7 +94,7 @@
               (SLIDE (?? integer?) (?? integer?) (bs))
               (REG (?? integer?))
               (ADDR (?? integer?))
-              (OPERANDS (?? integer?) (?? integer?))
+              (OPERANDS (?? integer?) (?? integer?)) ; integer or bv int?
               )]
   )
 
@@ -157,13 +157,16 @@
 ; (define (get-instr xstate)
 ;   (cdr xstate))
 
+(define (eval-operands op1 op2 xstate)
+  (println "[eval-operands] TODO"))
+
 ; Evaluation function for bit sequences.
 (define (eval-bs bs xstate)
   (destruct bs
             [(BS b) b]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b xstate))]
             [(REG reg) (eval-reg reg xstate)]
-            ; [(OPCODE bs op1 op2) (eval-opcode bs op1 op2 xstate)] ; This should probably not be here.
+            [(OPERANDS op1 op2) (eval-operands op1 op2 xstate)]
             ))
 
 ; Evaluation function for instructions.
@@ -214,9 +217,10 @@
 ;                     false otherwise
 ; TODO: this is just operating on registers currently, so opcode-equal is ignored.
 (define (obs-equal expr xstate1 xstate2)
-  (println "[obs-equal]")
-  (println xstate1)
-  (println xstate2))
+  ; (println "[obs-equal]")
+  ; (println xstate1)
+  ; (println xstate2)
+  (listbv-equal (obs expr xstate1) (obs expr xstate2)))
   ; (listbv-equal (obs expr xstate1) (obs expr xstate2)))
   ; (or (listbv-equal (obs expr xstate1) (obs expr xstate2))
       ; (opcode-equal (obs-opcode xstate1) (obs-opcode xstate2))))
@@ -279,7 +283,7 @@
                   (diff (+ i 1) j r i_ j_ r_ expr))
               (and (empty-obs expr (run-step-regs (list-ref r_ i_)))
                   (diff i j r (+ i_ 1) j_ r_ expr))
-              (and (not (obs-equal expr (run-step-opcode (list-ref r i)) (run-step-opcode (list-ref r_ i_))))) ; Checking if second oeprand for instruciton at each step is equal between runs. If not, operand value is leaked.)
+              (and (not (obs-equal expr (run-step-operands (list-ref r i)) (run-step-operands (list-ref r_ i_))))) ; Checking if second oeprand for instruciton at each step is equal between runs. If not, operand value is leaked.)
               (and (not (empty-obs expr (run-step-regs (list-ref r i))))
                    (not (empty-obs expr (run-step-regs (list-ref r_ i_)))))))))
                   ;  (not (obs-equal expr (run-step-regs (list-ref r i))
@@ -307,7 +311,7 @@
                    (bv 18446630612648439811 (bitvector 64))))
 
 (define r0 (list (make-run-step r0_0 (OPCODE (bv #b0000001011 (bitvector 8)))
-                                     (OPERANDS (bv #b0111 (bitvector 4)) (bv #b1101 (bitvector 4))))))
+                                     (list (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4))))))
 
 ; Register state @ instruction: PLACEHOLDER
 (define r1_0 (list (bv 176093659177 (bitvector 64))
@@ -330,7 +334,7 @@
                    (bv 18446630612648439811 (bitvector 64))))
 
 (define r1 (list (make-run-step r1_0 (OPCODE (bv #b0000001011 (bitvector 8)))
-                                     (OPERANDS (bv #b0111 (bitvector 4)) (bv #b1101 (bitvector 4))))))
+                                     (list (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4))))))
 
 (define myexpr (cexpr #:depth 1))
 
