@@ -103,7 +103,7 @@
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
                 (OPCODE (bs))
-                (INSTR (bs) (OPERAND) (OPERAND))
+                (INSTR (bs) (OPERANDS))
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
