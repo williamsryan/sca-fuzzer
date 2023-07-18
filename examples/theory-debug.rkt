@@ -220,6 +220,7 @@
   ; (println "[obs-equal]")
   ; (println xstate1)
   ; (println xstate2)
+  (println (listbv-equal (obs expr xstate1) (obs expr xstate2)))
   (listbv-equal (obs expr xstate1) (obs expr xstate2)))
   ; (listbv-equal (obs expr xstate1) (obs expr xstate2)))
   ; (or (listbv-equal (obs expr xstate1) (obs expr xstate2))
@@ -285,9 +286,9 @@
                   (diff i j r (+ i_ 1) j_ r_ expr))
               (and (not (obs-equal expr (run-step-operands (list-ref r i)) (run-step-operands (list-ref r_ i_))))) ; Checking if second oeprand for instruciton at each step is equal between runs. If not, operand value is leaked.)
               (and (not (empty-obs expr (run-step-regs (list-ref r i))))
-                   (not (empty-obs expr (run-step-regs (list-ref r_ i_)))))))))
-                  ;  (not (obs-equal expr (run-step-regs (list-ref r i))
-                                        ; (run-step-regs (list-ref r_ i_)))))))))
+                   (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
+                   (not (obs-equal expr (run-step-regs (list-ref r i))
+                                        (run-step-regs (list-ref r_ i_)))))))))
 
 ; ------------- END-CORE ------------------ ;
 ; Register state @ instruction: PLACEHOLDER
@@ -311,7 +312,9 @@
                    (bv 18446630612648439811 (bitvector 64))))
 
 (define r0 (list (make-run-step r0_0 (OPCODE (bv #b0000001011 (bitvector 8)))
-                                     (list (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4))))))
+                                     (list (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4))))
+                 (make-run-step r0_1 (OPCODE (bv #b0000001010 (bitvector 8)))
+                                     (list (bv #b0110 (bitvector 4)) (bv #b1101 (bitvector 4))))))
 
 ; Register state @ instruction: PLACEHOLDER
 (define r1_0 (list (bv 176093659177 (bitvector 64))
@@ -334,7 +337,9 @@
                    (bv 18446630612648439811 (bitvector 64))))
 
 (define r1 (list (make-run-step r1_0 (OPCODE (bv #b0000001011 (bitvector 8)))
-                                     (list (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4))))))
+                                     (list (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4))))
+                 (make-run-step r1_1 (OPCODE (bv #b0000001000 (bitvector 8)))
+                                     (list (bv #b1000 (bitvector 4)) (bv #b0011 (bitvector 4))))))
 
 (define myexpr (cexpr #:depth 1))
 
@@ -348,3 +353,4 @@
 ; (print-forms sol)
 
 (diff 0 1 r0 0 1 r1 myexpr)
+; (diff 1 2 r0 1 2 r1 myexpr)
