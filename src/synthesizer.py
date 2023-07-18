@@ -56,13 +56,13 @@ class Synthesizer:
             # Depending on results, we may actually use it in the tuple to help
             # guide the synthesizer to learning instructions vs. registers.
             for instr in instrs:
-                print(f"[synthesizer] Test instrs: {instr}")
+                print(f"[synthesizer] Test instrs: {instr} : {instr.operands}")
             return "\n(define {0} (list {1}))\n\n".format(xstate_name, regs)
 
         with open(self.work_dir + "/" + self.filename, "a") as f:
             xstates = ''
             for i, xstate in enumerate(run.archstates):
-                f.write(model(run.id, i, xstate, run.instructions))
+                f.write(model(run.id, i, xstate, run.mem_instrs))
 
                 if xstates == '':
                     # Implement logic for making xstate look like:
