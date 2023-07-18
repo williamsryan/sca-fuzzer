@@ -110,7 +110,7 @@
               (ADDR (?? integer?))
               (OPERANDS (?? integer?) (?? integer?))  ; This could be int or bv.
               (REG (choose (?? integer?)
-                           (OPERAND (?? integer?))))
+                           (?? (bitvector (?? integer?)))))
               )]
   )
 
@@ -214,13 +214,12 @@
   ;   [(MEM-STORE a _) (eval-bs a xstate)]))
 
 ; Evaluation function for registers.
-; TODO: testing REG with choice of concrete value, or OPERAND value.
 (define (eval-reg reg xstate)
   ; (log-debug "[eval-reg]")
   (match reg
-    [(REG reg-idx) (list-ref xstate reg-idx)]
-    [(OPERAND op) (eval-operand op xstate)]))
-  ; (list-ref xstate reg))
+    [(? integer? reg-idx) (list-ref xstate reg-idx)]
+    [(? bitvector? op) (eval-operand op xstate)]
+    [_ (log-error "Invalid register value in eval-reg: ~s" reg)]))
 
 ; obs() takes an expression and a xstate
 ;       returns its observation
@@ -295,7 +294,7 @@
                   (diff (+ i 1) j r i_ j_ r_ expr))
               (and (empty-obs expr (run-step-regs (list-ref r_ i_)))
                   (diff i j r (+ i_ 1) j_ r_ expr))
-              ; (and (not (obs-equal expr (run-step-operands (list-ref r i)) (run-step-operands (list-ref r_ i_)))))
+              (and (not (obs-equal expr (run-step-operands (list-ref r i)) (run-step-operands (list-ref r_ i_)))))
               (and (not (empty-obs expr (run-step-regs (list-ref r i))))
                    (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
                    (not (obs-equal expr (run-step-regs (list-ref r i))
