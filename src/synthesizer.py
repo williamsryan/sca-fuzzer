@@ -34,7 +34,7 @@ class Synthesizer:
         Separate method for generating Rosette structures for register values.
     """
     def map_regs(self, run):
-        def model(rid, xid, xstate, instr):
+        def model(rid, xid, xstate, instrs):
             xstate_name = self.get_xstate_name(rid, xid)
             header = len('(define {0} (list '.format(xstate_name))
             indentation = ''
@@ -55,6 +55,7 @@ class Synthesizer:
             # Annotate each register state object with the observed instruction.
             # Depending on results, we may actually use it in the tuple to help
             # guide the synthesizer to learning instructions vs. registers.
+            print(f"[synthesizer] Test instrs: {instrs}")
             return "\n(define {0} (list {1}))\n\n".format(xstate_name, regs)
 
         with open(self.work_dir + "/" + self.filename, "a") as f:
