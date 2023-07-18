@@ -110,7 +110,7 @@
               (ADDR (?? integer?))
               ; (OPERANDS (?? integer?) (?? integer?)) ; Moving OPERANDS to part of INSTR.
               (REG (choose (?? integer?)
-                           (?? (bitvector (?? integer?))))) ; Make this option an OPERAND?
+                           (OPERAND))) ; Make this option an OPERAND?
               )]
   )
 
@@ -218,7 +218,7 @@
   ; (log-debug "[eval-reg]")
   (match reg
     [(? integer? reg-idx) (list-ref xstate reg-idx)]
-    [(? bitvector? op) (eval-operand op xstate)]
+    [(OPERAND op) (eval-operand op xstate)]
     [_ (log-error "Invalid register value in eval-reg: ~s" reg)]))
 
 ; obs() takes an expression and a xstate
@@ -233,6 +233,7 @@
   (empty? (eval expr xstate)))
 
 (define (instr-equal xstate1 xstate2)
+  ; TODO: do we care about equality, or value presence in regs?
   (and (equal? (INSTR-opcode xstate1) (INSTR-opcode xstate2))
        (equal? (OPERANDS-op1 (INSTR-operands xstate1)) (OPERANDS-op1 (INSTR-operands xstate2)))
        (equal? (OPERANDS-op2 (INSTR-operands xstate1)) (OPERANDS-op2 (INSTR-operands xstate2)))))
@@ -293,7 +294,7 @@
                   (diff (+ i 1) j r i_ j_ r_ expr))
               (and (empty-obs expr (run-step-regs (list-ref r_ i_)))
                   (diff i j r (+ i_ 1) j_ r_ expr))
-              (and (not (obs-equal expr (run-step-instruction (list-ref r i)) (run-step-instruction (list-ref r_ i_)))))
+              (not (obs-equal expr (run-step-instruction (list-ref r i)) (run-step-instruction (list-ref r_ i_))))
               (and (not (empty-obs expr (run-step-regs (list-ref r i))))
                    (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
                    (not (obs-equal expr (run-step-regs (list-ref r i))
