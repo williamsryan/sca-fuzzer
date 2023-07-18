@@ -126,7 +126,7 @@
 ; This clause represents the condition where a memory store opcode (#b0000010101) is encountered,
 ; and the address referenced by operand1 is considered leaked based on the leakage-expression function.
 (define (eval-opcode opcode xstate)
-  (println "TODO"))
+  (println "[eval-opcode] TODO"))
 
 ; (define (get-opcode bs)
 ;   (bvextract 0 3 bs))     ; Extract bits 0 to 3 (inclusive) as opcode.
