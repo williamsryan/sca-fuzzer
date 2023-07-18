@@ -56,7 +56,9 @@ class Synthesizer:
             # Depending on results, we may actually use it in the tuple to help
             # guide the synthesizer to learning instructions vs. registers.
             for instr in instrs:
-                print(f"[synthesizer] Test instrs: {instr} : {instr.operands}")
+                print(f"[synthesizer] Test instrs: {instr}: ")
+                for op in instr.operands:
+                    print(f"[synthesizer]\toperands: {op.value}")
             return "\n(define {0} (list {1}))\n\n".format(xstate_name, regs)
 
         with open(self.work_dir + "/" + self.filename, "a") as f:
