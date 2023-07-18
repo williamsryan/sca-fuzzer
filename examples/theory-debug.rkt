@@ -33,7 +33,7 @@
 (struct OPCODE (bs) #:transparent)
 (struct OPERAND (bs) #:transparent)
 (struct OPERANDS (op1 op2) #:transparent)
-(struct INSTR (opcode op1 op2) #:transparent) ; TODO: use INSTR for opcode + operands (pred + bs).
+(struct INSTR (opcode operands) #:transparent) ; TODO: use INSTR for opcode + operands (pred + bs).
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
 (struct RS1 ())                         ; Register RS1.
 (struct RS2 ())                         ; Register RS2.
@@ -82,7 +82,7 @@
     (else #f)))
 
 ; New object that holds register values and instruction together.
-(struct run-step (regs opcode operands)
+(struct run-step (regs instruction)
   #:constructor-name make-run-step
   #:transparent)
 
@@ -133,7 +133,7 @@
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
             [(OPCODE bs) (eval-opcode bs xstate)]
-            [(INSTR opcode op1 op2) (eval-instr opcode op1 op2 xstate)]))
+            [(INSTR opcode ops) (eval-instr opcode ops xstate)]))
 
 ; Format notes:
 ; (IF (OPCODE #b0000001010) (REG[operand2])) : 
@@ -175,7 +175,7 @@
   ;        (list-ref xstate op1))))
 
 (define (eval-operand op xstate)
-  ; (log-info "[eval-operand]")
+  (log-info "[eval-operand]")
   (match op
     [(INTEGER value) value]
     [(REG reg) (extract-integer (list-ref xstate reg))]
@@ -189,7 +189,7 @@
             [(REG reg) (eval-reg reg xstate)]
             [(OPERANDS op1 op2) (eval-operands op1 op2 xstate)]
             [(OPERAND op) (eval-operand op xstate)]
-            ; [_ (println "Invalid expression for bitstring observation")]
+            ; [_ (log-error "Invalid expression for bitstring observation")]
             ))
 
 ; Evaluation function for instructions.
@@ -232,23 +232,22 @@
 (define (empty-obs expr xstate)
   (empty? (eval expr xstate)))
 
-(define (opcode-equal opcode1 opcode2)
-  (log-debug "[opcode-equal] TODO"))
-  ; (and (equal? (OPCODE-bs opcode1) (OPCODE-bs opcode2))
-  ;      (equal? (OPCODE-operands opcode1) (OPCODE-operands opcode2))))
+(define (instr-equal xstate1 xstate2)
+  (and (equal? (INSTR-opcode xstate1) (INSTR-opcode xstate2))
+       (equal? (OPERANDS-op1 (INSTR-operands xstate1)) (OPERANDS-op1 (INSTR-operands xstate2)))
+       (equal? (OPERANDS-op2 (INSTR-operands xstate1)) (OPERANDS-op2 (INSTR-operands xstate2)))))
     
 ; obs-equal() takes an expression and two xstates
 ;             returns true if the two xstates produces same observations
 ;                     false otherwise
 (define (obs-equal expr xstate1 xstate2)
-  ; (println "[obs-equal]")
-  ; (println xstate1)
-  ; (println xstate2)
-  ; (println (listbv-equal (obs expr xstate1) (obs expr xstate2)))
-  (listbv-equal (obs expr xstate1) (obs expr xstate2)))
+  ; (log-debug "[obs-equal]")
+  ; (log-debug (listbv-equal (obs expr xstate1) (obs expr xstate2)))
   ; (listbv-equal (obs expr xstate1) (obs expr xstate2)))
-  ; (or (listbv-equal (obs expr xstate1) (obs expr xstate2))
-      ; (opcode-equal (obs-opcode xstate1) (obs-opcode xstate2))))
+  ; (match-define (INSTR _ _) xstate1)
+  (if (and (INSTR? xstate1) (INSTR? xstate2))
+      (instr-equal xstate1 xstate2)
+      (listbv-equal (obs expr xstate1) (obs expr xstate2))))
 
 ; listbv-equal() takes two observations
 ;                returns true if they are the same
@@ -265,8 +264,8 @@
 (define (obs-opcode xstate)
   (log-debug "[obs-opcode] TODO")
   (match xstate
-    [(INSTR opcode op1 op2)
-     `(INSTR ,(obs opcode) ,(obs op1) ,(obs op2))]
+    [(INSTR opcode ops)
+     `(INSTR ,(obs opcode) ,(obs ops))]
     [_ (log-error "Invalid expression for opcode observation")]))
   ; (match xstate
   ;   [(OPCODE opcode operands)
@@ -294,7 +293,7 @@
                   (diff (+ i 1) j r i_ j_ r_ expr))
               (and (empty-obs expr (run-step-regs (list-ref r_ i_)))
                   (diff i j r (+ i_ 1) j_ r_ expr))
-              (and (not (obs-equal expr (run-step-operands (list-ref r i)) (run-step-operands (list-ref r_ i_)))))
+              (and (not (obs-equal expr (run-step-instruction (list-ref r i)) (run-step-instruction (list-ref r_ i_)))))
               (and (not (empty-obs expr (run-step-regs (list-ref r i))))
                    (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
                    (not (obs-equal expr (run-step-regs (list-ref r i))
@@ -321,10 +320,10 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439811 (bitvector 64))))
 
-(define r0 (list (make-run-step r0_0 (OPCODE (bv #b0000001011 (bitvector 8)))
-                                     (list (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4))))
-                 (make-run-step r0_1 (OPCODE (bv #b0000001010 (bitvector 8)))
-                                     (list (bv #b0110 (bitvector 4)) (bv #b0011 (bitvector 4))))))
+(define r0 (list (make-run-step r0_0 (INSTR (OPCODE (bv #b0000001011 (bitvector 8)))
+                                            (OPERANDS (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4)))))
+                 (make-run-step r0_1 (INSTR (OPCODE (bv #b0000001010 (bitvector 8)))
+                                            (OPERANDS (bv #b0110 (bitvector 4)) (bv #b0010 (bitvector 4)))))))
 
 ; Register state @ instruction: PLACEHOLDER
 (define r1_0 (list (bv 176093659177 (bitvector 64))
@@ -346,10 +345,10 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439811 (bitvector 64))))
 
-(define r1 (list (make-run-step r1_0 (OPCODE (bv #b0000001011 (bitvector 8)))
-                                     (list (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4))))
-                 (make-run-step r1_1 (OPCODE (bv #b0000001000 (bitvector 8)))
-                                     (list (bv #b0110 (bitvector 4)) (bv #b0010 (bitvector 4))))))
+(define r1 (list (make-run-step r1_0 (INSTR (OPCODE (bv #b0000001011 (bitvector 8)))
+                                            (OPERANDS (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4)))))
+                 (make-run-step r1_1 (INSTR (OPCODE (bv #b0000001010 (bitvector 8)))
+                                            (OPERANDS (bv #b0110 (bitvector 4)) (bv #b0011 (bitvector 4)))))))
 
 (define myexpr (cexpr #:depth 1))
 
