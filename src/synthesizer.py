@@ -55,9 +55,7 @@ class Synthesizer:
             # Annotate each register state object with the observed instruction.
             # Depending on results, we may actually use it in the tuple to help
             # guide the synthesizer to learning instructions vs. registers.
-            instr_temp = "PLACEHOLDER"
-            run_info = f"; Register state @ instruction: {instr_temp}"
-            return "{0}\n(define {1} (list {2}))\n\n".format(run_info, xstate_name, regs)
+            return "\n(define {0} (list {1}))\n\n".format(xstate_name, regs)
 
         with open(self.work_dir + "/" + self.filename, "a") as f:
             xstates = ''
