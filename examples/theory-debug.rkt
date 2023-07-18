@@ -157,8 +157,10 @@
 ; (define (get-instr xstate)
 ;   (cdr xstate))
 
+; TODO: update this with our desired constraints for instruction operands.
 (define (eval-operands op1 op2 xstate)
-  (println "[eval-operands] TODO"))
+  (list ((list-ref xstate op2)
+         (list-ref xstate op1))))
 
 ; Evaluation function for bit sequences.
 (define (eval-bs bs xstate)
@@ -167,6 +169,7 @@
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b xstate))]
             [(REG reg) (eval-reg reg xstate)]
             [(OPERANDS op1 op2) (eval-operands op1 op2 xstate)]
+            ; [_ (println "Invalid expression for bitstring observation")]
             ))
 
 ; Evaluation function for instructions.
