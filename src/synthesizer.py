@@ -60,12 +60,7 @@ class Synthesizer:
                 for op in instr.operands:
                     print(f"[synthesizer]\toperands: {op.value}")
 
-            # (define r1 (list (make-run-step r1_0 (INSTR (OPCODE (bv #b0000001011 (bitvector 8)))
-                                                        # (OPERANDS (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4)))))
-            test_constraint = f"\n(define {xstate_name} (list make-run-step {regs}))"
-            print(f"[synthesizer] {test_constraint}")
-
-            # (define r1 (list (make-run-step r1_0 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))))))).
+            # Run step registers object.
             return "\n(define {0} (list {1}))\n\n".format(xstate_name, regs)
 
         with open(self.work_dir + "/" + self.filename, "a") as f:
@@ -78,12 +73,10 @@ class Synthesizer:
                     # (make-run-step r0_0 'LOAD).
                     # xstates += self.get_xstate_name(run.id, i)
                     xstates += f"(make-run-step {self.get_xstate_name(run.id, i)} 'LOAD)"
+                    # (define r1 (list (make-run-step r1_0 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))))))).
+                    xstates += f"(make-run-step {self.get_xstate_name(run.id, i)} (INSTR (OPCODE () (OPERANDS () ()))))"
                 else:
                     xstates += ' ' + f"(make-run-step {self.get_xstate_name(run.id, i)} 'LOAD)"
-
-            # This is where the run (r0, r1) objects are defined (as a list of registers).
-            # TODO: update to match new struct where instruction is included too.
-            new_obj = f"(define {self.get_run_name(run.id)} (list {xstates}))\n\n"
             
             f.write("(define {0} (list {1}))\n\n".format(
                 self.get_run_name(run.id), xstates))
