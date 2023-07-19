@@ -374,13 +374,18 @@ class UnicornModel(Model, ABC):
         archstate = ArchState()
         # registers = self.target_desc.registers  # 7 registers ([35, 37, 38, 40, 43, 39, 25]).
         registers_llex = CONF.registers.keys()  # 16 registers (now matching above, extras commented out).
+        reg_addr = ""
         for reg in registers_llex:
             archstate.regs[reg] = self.emulator.reg_read(reg)
+            reg_addr = hex(self.emulator.reg_read(reg))
             # print(f"[+] REG {reg} : {self.emulator.reg_read(reg)}")
 
         mem_address_start = self.sandbox_base
         mem_address_end = mem_address_start + self.input_size
         mem_ = self.emulator.mem_read(mem_address_start, self.input_size)
+
+        # Test reading specific value.
+        test = self.emulator.mem_read(reg_addr, self.input_size)
 
         for i in range(mem_address_start, mem_address_end, 8):
             i_ = i - mem_address_start
