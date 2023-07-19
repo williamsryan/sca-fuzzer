@@ -47,7 +47,7 @@ class Synthesizer:
                     regs += indentation
                 reg_idx = CONF.map_reg(idx)
                 reg_name = CONF.registers.get(reg_idx)
-                regs += f"(bv {str(reg)} (bitvector 64))\t; Register: {reg_name} instruction: {instrs[idx]}\n"
+                regs += f"(bv {str(reg)} (bitvector 64))\t; Register: {reg_name.upper()} instruction: {instrs[idx]}\n"
                 # for op in instrs[idx].operands:
                 #     regs += f"\t\t\t\t; operands: {op.value}\n"
             if xstate.pc is not None:
