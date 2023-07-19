@@ -57,11 +57,13 @@ class Synthesizer:
             # guide the synthesizer to learning instructions vs. registers.
             for instr in instrs:
                 print(f"[synthesizer] Test instrs: {instr}: ")
+                comment_obj = f"; Register state for instruction: {instr}"
                 for op in instr.operands:
                     print(f"[synthesizer]\toperands: {op.value}")
+                    comment_obj += f" operands: {op.value}"
 
             # Run step registers object.
-            return "\n(define {0} (list {1}))\n\n".format(xstate_name, regs)
+            return "\n{0}\n(define {1} (list {2}))\n\n".format(comment_obj, xstate_name, regs)
 
         with open(self.work_dir + "/" + self.filename, "a") as f:
             xstates = ''
