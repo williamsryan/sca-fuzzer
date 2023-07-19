@@ -55,7 +55,7 @@ class Synthesizer:
                     f"(bv {str(xstate.pc)} (bitvector 64))))\t; PC"
             else:
                 # Meaning this is the final state; end with -1.
-                regs += indentation + f"(bv {str(-1)} (bitvector 64))))\t; Final state"
+                regs += indentation + f"(bv {str(-1)} (bitvector 64))))\t; Final state\n\n"
 
             # Annotate each register state object with the observed instruction.
             # Depending on results, we may actually use it in the tuple to help
@@ -68,7 +68,7 @@ class Synthesizer:
 
             violating_input = f"; Run on input: {inputs}"
             # Run step registers object.
-            return f"\n\n{violating_input}\n(define {xstate_name} (list {regs}\n"
+            return f"\n{violating_input}\n(define {xstate_name} (list {regs}\n"
 
         with open(self.work_dir + "/" + self.filename, "a") as f:
             xstates = ''

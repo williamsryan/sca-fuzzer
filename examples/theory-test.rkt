@@ -301,244 +301,212 @@
                                         (run-step-regs (list-ref r_ i_)))))))))
 
 ; ------------- END-CORE ------------------ ;
-(define r0_0 (list (bv 1035087118577 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                   (bv 1206885810457 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                   (bv 889058230479 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                   (bv 1185410973972 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                   (bv 1666447311236 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                   (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                   (bv 130 (bitvector 64))	; Register: eflags instruction: IMUL RDX
+; Run on input: [31]
+(define r0_0 (list (bv 837518622915 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 1919850381759 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 38654705673 (bitvector 64))	; Register: rcx instruction: CMP DL, SIL
+                   (bv 755914244272 (bitvector 64))	; Register: rdi instruction: IMUL EBX
+                   (bv 167503724583 (bitvector 64))	; Register: rdx instruction: AND RAX, 0b1111111111111
+                   (bv 103079215128 (bitvector 64))	; Register: rsi instruction: SUB DX, [R14 + RAX]
+                   (bv 199 (bitvector 64))	; Register: eflags instruction: JL .bb_main.1
                    (bv 18446612985909035008 (bitvector 64))))	; PC
 
-(define r0_1 (list (bv 1035087118577 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                   (bv 1206885810457 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                   (bv 889058230479 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                   (bv 1185410973972 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                   (bv 1666447311236 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                   (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                   (bv 130 (bitvector 64))	; Register: eflags instruction: IMUL RDX
+; Run on input: [31]
+(define r0_1 (list (bv 837518622915 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 1919850381759 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 38654705673 (bitvector 64))	; Register: rcx instruction: CMP DL, SIL
+                   (bv 755914244272 (bitvector 64))	; Register: rdi instruction: IMUL EBX
+                   (bv 167503724583 (bitvector 64))	; Register: rdx instruction: AND RAX, 0b1111111111111
+                   (bv 103079215128 (bitvector 64))	; Register: rsi instruction: SUB DX, [R14 + RAX]
+                   (bv 199 (bitvector 64))	; Register: eflags instruction: JL .bb_main.1
                    (bv 18446612985909035011 (bitvector 64))))	; PC
 
-(define r0_2 (list (bv 1035087118577 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                   (bv 1206885810457 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                   (bv 889058230479 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                   (bv 1185410973972 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                   (bv 1666447311236 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                   (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                   (bv 130 (bitvector 64))	; Register: eflags instruction: IMUL RDX
+; Run on input: [31]
+(define r0_2 (list (bv 837518622915 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 1919850381759 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 38654705673 (bitvector 64))	; Register: rcx instruction: CMP DL, SIL
+                   (bv 755914244272 (bitvector 64))	; Register: rdi instruction: IMUL EBX
+                   (bv 167503724583 (bitvector 64))	; Register: rdx instruction: AND RAX, 0b1111111111111
+                   (bv 103079215128 (bitvector 64))	; Register: rsi instruction: SUB DX, [R14 + RAX]
+                   (bv 199 (bitvector 64))	; Register: eflags instruction: JL .bb_main.1
                    (bv 18446612985909035013 (bitvector 64))))	; PC
 
-(define r0_3 (list (bv 1035087146308 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                   (bv 1206885810457 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                   (bv 889058230479 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                   (bv 1185410973972 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                   (bv 1666447310849 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                   (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                   (bv 2055 (bitvector 64))	; Register: eflags instruction: IMUL RDX
+; Run on input: [31]
+(define r0_3 (list (bv 837518622915 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 1919850381759 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 38654705673 (bitvector 64))	; Register: rcx instruction: CMP DL, SIL
+                   (bv 755914244272 (bitvector 64))	; Register: rdi instruction: IMUL EBX
+                   (bv 167503724583 (bitvector 64))	; Register: rdx instruction: AND RAX, 0b1111111111111
+                   (bv 103079215128 (bitvector 64))	; Register: rsi instruction: SUB DX, [R14 + RAX]
+                   (bv 22 (bitvector 64))	; Register: eflags instruction: JL .bb_main.1
                    (bv 18446612985909035016 (bitvector 64))))	; PC
 
-(define r0_4 (list (bv 3396 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                   (bv 1206885810457 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                   (bv 889058230479 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                   (bv 1185410973972 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                   (bv 1666447310849 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                   (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                   (bv 6 (bitvector 64))	; Register: eflags instruction: IMUL RDX
-                   (bv 18446612985909035022 (bitvector 64))))	; PC
+; Run on input: [31]
+(define r0_4 (list (bv 87165 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 1919850381759 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 38654705673 (bitvector 64))	; Register: rcx instruction: CMP DL, SIL
+                   (bv 755914244272 (bitvector 64))	; Register: rdi instruction: IMUL EBX
+                   (bv 0 (bitvector 64))	; Register: rdx instruction: AND RAX, 0b1111111111111
+                   (bv 103079215128 (bitvector 64))	; Register: rsi instruction: SUB DX, [R14 + RAX]
+                   (bv 6 (bitvector 64))	; Register: eflags instruction: JL .bb_main.1
+                   (bv 18446612985909035018 (bitvector 64))))	; PC
 
-(define r0_5 (list (bv 3396 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                   (bv 1206885810457 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                   (bv 889058230479 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                   (bv 1185410973972 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                   (bv 1666447310849 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                   (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                   (bv 130 (bitvector 64))	; Register: eflags instruction: IMUL RDX
-                   (bv 18446612985909035026 (bitvector 64))))	; PC
+; Run on input: [31]
+(define r0_5 (list (bv 5245 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 1919850381759 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 38654705673 (bitvector 64))	; Register: rcx instruction: CMP DL, SIL
+                   (bv 755914244272 (bitvector 64))	; Register: rdi instruction: IMUL EBX
+                   (bv 0 (bitvector 64))	; Register: rdx instruction: AND RAX, 0b1111111111111
+                   (bv 103079215128 (bitvector 64))	; Register: rsi instruction: SUB DX, [R14 + RAX]
+                   (bv 6 (bitvector 64))	; Register: eflags instruction: JL .bb_main.1
+                   (bv 18446612985909035024 (bitvector 64))))	; PC
 
-(define r0_6 (list (bv 1458570894061200 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                   (bv 1206885810457 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                   (bv 889058230479 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                   (bv 1185410973972 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                   (bv 0 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                   (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                   (bv 6 (bitvector 64))	; Register: eflags instruction: IMUL RDX
+; Run on input: [31]
+(define r0_6 (list (bv 5245 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 1919850381759 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 38654705673 (bitvector 64))	; Register: rcx instruction: CMP DL, SIL
+                   (bv 755914244272 (bitvector 64))	; Register: rdi instruction: IMUL EBX
+                   (bv 0 (bitvector 64))	; Register: rdx instruction: AND RAX, 0b1111111111111
+                   (bv 103079215128 (bitvector 64))	; Register: rsi instruction: SUB DX, [R14 + RAX]
+                   (bv 70 (bitvector 64))	; Register: eflags instruction: JL .bb_main.1
                    (bv 18446612985909035029 (bitvector 64))))	; PC
 
-(define r0_7 (list (bv 0 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                   (bv 1206885810457 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                   (bv 889058230479 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                   (bv 1185410973972 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                   (bv 0 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                   (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                   (bv 70 (bitvector 64))	; Register: eflags instruction: IMUL RDX
-                   (bv 18446612985909035032 (bitvector 64))))	; PC
+; Run on input: [31]
+(define r0_7 (list (bv 5245 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 1919850381759 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 38654705673 (bitvector 64))	; Register: rcx instruction: CMP DL, SIL
+                   (bv 755914244272 (bitvector 64))	; Register: rdi instruction: IMUL EBX
+                   (bv 0 (bitvector 64))	; Register: rdx instruction: AND RAX, 0b1111111111111
+                   (bv 103079215128 (bitvector 64))	; Register: rsi instruction: SUB DX, [R14 + RAX]
+                   (bv 70 (bitvector 64))	; Register: eflags instruction: JL .bb_main.1
+                   (bv 18446612985909035031 (bitvector 64))))	; PC
 
-(define r0_8 (list (bv 0 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                   (bv 1206885810457 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                   (bv 889058230479 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                   (bv 1185410973972 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                   (bv 0 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                   (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                   (bv 70 (bitvector 64))	; Register: eflags instruction: IMUL RDX
-                   (bv 18446612985909035039 (bitvector 64))))	; PC
+; Run on input: [31]
+(define r0_8 (list (bv 5245 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 1919850381759 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 38654705673 (bitvector 64))	; Register: rcx instruction: CMP DL, SIL
+                   (bv 755914244272 (bitvector 64))	; Register: rdi instruction: IMUL EBX
+                   (bv 0 (bitvector 64))	; Register: rdx instruction: AND RAX, 0b1111111111111
+                   (bv 103079215128 (bitvector 64))	; Register: rsi instruction: SUB DX, [R14 + RAX]
+                   (bv 70 (bitvector 64))	; Register: eflags instruction: JL .bb_main.1
+                   (bv 18446612985909035108 (bitvector 64))))	; PC
 
-(define r0_9 (list (bv 35920 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                   (bv 1206885810457 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                   (bv 889058230479 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                   (bv 1185410973972 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                   (bv 0 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                   (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                   (bv 2183 (bitvector 64))	; Register: eflags instruction: IMUL RDX
-                   (bv 18446612985909035045 (bitvector 64))))	; PC
-
-(define r0_10 (list (bv 35920 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                    (bv 1206885810457 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                    (bv 889058230479 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                    (bv 1185410973972 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                    (bv 0 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                    (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                    (bv 2183 (bitvector 64))	; Register: eflags instruction: IMUL RDX
-                    (bv 18446612985909035047 (bitvector 64))))	; PC
-
-(define r0_11 (list (bv 35920 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                    (bv 1206885810457 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                    (bv 889058230479 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                    (bv 1185410973972 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                    (bv 0 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                    (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                    (bv 2183 (bitvector 64))	; Register: eflags instruction: IMUL RDX
-                    (bv 18446612985909035115 (bitvector 64))))	; PC
-
-(define r0_12 (list (bv 35920 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                    (bv 1206885810457 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                    (bv 889058230479 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                    (bv 1185410973972 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                    (bv 0 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                    (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                    (bv 2183 (bitvector 64))	; Register: eflags instruction: IMUL RDX
-                    (bv -1 (bitvector 64))))	; Final state
-
-(define r0 (list (make-run-step r0_0 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_1 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_2 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_3 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_4 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_5 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_6 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_7 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_8 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_9 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_10 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_11 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_12 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4)))))))
+; Run on input: [31]
+(define r0_9 (list (bv 5245 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 1919850381759 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 38654705673 (bitvector 64))	; Register: rcx instruction: CMP DL, SIL
+                   (bv 755914244272 (bitvector 64))	; Register: rdi instruction: IMUL EBX
+                   (bv 0 (bitvector 64))	; Register: rdx instruction: AND RAX, 0b1111111111111
+                   (bv 103079215128 (bitvector 64))	; Register: rsi instruction: SUB DX, [R14 + RAX]
+                   (bv 70 (bitvector 64))	; Register: eflags instruction: JL .bb_main.1
+                   (bv -1 (bitvector 64))))	; Final state
 
 
-(define r1_0 (list (bv 1035087118577 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                   (bv 1885490643383 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                   (bv 1035087118577 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                   (bv 1550483194217 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                   (bv 1666447311236 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                   (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                   (bv 130 (bitvector 64))	; Register: eflags instruction: IMUL RDX
+(define r0 (list (make-run-step r0_0 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_1 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_2 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_3 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_4 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_5 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_6 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_7 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_8 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_9 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4)))))))
+
+
+; Run on input: [81]
+(define r1_0 (list (bv 837518622915 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 1919850381759 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 1602022801781 (bitvector 64))	; Register: rcx instruction: CMP DL, SIL
+                   (bv 1344324763961 (bitvector 64))	; Register: rdi instruction: IMUL EBX
+                   (bv 167503724583 (bitvector 64))	; Register: rdx instruction: AND RAX, 0b1111111111111
+                   (bv 103079215128 (bitvector 64))	; Register: rsi instruction: SUB DX, [R14 + RAX]
+                   (bv 199 (bitvector 64))	; Register: eflags instruction: JL .bb_main.1
                    (bv 18446612985909035008 (bitvector 64))))	; PC
 
-(define r1_1 (list (bv 1035087118577 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                   (bv 1885490643383 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                   (bv 1035087118577 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                   (bv 1550483194217 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                   (bv 1666447311236 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                   (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                   (bv 130 (bitvector 64))	; Register: eflags instruction: IMUL RDX
+; Run on input: [81]
+(define r1_1 (list (bv 837518622915 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 1919850381759 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 1602022801781 (bitvector 64))	; Register: rcx instruction: CMP DL, SIL
+                   (bv 1344324763961 (bitvector 64))	; Register: rdi instruction: IMUL EBX
+                   (bv 167503724583 (bitvector 64))	; Register: rdx instruction: AND RAX, 0b1111111111111
+                   (bv 103079215128 (bitvector 64))	; Register: rsi instruction: SUB DX, [R14 + RAX]
+                   (bv 199 (bitvector 64))	; Register: eflags instruction: JL .bb_main.1
                    (bv 18446612985909035011 (bitvector 64))))	; PC
 
-(define r1_2 (list (bv 1035087118577 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                   (bv 1885490643383 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                   (bv 1035087118577 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                   (bv 1550483194217 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                   (bv 1666447311236 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                   (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                   (bv 130 (bitvector 64))	; Register: eflags instruction: IMUL RDX
+; Run on input: [81]
+(define r1_2 (list (bv 837518622915 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 1919850381759 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 1602022801781 (bitvector 64))	; Register: rcx instruction: CMP DL, SIL
+                   (bv 1344324763961 (bitvector 64))	; Register: rdi instruction: IMUL EBX
+                   (bv 167503724583 (bitvector 64))	; Register: rdx instruction: AND RAX, 0b1111111111111
+                   (bv 103079215128 (bitvector 64))	; Register: rsi instruction: SUB DX, [R14 + RAX]
+                   (bv 199 (bitvector 64))	; Register: eflags instruction: JL .bb_main.1
                    (bv 18446612985909035013 (bitvector 64))))	; PC
 
-(define r1_3 (list (bv 1035087146308 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                   (bv 1885490643383 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                   (bv 1035087118577 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                   (bv 1550483194217 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                   (bv 1666447310849 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                   (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                   (bv 2055 (bitvector 64))	; Register: eflags instruction: IMUL RDX
+; Run on input: [81]
+(define r1_3 (list (bv 837518622915 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 1919850381759 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 1602022801781 (bitvector 64))	; Register: rcx instruction: CMP DL, SIL
+                   (bv 1344324763961 (bitvector 64))	; Register: rdi instruction: IMUL EBX
+                   (bv 167503724583 (bitvector 64))	; Register: rdx instruction: AND RAX, 0b1111111111111
+                   (bv 103079215128 (bitvector 64))	; Register: rsi instruction: SUB DX, [R14 + RAX]
+                   (bv 22 (bitvector 64))	; Register: eflags instruction: JL .bb_main.1
                    (bv 18446612985909035016 (bitvector 64))))	; PC
 
-(define r1_4 (list (bv 3396 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                   (bv 1885490643383 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                   (bv 1035087118577 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                   (bv 1550483194217 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                   (bv 1666447310849 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                   (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                   (bv 6 (bitvector 64))	; Register: eflags instruction: IMUL RDX
-                   (bv 18446612985909035022 (bitvector 64))))	; PC
+; Run on input: [81]
+(define r1_4 (list (bv 87165 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 1919850381759 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 1602022801781 (bitvector 64))	; Register: rcx instruction: CMP DL, SIL
+                   (bv 1344324763961 (bitvector 64))	; Register: rdi instruction: IMUL EBX
+                   (bv 0 (bitvector 64))	; Register: rdx instruction: AND RAX, 0b1111111111111
+                   (bv 103079215128 (bitvector 64))	; Register: rsi instruction: SUB DX, [R14 + RAX]
+                   (bv 6 (bitvector 64))	; Register: eflags instruction: JL .bb_main.1
+                   (bv 18446612985909035018 (bitvector 64))))	; PC
 
-(define r1_5 (list (bv 3396 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                   (bv 1885490643383 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                   (bv 1035087118577 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                   (bv 1550483194217 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                   (bv 1666447310849 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                   (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                   (bv 130 (bitvector 64))	; Register: eflags instruction: IMUL RDX
-                   (bv 18446612985909035026 (bitvector 64))))	; PC
+; Run on input: [81]
+(define r1_5 (list (bv 5245 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 1919850381759 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 1602022801781 (bitvector 64))	; Register: rcx instruction: CMP DL, SIL
+                   (bv 1344324763961 (bitvector 64))	; Register: rdi instruction: IMUL EBX
+                   (bv 0 (bitvector 64))	; Register: rdx instruction: AND RAX, 0b1111111111111
+                   (bv 103079215128 (bitvector 64))	; Register: rsi instruction: SUB DX, [R14 + RAX]
+                   (bv 6 (bitvector 64))	; Register: eflags instruction: JL .bb_main.1
+                   (bv 18446612985909035024 (bitvector 64))))	; PC
 
-(define r1_6 (list (bv 1458570894061200 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                   (bv 1885490643383 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                   (bv 1035087118577 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                   (bv 1550483194217 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                   (bv 0 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                   (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                   (bv 6 (bitvector 64))	; Register: eflags instruction: IMUL RDX
+; Run on input: [81]
+(define r1_6 (list (bv 5245 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 1919850381759 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 1602022801781 (bitvector 64))	; Register: rcx instruction: CMP DL, SIL
+                   (bv 1344324763961 (bitvector 64))	; Register: rdi instruction: IMUL EBX
+                   (bv 0 (bitvector 64))	; Register: rdx instruction: AND RAX, 0b1111111111111
+                   (bv 103079215128 (bitvector 64))	; Register: rsi instruction: SUB DX, [R14 + RAX]
+                   (bv 70 (bitvector 64))	; Register: eflags instruction: JL .bb_main.1
                    (bv 18446612985909035029 (bitvector 64))))	; PC
 
-(define r1_7 (list (bv 0 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                   (bv 1885490643383 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                   (bv 1035087118577 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                   (bv 1550483194217 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                   (bv 0 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                   (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                   (bv 70 (bitvector 64))	; Register: eflags instruction: IMUL RDX
-                   (bv 18446612985909035032 (bitvector 64))))	; PC
+; Run on input: [81]
+(define r1_7 (list (bv 5245 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 1919850381759 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 1602022801781 (bitvector 64))	; Register: rcx instruction: CMP DL, SIL
+                   (bv 1344324763961 (bitvector 64))	; Register: rdi instruction: IMUL EBX
+                   (bv 0 (bitvector 64))	; Register: rdx instruction: AND RAX, 0b1111111111111
+                   (bv 103079215128 (bitvector 64))	; Register: rsi instruction: SUB DX, [R14 + RAX]
+                   (bv 70 (bitvector 64))	; Register: eflags instruction: JL .bb_main.1
+                   (bv 18446612985909035031 (bitvector 64))))	; PC
 
-(define r1_8 (list (bv 0 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                   (bv 1885490643383 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                   (bv 1035087118577 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                   (bv 1550483194217 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                   (bv 0 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                   (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                   (bv 70 (bitvector 64))	; Register: eflags instruction: IMUL RDX
-                   (bv 18446612985909035039 (bitvector 64))))	; PC
+; Run on input: [81]
+(define r1_8 (list (bv 5245 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 1919850381759 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 1602022801781 (bitvector 64))	; Register: rcx instruction: CMP DL, SIL
+                   (bv 1344324763961 (bitvector 64))	; Register: rdi instruction: IMUL EBX
+                   (bv 0 (bitvector 64))	; Register: rdx instruction: AND RAX, 0b1111111111111
+                   (bv 103079215128 (bitvector 64))	; Register: rsi instruction: SUB DX, [R14 + RAX]
+                   (bv 70 (bitvector 64))	; Register: eflags instruction: JL .bb_main.1
+                   (bv 18446612985909035108 (bitvector 64))))	; PC
 
-(define r1_9 (list (bv 35920 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                   (bv 1885490643383 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                   (bv 1035087118577 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                   (bv 1550483194217 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                   (bv 0 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                   (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                   (bv 2183 (bitvector 64))	; Register: eflags instruction: IMUL RDX
-                   (bv 18446612985909035045 (bitvector 64))))	; PC
+; Run on input: [81]
+(define r1_9 (list (bv 5245 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 1919850381759 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 1602022801781 (bitvector 64))	; Register: rcx instruction: CMP DL, SIL
+                   (bv 1344324763961 (bitvector 64))	; Register: rdi instruction: IMUL EBX
+                   (bv 0 (bitvector 64))	; Register: rdx instruction: AND RAX, 0b1111111111111
+                   (bv 103079215128 (bitvector 64))	; Register: rsi instruction: SUB DX, [R14 + RAX]
+                   (bv 70 (bitvector 64))	; Register: eflags instruction: JL .bb_main.1
+                   (bv -1 (bitvector 64))))	; Final state
 
-(define r1_10 (list (bv 35920 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                    (bv 1885490643383 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                    (bv 1035087118577 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                    (bv 1550483194217 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                    (bv 0 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                    (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                    (bv 2183 (bitvector 64))	; Register: eflags instruction: IMUL RDX
-                    (bv 18446612985909035047 (bitvector 64))))	; PC
 
-(define r1_11 (list (bv 35920 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                    (bv 1885490643383 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                    (bv 1035087118577 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                    (bv 1550483194217 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                    (bv 0 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                    (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                    (bv 2183 (bitvector 64))	; Register: eflags instruction: IMUL RDX
-                    (bv 18446612985909035115 (bitvector 64))))	; PC
-
-(define r1_12 (list (bv 35920 (bitvector 64))	; Register: rax instruction: UNMAPPED 
-                    (bv 1885490643383 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
-                    (bv 1035087118577 (bitvector 64))	; Register: rcx instruction: IMUL DX
-                    (bv 1550483194217 (bitvector 64))	; Register: rdi instruction: AND RAX, 0b1111111111111
-                    (bv 0 (bitvector 64))	; Register: rdx instruction: CMP [R14 + RAX], DL
-                    (bv 429496729700 (bitvector 64))	; Register: rsi instruction: IMUL RSI
-                    (bv 2183 (bitvector 64))	; Register: eflags instruction: IMUL RDX
-                    (bv -1 (bitvector 64))))	; Final state
-                    
-(define r1 (list (make-run-step r1_0 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_1 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_2 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_3 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_4 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_5 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_6 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_7 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_8 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_9 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_10 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_11 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_12 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4)))))))
+(define r1 (list (make-run-step r1_0 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_1 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_2 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_3 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_4 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_5 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_6 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_7 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_8 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_9 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4)))))))
 
 (define myexpr (cexpr #:depth 1))
 
@@ -560,13 +528,7 @@
                                (diff 8 9 r0 8 9 r1 myexpr)
                                (diff 9 9 r0 9 9 r1 myexpr)
                                (diff 9 10 r0 9 10 r1 myexpr)
-                               (diff 10 10 r0 10 10 r1 myexpr)
-                               (diff 10 11 r0 10 11 r1 myexpr)
-                               (diff 11 11 r0 11 11 r1 myexpr)
-                               (diff 11 12 r0 11 12 r1 myexpr)
-                               (diff 12 12 r0 12 12 r1 myexpr)
-                               (diff 12 13 r0 12 13 r1 myexpr)
-                               (diff 13 12 r0 13 12 r1 myexpr)
+                               (diff 10 9 r0 10 9 r1 myexpr)
 ))))
 
 (print-forms sol)
