@@ -120,6 +120,7 @@ class Fuzzer:
                 self.store_test_case(test_case, violation) # TODO: use test case for parametric contract executor.
 
                 violate_inputs: List[Input] = self.get_single_violation(violation)
+                print(f"[fuzzer] Violating inputs: {violate_inputs}")
                 # print(f"[+] Violation: {violation}")
                 runs = self.capture(test_case, violate_inputs)
                 run1 = runs[0]
