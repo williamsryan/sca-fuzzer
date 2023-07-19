@@ -386,6 +386,11 @@ class UnicornModel(Model, ABC):
             i_ = i - mem_address_start
             archstate.mems[i] = (mem_[i_:i_+8]).hex()
 
+        # Test updating registers with corresponding memory addresses.
+        for reg_addr, reg_val in archstate.regs.items():
+            if reg_val in archstate.mems:
+                print(f"TEST: {archstate.regs[reg_addr]} : {archstate.mems[reg_val]}")
+
         return archstate
 
     def execute(self, input):
