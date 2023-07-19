@@ -6,6 +6,7 @@ from interfaces import Run
 from typing import List
 from pathlib import Path
 
+from config import CONF
 
 class Synthesizer:
     filename: str
@@ -38,13 +39,13 @@ class Synthesizer:
             xstate_name = self.get_xstate_name(rid, xid)
             header = len('(define {0} (list '.format(xstate_name))
             indentation = ''
-            for i in range(0, header):
+            for _ in range(0, header):
                 indentation += ' '
             regs = ''
             for idx, reg in enumerate(xstate.regs.values()):
                 if regs != '':
                     regs += indentation
-                regs += f"(bv {str(reg)} (bitvector 64))\t\t\t; Register: {idx} instruction: {instrs[idx]}\n"   # Each of these is the value of a given register.
+                regs += f"(bv {str(reg)} (bitvector 64))\t\t\t; Register: {CONF.map_reg(idx)} instruction: {instrs[idx]}\n"
             if xstate.pc is not None:
                 regs += indentation + \
                     f"(bv {str(xstate.pc)} (bitvector 64))))\t\t\t; PC"
