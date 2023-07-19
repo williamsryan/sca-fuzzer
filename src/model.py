@@ -89,6 +89,8 @@ class UnicornTracer(Tracer):
         if model.in_speculation:
             return
 
+        # If it's a memory store instruction, use provided value.
+        # If it's a memory load, read the memory content at the given address.
         if model.execution_tracing_enabled:
             val = value if is_store else int.from_bytes(
                 model.emulator.mem_read(address, size), byteorder='little')
@@ -379,9 +381,6 @@ class UnicornModel(Model, ABC):
         mem_address_start = self.sandbox_base
         mem_address_end = mem_address_start + self.input_size
         mem_ = self.emulator.mem_read(mem_address_start, self.input_size)
-
-        # Testing again.
-        print(f"[model::capture_state] Mem read: {mem_}")
 
         for i in range(mem_address_start, mem_address_end, 8):
             i_ = i - mem_address_start
