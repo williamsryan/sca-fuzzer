@@ -21,7 +21,7 @@ class Synthesizer:
 
     def add_core(self):
         Path(self.work_dir).mkdir(exist_ok=True)
-        core_path = "core-new.rkt"
+        core_path = "core.rkt"
         # print(f"[*] Workdir: {self.work_dir}, filename: {self.filename}")
         shutil.copy2(core_path, self.work_dir + "/" + self.filename)
 
