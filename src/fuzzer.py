@@ -120,7 +120,7 @@ class Fuzzer:
                 self.store_test_case(test_case, violation) # TODO: use test case for parametric contract executor.
 
                 violate_inputs: List[Input] = self.get_single_violation(violation)
-                print(f"[fuzzer] Violating inputs: {violate_inputs}")
+                # print(f"[fuzzer] Violating inputs: {violate_inputs}")
                 # print(f"[+] Violation: {violation}")
                 runs = self.capture(test_case, violate_inputs)
                 run1 = runs[0]
@@ -170,7 +170,7 @@ class Fuzzer:
     def capture(self, test_case, inputs):
         runs = {}
 
-        # print(f"[+] Capturing run data: {test_case} -> {inputs}")
+        print(f"[fuzzer::capture] Capturing run data: {test_case} -> {inputs}")
 
         self.model.load_test_case(test_case)
         # self.executor.load_test_case(test_case)
@@ -180,6 +180,7 @@ class Fuzzer:
         for id, input in enumerate(inputs):
             run = self.model.execute(input) # Equivalent contract traces with different inputs. That should be correct.
             run.id = id
+            run.input = input
             # self.store_run(run)
             runs[id] = run
 
