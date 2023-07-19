@@ -45,7 +45,9 @@ class Synthesizer:
             for idx, reg in enumerate(xstate.regs.values()):
                 if regs != '':
                     regs += indentation
-                regs += f"(bv {str(reg)} (bitvector 64))\t\t\t; Register: {CONF.map_reg(idx)} instruction: {instrs[idx]}\n"
+                reg_idx = CONF.map_reg(idx)
+                reg_name = CONF.registers.get(reg_idx)
+                regs += f"(bv {str(reg)} (bitvector 64))\t\t\t; Register: {reg_name} instruction: {instrs[idx]}\n"
             if xstate.pc is not None:
                 regs += indentation + \
                     f"(bv {str(xstate.pc)} (bitvector 64))))\t\t\t; PC"
