@@ -42,16 +42,15 @@ class Synthesizer:
                 indentation += ' '
             regs = ''
             for idx, reg in enumerate(xstate.regs.values()):
-                print(f"[synthesizer] Reg idx {idx} -> {reg}\tinstr: {instrs[idx]}")
                 if regs != '':
                     regs += indentation
-                regs += f"(bv {str(reg)} (bitvector 64))\t\t\t\t; Register state for instruction: {instrs[idx]}\n"   # Each of these is the value of a given register.
+                regs += f"(bv {str(reg)} (bitvector 64))\t\t\t; Register: {idx} instruction: {instrs[idx]}\n"   # Each of these is the value of a given register.
             if xstate.pc is not None:
                 regs += indentation + \
-                    f"(bv {str(xstate.pc)} (bitvector 64))\t\t\t\t; PC"
+                    f"(bv {str(xstate.pc)} (bitvector 64))))\t\t\t; PC"
             else:
                 # Meaning this is the final state; end with -1.
-                regs += indentation + f"(bv {str(-1)} (bitvector 64))\t\t\t\t; Final state"
+                regs += indentation + f"(bv {str(-1)} (bitvector 64))))\t\t\t; Final state"
 
             # Annotate each register state object with the observed instruction.
             # Depending on results, we may actually use it in the tuple to help
@@ -63,7 +62,7 @@ class Synthesizer:
                 #     comment_obj += f" operands: {op.value}"
 
             # Run step registers object.
-            return f"\n(define {xstate_name} (list {regs}))\n"
+            return f"\n(define {xstate_name} (list {regs}\n"
 
         with open(self.work_dir + "/" + self.filename, "a") as f:
             xstates = ''
