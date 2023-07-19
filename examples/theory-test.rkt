@@ -301,269 +301,368 @@
                                         (run-step-regs (list-ref r_ i_)))))))))
 
 ; ------------- END-CORE ------------------ ;
+(define r0_0 (list (bv 1017907249389 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 1464583848277 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                   (bv 515396075640 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                   (bv 846108557509 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                   (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                   (bv 83 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                   (bv 18446612985909035008 (bitvector 64))))	; PC
 
-(define r0_0 (list (bv 1610612736375 (bitvector 64))
-                   (bv 2181843386876 (bitvector 64))
-                   (bv 558345748610 (bitvector 64))
-                   (bv 1928440316353 (bitvector 64))
-                   (bv 1872605741492 (bitvector 64))
-                   (bv 167503724583 (bitvector 64))
-                   (bv 86 (bitvector 64))
-                   (bv 18446612985909035008 (bitvector 64))))
+(define r0_1 (list (bv 1017907249389 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 1464583848277 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                   (bv 515396075640 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                   (bv 846108557509 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                   (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                   (bv 83 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                   (bv 18446612985909035011 (bitvector 64))))	; PC
 
+(define r0_2 (list (bv 1017907249389 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 1464583848277 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                   (bv 515396075640 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                   (bv 846108557509 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                   (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                   (bv 83 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                   (bv 18446612985909035013 (bitvector 64))))	; PC
 
-(define r0_1 (list (bv 1610612736375 (bitvector 64))
-                   (bv 2181843386876 (bitvector 64))
-                   (bv 558345748610 (bitvector 64))
-                   (bv 1928440316353 (bitvector 64))
-                   (bv 1872605741492 (bitvector 64))
-                   (bv 167503724583 (bitvector 64))
-                   (bv 86 (bitvector 64))
-                   (bv 18446612985909035011 (bitvector 64))))
+(define r0_3 (list (bv 1017907249379 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 1464583848277 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                   (bv 515396075640 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                   (bv 846108557509 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                   (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                   (bv 130 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                   (bv 18446612985909035015 (bitvector 64))))	; PC
 
+(define r0_4 (list (bv 1017907249379 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 341 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                   (bv 515396075640 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                   (bv 846108557509 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                   (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                   (bv 6 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                   (bv 18446612985909035022 (bitvector 64))))	; PC
 
-(define r0_2 (list (bv 1610612736375 (bitvector 64))
-                   (bv 2181843386876 (bitvector 64))
-                   (bv 558345748610 (bitvector 64))
-                   (bv 1928440316353 (bitvector 64))
-                   (bv 1872605741492 (bitvector 64))
-                   (bv 167503724583 (bitvector 64))
-                   (bv 86 (bitvector 64))
-                   (bv 18446612985909035013 (bitvector 64))))
+(define r0_5 (list (bv 1017907249379 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 341 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                   (bv 515396075640 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                   (bv 846108557509 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                   (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                   (bv 70 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                   (bv 18446612985909035026 (bitvector 64))))	; PC
 
+(define r0_6 (list (bv 1017907249379 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 340 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                   (bv 515396075640 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                   (bv 846108557509 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                   (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                   (bv 70 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                   (bv 18446612985909035028 (bitvector 64))))	; PC
 
-(define r0_3 (list (bv 1610612736375 (bitvector 64))
-                   (bv 2181843386876 (bitvector 64))
-                   (bv 558345748610 (bitvector 64))
-                   (bv 319 (bitvector 64))
-                   (bv 1872605741492 (bitvector 64))
-                   (bv 167503724583 (bitvector 64))
-                   (bv 22 (bitvector 64))
-                   (bv 18446612985909035015 (bitvector 64))))
+(define r0_7 (list (bv 1017907249379 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 340 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                   (bv 515396075640 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                   (bv 846108557509 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                   (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                   (bv 70 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                   (bv 18446612985909035081 (bitvector 64))))	; PC
 
+(define r0_8 (list (bv 2667753056 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 340 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                   (bv 515396075640 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                   (bv 846108557509 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                   (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                   (bv 150 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                   (bv 18446612985909035086 (bitvector 64))))	; PC
 
-(define r0_4 (list (bv 1610612736375 (bitvector 64))
-                   (bv 2181843386876 (bitvector 64))
-                   (bv 558345748610 (bitvector 64))
-                   (bv 319 (bitvector 64))
-                   (bv 1872605741492 (bitvector 64))
-                   (bv 39 (bitvector 64))
-                   (bv 6 (bitvector 64))
-                   (bv 18446612985909035022 (bitvector 64))))
+(define r0_9 (list (bv 3680 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 340 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                   (bv 515396075640 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                   (bv 846108557509 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                   (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                   (bv 6 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                   (bv 18446612985909035092 (bitvector 64))))	; PC
 
+(define r0_10 (list (bv 3680 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                    (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                    (bv 340 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                    (bv 4294967230 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                    (bv 846108557509 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                    (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                    (bv 151 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                    (bv 18446612985909035096 (bitvector 64))))	; PC
 
-(define r0_5 (list (bv 1610612736375 (bitvector 64))
-                   (bv 2181843386876 (bitvector 64))
-                   (bv 558345748610 (bitvector 64))
-                   (bv 319 (bitvector 64))
-                   (bv 1872605741492 (bitvector 64))
-                   (bv 39 (bitvector 64))
-                   (bv 6 (bitvector 64))
-                   (bv 18446612985909035027 (bitvector 64))))
+(define r0_11 (list (bv 635655163636 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                    (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                    (bv 340 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                    (bv 4294967230 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                    (bv 846108557509 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                    (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                    (bv 2 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                    (bv 18446612985909035099 (bitvector 64))))	; PC
 
+(define r0_12 (list (bv 635655163636 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                    (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                    (bv 340 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                    (bv 4294967230 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                    (bv 846108557401 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                    (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                    (bv 2055 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                    (bv 18446612985909035101 (bitvector 64))))	; PC
 
-(define r0_6 (list (bv 18446742463096815241 (bitvector 64))
-                   (bv 2181843386876 (bitvector 64))
-                   (bv 558345748610 (bitvector 64))
-                   (bv 319 (bitvector 64))
-                   (bv 1872605741492 (bitvector 64))
-                   (bv 39 (bitvector 64))
-                   (bv 147 (bitvector 64))
-                   (bv 18446612985909035030 (bitvector 64))))
+(define r0_13 (list (bv 635655163636 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                    (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                    (bv 340 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                    (bv 4294967230 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                    (bv 846108557401 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                    (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                    (bv 2 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                    (bv 18446612985909035105 (bitvector 64))))	; PC
 
+(define r0_14 (list (bv 635655159809 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                    (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                    (bv 340 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                    (bv 4294967230 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                    (bv 846108557401 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                    (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                    (bv 2 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                    (bv 18446612985909035109 (bitvector 64))))	; PC
 
-(define r0_7 (list (bv 18446742463096759633 (bitvector 64))
-                   (bv 2181843386876 (bitvector 64))
-                   (bv 558345748610 (bitvector 64))
-                   (bv 319 (bitvector 64))
-                   (bv 1872605741492 (bitvector 64))
-                   (bv 39 (bitvector 64))
-                   (bv 2051 (bitvector 64))
-                   (bv 18446612985909035034 (bitvector 64))))
+(define r0_15 (list (bv 635655159809 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                    (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                    (bv 340 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                    (bv 4294967230 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                    (bv 846108557401 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                    (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                    (bv 2 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                    (bv 18446612985909035112 (bitvector 64))))	; PC
 
+(define r0_16 (list (bv 635655159809 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                    (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                    (bv 339 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                    (bv 4294967230 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                    (bv 846108557401 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                    (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                    (bv 6 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                    (bv 18446612985909035114 (bitvector 64))))	; PC
 
-(define r0_8 (list (bv 1361 (bitvector 64))
-                   (bv 2181843386876 (bitvector 64))
-                   (bv 558345748610 (bitvector 64))
-                   (bv 319 (bitvector 64))
-                   (bv 1872605741492 (bitvector 64))
-                   (bv 39 (bitvector 64))
-                   (bv 2 (bitvector 64))
-                   (bv 18446612985909035040 (bitvector 64))))
+(define r0_17 (list (bv 635655159809 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                    (bv 148 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                    (bv 339 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                    (bv 4294967230 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                    (bv 846108557401 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                    (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                    (bv 2 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                    (bv 18446612985909035121 (bitvector 64))))	; PC
 
+(define r0_18 (list (bv 635655159809 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                    (bv 148 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                    (bv 339 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                    (bv 4294967230 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                    (bv 846108557401 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                    (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                    (bv 2 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                    (bv 18446612985909035126 (bitvector 64))))	; PC
 
-(define r0_9 (list (bv 1361 (bitvector 64))
-                   (bv 2181843386876 (bitvector 64))
-                   (bv 558345748610 (bitvector 64))
-                   (bv 319 (bitvector 64))
-                   (bv 1872605741492 (bitvector 64))
-                   (bv 39 (bitvector 64))
-                   (bv 131 (bitvector 64))
-                   (bv 18446612985909035044 (bitvector 64))))
-
-
-(define r0_10 (list (bv 1361 (bitvector 64))
-                    (bv 2181843386876 (bitvector 64))
-                    (bv 558345748610 (bitvector 64))
-                    (bv 319 (bitvector 64))
-                    (bv 1872605741492 (bitvector 64))
-                    (bv 39 (bitvector 64))
-                    (bv 131 (bitvector 64))
-                    (bv 18446612985909035046 (bitvector 64))))
-
-
-(define r0_11 (list (bv 1361 (bitvector 64))
-                    (bv 2181843386876 (bitvector 64))
-                    (bv 558345748610 (bitvector 64))
-                    (bv 319 (bitvector 64))
-                    (bv 1872605741492 (bitvector 64))
-                    (bv 39 (bitvector 64))
-                    (bv 131 (bitvector 64))
-                    (bv 18446612985909035097 (bitvector 64))))
-
-
-(define r0_12 (list (bv 1361 (bitvector 64))
-                    (bv 2181843386876 (bitvector 64))
-                    (bv 558345748610 (bitvector 64))
-                    (bv 319 (bitvector 64))
-                    (bv 1872605741492 (bitvector 64))
-                    (bv 39 (bitvector 64))
-                    (bv 131 (bitvector 64))
-                    (bv -1 (bitvector 64))))
-
-(define r0 (list (make-run-step r0_0 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_1 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_2 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_3 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_4 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_5 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_6 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_7 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_8 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_9 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_10 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_11 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_12 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4)))))))
-
-
-(define r1_0 (list (bv 1610612736375 (bitvector 64))
-                   (bv 1911260447165 (bitvector 64))
-                   (bv 558345748610 (bitvector 64))
-                   (bv 1928440316353 (bitvector 64))
-                   (bv 1872605741492 (bitvector 64))
-                   (bv 167503724583 (bitvector 64))
-                   (bv 86 (bitvector 64))
-                   (bv 18446612985909035008 (bitvector 64))))
-
-
-(define r1_1 (list (bv 1610612736375 (bitvector 64))
-                   (bv 1911260447165 (bitvector 64))
-                   (bv 558345748610 (bitvector 64))
-                   (bv 1928440316353 (bitvector 64))
-                   (bv 1872605741492 (bitvector 64))
-                   (bv 167503724583 (bitvector 64))
-                   (bv 86 (bitvector 64))
-                   (bv 18446612985909035011 (bitvector 64))))
-
-
-(define r1_2 (list (bv 1610612736375 (bitvector 64))
-                   (bv 1911260447165 (bitvector 64))
-                   (bv 558345748610 (bitvector 64))
-                   (bv 1928440316353 (bitvector 64))
-                   (bv 1872605741492 (bitvector 64))
-                   (bv 167503724583 (bitvector 64))
-                   (bv 86 (bitvector 64))
-                   (bv 18446612985909035013 (bitvector 64))))
-
-
-(define r1_3 (list (bv 1610612736375 (bitvector 64))
-                   (bv 1911260447165 (bitvector 64))
-                   (bv 558345748610 (bitvector 64))
-                   (bv 319 (bitvector 64))
-                   (bv 1872605741492 (bitvector 64))
-                   (bv 167503724583 (bitvector 64))
-                   (bv 22 (bitvector 64))
-                   (bv 18446612985909035015 (bitvector 64))))
-
-
-(define r1_4 (list (bv 1610612736375 (bitvector 64))
-                   (bv 1911260447165 (bitvector 64))
-                   (bv 558345748610 (bitvector 64))
-                   (bv 319 (bitvector 64))
-                   (bv 1872605741492 (bitvector 64))
-                   (bv 39 (bitvector 64))
-                   (bv 6 (bitvector 64))
-                   (bv 18446612985909035022 (bitvector 64))))
-
-
-(define r1_5 (list (bv 1610612736375 (bitvector 64))
-                   (bv 1911260447165 (bitvector 64))
-                   (bv 558345748610 (bitvector 64))
-                   (bv 319 (bitvector 64))
-                   (bv 1872605741492 (bitvector 64))
-                   (bv 39 (bitvector 64))
-                   (bv 6 (bitvector 64))
-                   (bv 18446612985909035027 (bitvector 64))))
+(define r0_19 (list (bv 635655159809 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                    (bv 148 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                    (bv 339 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                    (bv 4294967230 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                    (bv 846108557401 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                    (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                    (bv 2 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                    (bv -1 (bitvector 64))))	; Final state
+(define r0 (list (make-run-step r0_0 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_1 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_2 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_3 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_4 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_5 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_6 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_7 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_8 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_9 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_10 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_11 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_12 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_13 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_14 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_15 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_16 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_17 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_18 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r0_19 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4)))))))
 
 
-(define r1_6 (list (bv 18446742463096815241 (bitvector 64))
-                   (bv 1911260447165 (bitvector 64))
-                   (bv 558345748610 (bitvector 64))
-                   (bv 319 (bitvector 64))
-                   (bv 1872605741492 (bitvector 64))
-                   (bv 39 (bitvector 64))
-                   (bv 147 (bitvector 64))
-                   (bv 18446612985909035030 (bitvector 64))))
+(define r1_0 (list (bv 1017907249389 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 1464583848277 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                   (bv 1649267442048 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                   (bv 2168958484985 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                   (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                   (bv 83 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                   (bv 18446612985909035008 (bitvector 64))))	; PC
 
+(define r1_1 (list (bv 1017907249389 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 1464583848277 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                   (bv 1649267442048 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                   (bv 2168958484985 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                   (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                   (bv 83 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                   (bv 18446612985909035011 (bitvector 64))))	; PC
 
-(define r1_7 (list (bv 18446742463096759633 (bitvector 64))
-                   (bv 1911260447165 (bitvector 64))
-                   (bv 558345748610 (bitvector 64))
-                   (bv 319 (bitvector 64))
-                   (bv 1872605741492 (bitvector 64))
-                   (bv 39 (bitvector 64))
-                   (bv 2051 (bitvector 64))
-                   (bv 18446612985909035034 (bitvector 64))))
+(define r1_2 (list (bv 1017907249389 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 1464583848277 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                   (bv 1649267442048 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                   (bv 2168958484985 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                   (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                   (bv 83 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                   (bv 18446612985909035013 (bitvector 64))))	; PC
 
+(define r1_3 (list (bv 1017907249379 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 1464583848277 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                   (bv 1649267442048 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                   (bv 2168958484985 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                   (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                   (bv 130 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                   (bv 18446612985909035015 (bitvector 64))))	; PC
 
-(define r1_8 (list (bv 1361 (bitvector 64))
-                   (bv 1911260447165 (bitvector 64))
-                   (bv 558345748610 (bitvector 64))
-                   (bv 319 (bitvector 64))
-                   (bv 1872605741492 (bitvector 64))
-                   (bv 39 (bitvector 64))
-                   (bv 2 (bitvector 64))
-                   (bv 18446612985909035040 (bitvector 64))))
+(define r1_4 (list (bv 1017907249379 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 341 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                   (bv 1649267442048 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                   (bv 2168958484985 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                   (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                   (bv 6 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                   (bv 18446612985909035022 (bitvector 64))))	; PC
 
+(define r1_5 (list (bv 1017907249379 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 341 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                   (bv 1649267442048 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                   (bv 2168958484985 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                   (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                   (bv 70 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                   (bv 18446612985909035026 (bitvector 64))))	; PC
 
-(define r1_9 (list (bv 1361 (bitvector 64))
-                   (bv 1911260447165 (bitvector 64))
-                   (bv 558345748610 (bitvector 64))
-                   (bv 319 (bitvector 64))
-                   (bv 1872605741492 (bitvector 64))
-                   (bv 39 (bitvector 64))
-                   (bv 131 (bitvector 64))
-                   (bv 18446612985909035044 (bitvector 64))))
+(define r1_6 (list (bv 1017907249379 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 340 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                   (bv 1649267442048 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                   (bv 2168958484985 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                   (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                   (bv 70 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                   (bv 18446612985909035028 (bitvector 64))))	; PC
 
+(define r1_7 (list (bv 1017907249379 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 340 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                   (bv 1649267442048 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                   (bv 2168958484985 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                   (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                   (bv 70 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                   (bv 18446612985909035081 (bitvector 64))))	; PC
 
-(define r1_10 (list (bv 1361 (bitvector 64))
-                    (bv 1911260447165 (bitvector 64))
-                    (bv 558345748610 (bitvector 64))
-                    (bv 319 (bitvector 64))
-                    (bv 1872605741492 (bitvector 64))
-                    (bv 39 (bitvector 64))
-                    (bv 131 (bitvector 64))
-                    (bv 18446612985909035046 (bitvector 64))))
+(define r1_8 (list (bv 2667753056 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 340 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                   (bv 1649267442048 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                   (bv 2168958484985 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                   (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                   (bv 150 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                   (bv 18446612985909035086 (bitvector 64))))	; PC
 
+(define r1_9 (list (bv 3680 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                   (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                   (bv 340 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                   (bv 1649267442048 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                   (bv 2168958484985 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                   (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                   (bv 6 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                   (bv 18446612985909035092 (bitvector 64))))	; PC
 
-(define r1_11 (list (bv 1361 (bitvector 64))
-                    (bv 1911260447165 (bitvector 64))
-                    (bv 558345748610 (bitvector 64))
-                    (bv 319 (bitvector 64))
-                    (bv 1872605741492 (bitvector 64))
-                    (bv 39 (bitvector 64))
-                    (bv 131 (bitvector 64))
-                    (bv 18446612985909035097 (bitvector 64))))
+(define r1_10 (list (bv 3680 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                    (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                    (bv 340 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                    (bv 340 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                    (bv 2168958484985 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                    (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                    (bv 18 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                    (bv 18446612985909035096 (bitvector 64))))	; PC
 
+(define r1_11 (list (bv 635655163636 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                    (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                    (bv 340 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                    (bv 340 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                    (bv 2168958484985 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                    (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                    (bv 2 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                    (bv 18446612985909035099 (bitvector 64))))	; PC
 
-(define r1_12 (list (bv 1361 (bitvector 64))
-                    (bv 1911260447165 (bitvector 64))
-                    (bv 558345748610 (bitvector 64))
-                    (bv 319 (bitvector 64))
-                    (bv 1872605741492 (bitvector 64))
-                    (bv 39 (bitvector 64))
-                    (bv 131 (bitvector 64))
-                    (bv -1 (bitvector 64))))
+(define r1_12 (list (bv 635655163636 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                    (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                    (bv 340 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                    (bv 340 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                    (bv 2168958484877 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                    (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                    (bv 135 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                    (bv 18446612985909035101 (bitvector 64))))	; PC
 
-(define r1 (list (make-run-step r1_0 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_1 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_2 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_3 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_4 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_5 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_6 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_7 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_8 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_9 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_10 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_11 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_12 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4)))))))
+(define r1_13 (list (bv 635655163636 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                    (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                    (bv 340 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                    (bv 340 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                    (bv 2168958484877 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                    (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                    (bv 2 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                    (bv 18446612985909035105 (bitvector 64))))	; PC
+
+(define r1_14 (list (bv 635655159809 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                    (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                    (bv 340 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                    (bv 340 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                    (bv 2168958484877 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                    (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                    (bv 2 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                    (bv 18446612985909035109 (bitvector 64))))	; PC
+
+(define r1_15 (list (bv 635655159809 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                    (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                    (bv 340 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                    (bv 340 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                    (bv 2168958484877 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                    (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                    (bv 2 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                    (bv 18446612985909035112 (bitvector 64))))	; PC
+
+(define r1_16 (list (bv 635655159809 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                    (bv 635655159956 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                    (bv 339 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                    (bv 340 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                    (bv 2168958484877 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                    (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                    (bv 6 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                    (bv 18446612985909035114 (bitvector 64))))	; PC
+
+(define r1_17 (list (bv 635655159809 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                    (bv 148 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                    (bv 339 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                    (bv 340 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                    (bv 2168958484877 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                    (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                    (bv 2 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                    (bv 18446612985909035121 (bitvector 64))))	; PC
+
+(define r1_18 (list (bv 635655159809 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                    (bv 148 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                    (bv 339 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                    (bv 340 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                    (bv 2168958484877 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                    (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                    (bv 2 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                    (bv 18446612985909035126 (bitvector 64))))	; PC
+
+(define r1_19 (list (bv 635655159809 (bitvector 64))	; Register: rax instruction: UNMAPPED 
+                    (bv 148 (bitvector 64))	; Register: rbx instruction: JMP .bb_main.0
+                    (bv 339 (bitvector 64))	; Register: rcx instruction: SUB AL, 10
+                    (bv 340 (bitvector 64))	; Register: rdi instruction: AND RCX, 0b1111111111111
+                    (bv 2168958484877 (bitvector 64))	; Register: rdx instruction: SUB [R14 + RCX], SIL
+                    (bv 1103806595329 (bitvector 64))	; Register: rsi instruction: LOOPNE .bb_main.1
+                    (bv 2 (bitvector 64))	; Register: eflags instruction: JMP .bb_main.3
+                    (bv -1 (bitvector 64))))	; Final state
+(define r1 (list (make-run-step r1_0 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_1 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_2 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_3 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_4 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_5 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_6 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_7 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_8 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_9 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_10 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_11 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_12 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_13 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_14 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_15 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_16 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_17 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_18 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))))) (make-run-step r1_19 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4)))))))
 
 (define myexpr (cexpr #:depth 1))
 
@@ -591,7 +690,21 @@
                                (diff 11 12 r0 11 12 r1 myexpr)
                                (diff 12 12 r0 12 12 r1 myexpr)
                                (diff 12 13 r0 12 13 r1 myexpr)
-                               (diff 13 12 r0 13 12 r1 myexpr)
+                               (diff 13 13 r0 13 13 r1 myexpr)
+                               (diff 13 14 r0 13 14 r1 myexpr)
+                               (diff 14 14 r0 14 14 r1 myexpr)
+                               (diff 14 15 r0 14 15 r1 myexpr)
+                               (diff 15 15 r0 15 15 r1 myexpr)
+                               (diff 15 16 r0 15 16 r1 myexpr)
+                               (diff 16 16 r0 16 16 r1 myexpr)
+                               (diff 16 17 r0 16 17 r1 myexpr)
+                               (diff 17 17 r0 17 17 r1 myexpr)
+                               (diff 17 18 r0 17 18 r1 myexpr)
+                               (diff 18 18 r0 18 18 r1 myexpr)
+                               (diff 18 19 r0 18 19 r1 myexpr)
+                               (diff 19 19 r0 19 19 r1 myexpr)
+                               (diff 19 20 r0 19 20 r1 myexpr)
+                               (diff 20 19 r0 20 19 r1 myexpr)
 ))))
 
 (print-forms sol)
