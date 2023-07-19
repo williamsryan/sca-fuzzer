@@ -380,6 +380,9 @@ class UnicornModel(Model, ABC):
         mem_address_end = mem_address_start + self.input_size
         mem_ = self.emulator.mem_read(mem_address_start, self.input_size)
 
+        # Testing again.
+        print(f"[model::capture_state] Mem read: {mem_}")
+
         for i in range(mem_address_start, mem_address_end, 8):
             i_ = i - mem_address_start
             archstate.mems[i] = (mem_[i_:i_+8]).hex()
@@ -450,10 +453,6 @@ class UnicornModel(Model, ABC):
         # We call a different method that handles customized contracts, i.e., contract that's comprised of sequences of expressions.
         model.taint_tracker.start_instruction(model.current_instruction)
         model.tracer.observe_instruction(address, size, model)
-
-        # Just testing for now.
-        test = model.tracer.observe_mem_access(address, size)
-        print(f"[model::instruction_hook] Test: {test}")
 
         # print(f"[+] Current contract: {model.contract}")
         for expr in model.contract:
