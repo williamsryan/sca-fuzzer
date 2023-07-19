@@ -42,6 +42,7 @@ class Synthesizer:
                 indentation += ' '
             regs = ''
             for idx, reg in enumerate(xstate.regs.values()):
+                print(f"[synthesizer] Reg idx {idx} -> {reg}\tinstr: {instrs[idx]}")
                 if regs != '':
                     regs += indentation
                 regs += f"(bv {str(reg)} (bitvector 64))\t\t\t\t; Register state for instruction: {instrs[idx]}\n"   # Each of these is the value of a given register.
