@@ -451,6 +451,10 @@ class UnicornModel(Model, ABC):
         model.taint_tracker.start_instruction(model.current_instruction)
         model.tracer.observe_instruction(address, size, model)
 
+        # Just testing for now.
+        test = model.tracer.observe_mem_access(address, size)
+        print(f"[model::instruction_hook] Test: {test}")
+
         # print(f"[+] Current contract: {model.contract}")
         for expr in model.contract:
             model.eval_expr(emulator, address, size, expr)
