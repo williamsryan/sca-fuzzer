@@ -44,13 +44,13 @@ class Synthesizer:
             for idx, reg in enumerate(xstate.regs.values()):
                 if regs != '':
                     regs += indentation
-                regs += f"(bv {str(reg)} (bitvector 64))\t\t; Register state for instruction: {instrs[idx]}\n"   # Each of these is the value of a given register.
+                regs += f"(bv {str(reg)} (bitvector 64))\t\t\t\t; Register state for instruction: {instrs[idx]}\n"   # Each of these is the value of a given register.
             if xstate.pc is not None:
                 regs += indentation + \
-                    f"(bv {str(xstate.pc)} (bitvector 64))"
+                    f"(bv {str(xstate.pc)} (bitvector 64))\t\t\t\t; PC"
             else:
                 # Meaning this is the final state; end with -1.
-                regs += indentation + f"(bv {str(-1)} (bitvector 64))"
+                regs += indentation + f"(bv {str(-1)} (bitvector 64))\t\t\t\t; Final state"
 
             # Annotate each register state object with the observed instruction.
             # Depending on results, we may actually use it in the tuple to help
@@ -72,11 +72,6 @@ class Synthesizer:
                 f.write(model(run.id, i, xstate, run.mem_instrs))
 
                 if xstates == '':
-                    # Implement logic for making xstate look like:
-                    # (make-run-step r0_0 'LOAD).
-                    # xstates += self.get_xstate_name(run.id, i)
-                    # xstates += f"(make-run-step {self.get_xstate_name(run.id, i)} 'LOAD)"
-                    # (define r1 (list (make-run-step r1_0 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))))))).
                     opcode_test = "bv #b0000001011 (bitvector 8)"
                     bv_test = "bv #b0111 (bitvector 4)"
                     xstates += f"(make-run-step {self.get_xstate_name(run.id, i)} (INSTR (OPCODE ({opcode_test})) (OPERANDS ({bv_test}) ({bv_test}))))"
