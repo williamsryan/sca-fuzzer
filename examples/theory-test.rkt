@@ -7,7 +7,6 @@
 (require rosette/lib/destruct) ; Value destructuring library.
 (require rosette/lib/synthax) ; Synthesis library.
 (require racket/match)
-; (require racket/base)
 
 ; General purpose register encoding.
 (define RAX 0)  ; A eXtended
@@ -31,9 +30,7 @@
 ; Struct definitions for our contract language.
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
 (struct OPCODE (bs) #:transparent)
-(struct OPERAND (bs) #:transparent)
-(struct OPERANDS (op1 op2) #:transparent)
-(struct INSTR (opcode operands) #:transparent) ; TODO: use INSTR for opcode + operands (pred + bs).
+(struct INSTR (name operand) #:transparent)
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
 (struct RS1 ())                         ; Register RS1.
 (struct RS2 ())                         ; Register RS2.
@@ -44,20 +41,9 @@
 (struct BOOL (b))
 (struct BS (bs))                        ; Bitstring value.
 (struct REG (r) #:transparent)          ; Register value.
+; (struct MEM-LOAD (a) #:transparent)
+; (struct MEM-STORE (a bs) #:transparent)
 (struct ADDR (a) #:transparent)         ; Address value.
-
-; Aux structs.
-(struct INTEGER (value) #:transparent)
-
-; Some logging stuff.
-(define (log-info message)
-  (printf "[INFO]: ~a\n" message))
-
-(define (log-debug message)
-  (printf "[DEBUG]: ~a\n" message))
-
-(define (log-error message)
-  (printf "[ERROR]: ~a\n" message))
 
 ;; Helper function to get the register name from the register index.
 (define (get-register-name reg-index registers)
@@ -82,7 +68,7 @@
     (else #f)))
 
 ; New object that holds register values and instruction together.
-(struct run-step (regs instruction)
+(struct run-step (regs instr)
   #:constructor-name make-run-step
   #:transparent)
 
@@ -103,37 +89,36 @@
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
                 (OPCODE (bs))
-                (INSTR (bs) (OPERANDS))
+                ; (INSTR (name))
                 )]
+  ; [name (choose 'LOAD
+  ;               'STORE)]
+  ; [operand (?? integer?)]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
+              (REG (?? integer?))
               (ADDR (?? integer?))
-              ; (OPERANDS (?? integer?) (?? integer?)) ; Moving OPERANDS to part of INSTR.
-              (REG (choose (?? integer?)
-                           (OPERAND))) ; Make this option an OPERAND?
+              ; (MEM-LOAD (bs))
+              ; (MEM-STORE (bs) (bs))
               )]
   )
 
 (define EMPTY (list '()))
 
 ; Evaluation function for expressions.
-(define (eval expr xstate)
-  ; (println "[eval]")
-  (destruct expr
-    [(IF pred bs) (if (eval-pred pred xstate) (list (eval-bs bs xstate)) EMPTY)]
-    [_ EMPTY]))
+(define (eval e xstate)
+  (destruct e [(IF pred bs) (if (eval-pred pred xstate) (list (eval-bs bs xstate)) EMPTY)]))
 
 ; Evaluation function for predicates.
-(define (eval-pred pred xstate)
-  ; (println "[eval-pred]")
-  (destruct pred
+(define (eval-pred p xstate)
+  (destruct p
             [(BOOL b) b]
             [(NOT some-p) (not (eval-pred some-p xstate))]
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
-            [(OPCODE bs) (eval-opcode bs xstate)]
-            [(INSTR opcode ops) (eval-instr opcode ops xstate)]))
+            [(OPCODE bs) (eval-opcode bs xstate)]))
+            ; [(INSTR name operand) (eval-instr name operand xstate)]))
 
 ; Format notes:
 ; (IF (OPCODE #b0000001010) (REG[operand2])) : 
@@ -143,13 +128,42 @@
 ; (IF (OPCODE #b0000010101) ADDR[operand1]) : 
 ; This clause represents the condition where a memory store opcode (#b0000010101) is encountered,
 ; and the address referenced by operand1 is considered leaked based on the leakage-expression function.
-(define (eval-opcode opcode xstate)
-  (log-debug "[eval-opcode] TODO"))
+(define (eval-opcode bs xstate)
+  (let* ((opcode (get-opcode bs))
+         (op1 (extract-op1 bs)) ; Address where data is being stored (for a store instr).
+         (op2 (extract-op2 bs))) ; Value/data being stored.
+    (cond
+      ((eq? opcode #b0000001010) ; Example opcode value for memory load.
+       ; Retrieve the values of registers or operands based on the opcode.
+       ; Perform the evaluation or comparison using the retrieved values.
+       ; Return the result of the evaluation.
+       (let* ((reg-index (extract-integer op1))
+              (register (list-ref xstate reg-index))
+              (operand-value (extract-integer op2)))
+         (eq? register operand-value))) ; If register value == op2 value -> op2 value is leaked.
+      ((eq? opcode #b0000001100) ; Another example opcode value for memory store.
+       ; Handle the specific behavior for this opcode value.
+       (let* ((addr-index (extract-integer op1))
+              (address (list-ref xstate addr-index)))
+              #t) ; Just return that the address is leaked. Later we will likely want to constrain this.
+       )
+      (else
+       ; Handle other opcode values, if any.
+       #f))))
+
+(define (get-opcode bs)
+  (bvextract 0 3 bs))     ; Extract bits 0 to 3 (inclusive) as opcode.
+
+(define (extract-op1 bs)
+  (extract-bits bs 4 7))  ; Extract bits 4 to 7 (inclusive) as operand1.
+
+(define (extract-op2 bs)
+  (extract-bits bs 8 11))  ; Extract bits 8 to 11 (inclusive) as operand2.
 
 (define (extract-integer value)
   (match value
     [(bv i _) i]
-    [_ (log-error "Invalid integer value from bitvector")]))
+    [_ (println "Invalid value for extracting integer")]))
 
 (define (extract-bits bs start-bit end-bit)
   (bvextract start-bit (+ 1 (- end-bit start-bit)) bs))
@@ -160,26 +174,15 @@
 (define (bv-eq? bv1 bv2)
   (bveq bv1 bv2))
 
-; (define (opcode-equal opcode1 opcode2)
-;   (bv-eq? opcode1 opcode2))
+; (define (get-opcode bs)
+;   (match bs
+;     [(bv #b00000000 _) 'LOAD]
+;     [(bv #b00000001 _) 'STORE]
+;     ; Add more cases for other opcodes if needed.
+;     [_ #f]))
 
-; (define (get-instr xstate)
-;   (cdr xstate))
-
-; TODO: update this with our desired constraints for instruction operands.
-(define (eval-operands op1 op2 xstate)
-  (log-debug "[eval-operands] TODO"))
-  ; (list-ref xstate op2)
-  ; (list-ref xstate op1))
-  ; (list ((list-ref xstate op2)
-  ;        (list-ref xstate op1))))
-
-(define (eval-operand op xstate)
-  (log-info "[eval-operand]")
-  (match op
-    [(INTEGER value) value]
-    [(REG reg) (extract-integer (list-ref xstate reg))]
-    ))
+(define (get-instr xstate)
+  (cdr xstate))
 
 ; Evaluation function for bit sequences.
 (define (eval-bs bs xstate)
@@ -187,23 +190,16 @@
             [(BS b) b]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b xstate))]
             [(REG reg) (eval-reg reg xstate)]
-            ; [(OPERANDS op1 op2) (eval-operands op1 op2 xstate)]
-            [(OPERAND op) (eval-operand op xstate)]
-            ; [_ (log-error "Invalid expression for bitstring observation")]
             ))
 
 ; Evaluation function for instructions.
-(define (eval-instr opcode op1 op2 xstate)
-  (log-info "[eval-instr]")
-  (let* ((opcode-value (eval-bs opcode xstate))
-         (op1-value (eval-bs op1 xstate))
-         (op2-value (eval-bs op2 xstate)))
-    (cond
-      ((eq? opcode-value 'memory-store) op1-value)  ; Update instruction opcode later.
-      ((eq? opcode-value 'memory-load) op2-value)   ; Update instruction opcode later.
-      (else
-        (log-error "Invalid opcode value")
-  ))))
+(define (eval-instr name operand xstate)
+  (match name
+    ['LOAD
+      (println "Got a 'LOAD; just testing for now.")
+      (eval-reg operand xstate)]
+    ['STORE
+      (println "Got a 'STORE; not yet implemented.")]))
 
 ; Evaluation function for addresses.
 (define (eval-addr addr xstate)
@@ -215,11 +211,7 @@
 
 ; Evaluation function for registers.
 (define (eval-reg reg xstate)
-  ; (log-debug "[eval-reg]")
-  (match reg
-    [(? integer? reg-idx) (list-ref xstate reg-idx)]
-    [(OPERAND op) (eval-operand op xstate)]
-    [_ (log-error "Invalid register value in eval-reg: ~s" reg)]))
+  (list-ref xstate reg))
 
 ; obs() takes an expression and a xstate
 ;       returns its observation
@@ -232,23 +224,11 @@
 (define (empty-obs expr xstate)
   (empty? (eval expr xstate)))
 
-(define (instr-equal xstate1 xstate2)
-  ; TODO: do we care about equality, or value presence in regs?
-  (and (equal? (INSTR-opcode xstate1) (INSTR-opcode xstate2))
-       (equal? (OPERANDS-op1 (INSTR-operands xstate1)) (OPERANDS-op1 (INSTR-operands xstate2)))
-       (equal? (OPERANDS-op2 (INSTR-operands xstate1)) (OPERANDS-op2 (INSTR-operands xstate2)))))
-    
 ; obs-equal() takes an expression and two xstates
 ;             returns true if the two xstates produces same observations
 ;                     false otherwise
 (define (obs-equal expr xstate1 xstate2)
-  ; (log-debug "[obs-equal]")
-  ; (log-debug (listbv-equal (obs expr xstate1) (obs expr xstate2)))
-  ; (listbv-equal (obs expr xstate1) (obs expr xstate2)))
-  ; (match-define (INSTR _ _) xstate1)
-  (if (and (INSTR? xstate1) (INSTR? xstate2))
-      (instr-equal xstate1 xstate2)
-      (listbv-equal (obs expr xstate1) (obs expr xstate2))))
+  (listbv-equal (obs expr xstate1) (obs expr xstate2)))
 
 ; listbv-equal() takes two observations
 ;                returns true if they are the same
@@ -260,19 +240,21 @@
           #f
           (and (bveq (first bvs1) (first bvs2)) (listbv-equal (rest bvs1) (rest bvs2))))))
 
-; Take our grammar expression and archstate as input.
-; Return a list of the operands for the run step.
-(define (obs-opcode xstate)
-  (log-debug "[obs-opcode] TODO")
-  (match xstate
-    [(INSTR opcode ops)
-     `(INSTR ,(obs opcode) ,(obs ops))]
-    [_ (log-error "Invalid expression for opcode observation")]))
-  ; (match xstate
-  ;   [(OPCODE opcode operands)
-  ;    (list opcode operands)]
-  ;   [_
-  ;    (println "Invalid expression for opcode observation")]))
+; extract-observation() takes a run object
+; This is just a test function for now.
+; (define (extract-observations run)
+;   (let loop ((steps run) (observations '()))
+;     (if (null? steps)
+;         observations
+;         (let* ((step (car steps))
+;                (instruction (run-step-instr step))
+;                (registers (run-step-regs step))
+;                (register-index (run-step-reg-index step))
+;                (register-name (get-register-name register-index)))
+;           (if (eq? instruction '(LOAD))
+;               (let ((reg-value (list-ref registers register-index)))
+;                 (loop (cdr steps) (cons `(IF (INSTR == 'LOAD) (REG ${register-name})) ,reg-value) observations)))
+;               (loop (cdr steps) observations)))))
 
 ; diff() takes the following arguments:
 ;              i,j,i_,j_  : natural numbers such that i <= j and i_ <= j_
@@ -285,365 +267,346 @@
   (if (equal? i j)
       (if (equal? i_ j_)
           #f
-          (or (not (empty-obs expr (run-step-regs (list-ref r_ i_)))
-              (diff j j r (+ i_ 1) j_ r_ expr))))
+          (or (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
+              (diff j j r (+ i_ 1) j_ r_ expr)))
       (if (equal? i_ j_)
-          (or (not (empty-obs expr (run-step-regs (list-ref r i)))
-              (diff (+ i 1) j r j_ j_ r_ expr)))
+          (or (not (empty-obs expr (run-step-regs (list-ref r i))))
+              (diff (+ i 1) j r j_ j_ r_ expr))
           (or (and (empty-obs expr (run-step-regs (list-ref r i)))
                   (diff (+ i 1) j r i_ j_ r_ expr))
               (and (empty-obs expr (run-step-regs (list-ref r_ i_)))
                   (diff i j r (+ i_ 1) j_ r_ expr))
-              (not (obs-equal expr (run-step-instruction (list-ref r i)) (run-step-instruction (list-ref r_ i_))))
               (and (not (empty-obs expr (run-step-regs (list-ref r i))))
                    (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
+                   (equal? (run-step-instr (list-ref r i))
+                           (run-step-instr (list-ref r_ i_)))
                    (not (obs-equal expr (run-step-regs (list-ref r i))
                                         (run-step-regs (list-ref r_ i_)))))))))
 
 ; ------------- END-CORE ------------------ ;
 
-(define r0_0 (list (bv 682899800223 (bitvector 64))
-                   (bv 1640677507454 (bitvector 64))
-                   (bv 210453397553 (bitvector 64))
-                   (bv 682899800223 (bitvector 64))
-                   (bv 1915555414462 (bitvector 64))
-                   (bv 1906965479868 (bitvector 64))
-                   (bv 134 (bitvector 64))
+(define r0_0 (list (bv 1348619731258 (bitvector 64))
+                   (bv 2031519531481 (bitvector 64))
+                   (bv 158913789989 (bitvector 64))
+                   (bv 1267015352615 (bitvector 64))
+                   (bv 2134598746609 (bitvector 64))
+                   (bv 1735166787988 (bitvector 64))
+                   (bv 214 (bitvector 64))
                    (bv 18446612985909035008 (bitvector 64))))
 
 
-(define r0_1 (list (bv 682899800223 (bitvector 64))
-                   (bv 1640677507454 (bitvector 64))
-                   (bv 210453397553 (bitvector 64))
-                   (bv 682899800223 (bitvector 64))
-                   (bv 1915555414462 (bitvector 64))
-                   (bv 1906965479868 (bitvector 64))
-                   (bv 134 (bitvector 64))
+(define r0_1 (list (bv 1348619731258 (bitvector 64))
+                   (bv 2031519531481 (bitvector 64))
+                   (bv 158913789989 (bitvector 64))
+                   (bv 1267015352615 (bitvector 64))
+                   (bv 2134598746609 (bitvector 64))
+                   (bv 1735166787988 (bitvector 64))
+                   (bv 214 (bitvector 64))
                    (bv 18446612985909035011 (bitvector 64))))
 
 
-(define r0_2 (list (bv 682899800223 (bitvector 64))
-                   (bv 1640677507454 (bitvector 64))
-                   (bv 210453397553 (bitvector 64))
-                   (bv 682899800223 (bitvector 64))
-                   (bv 1915555414462 (bitvector 64))
-                   (bv 1906965479868 (bitvector 64))
-                   (bv 134 (bitvector 64))
+(define r0_2 (list (bv 1348619731258 (bitvector 64))
+                   (bv 2031519531481 (bitvector 64))
+                   (bv 158913789989 (bitvector 64))
+                   (bv 1267015352615 (bitvector 64))
+                   (bv 2134598746609 (bitvector 64))
+                   (bv 1735166787988 (bitvector 64))
+                   (bv 214 (bitvector 64))
                    (bv 18446612985909035013 (bitvector 64))))
 
 
-(define r0_3 (list (bv 606415022527428 (bitvector 64))
-                   (bv 1640677507454 (bitvector 64))
-                   (bv 210453397553 (bitvector 64))
-                   (bv 682899800223 (bitvector 64))
-                   (bv 70596 (bitvector 64))
-                   (bv 1906965479868 (bitvector 64))
-                   (bv 2051 (bitvector 64))
-                   (bv 18446612985909035016 (bitvector 64))))
+(define r0_3 (list (bv 1348619731258 (bitvector 64))
+                   (bv 2031519531481 (bitvector 64))
+                   (bv 158913789989 (bitvector 64))
+                   (bv 1267015352615 (bitvector 64))
+                   (bv 2134598746609 (bitvector 64))
+                   (bv 1735166788004 (bitvector 64))
+                   (bv 130 (bitvector 64))
+                   (bv 18446612985909035017 (bitvector 64))))
 
 
-(define r0_4 (list (bv 606415022527428 (bitvector 64))
-                   (bv 1640677507454 (bitvector 64))
-                   (bv 3459204 (bitvector 64))
-                   (bv 682899800223 (bitvector 64))
-                   (bv 70596 (bitvector 64))
-                   (bv 1906965479868 (bitvector 64))
-                   (bv 6 (bitvector 64))
-                   (bv 18446612985909035019 (bitvector 64))))
+(define r0_4 (list (bv 1348619731258 (bitvector 64))
+                   (bv 2031519531481 (bitvector 64))
+                   (bv 158913789989 (bitvector 64))
+                   (bv 1267015352615 (bitvector 64))
+                   (bv 497 (bitvector 64))
+                   (bv 1735166788004 (bitvector 64))
+                   (bv 2 (bitvector 64))
+                   (bv 18446612985909035024 (bitvector 64))))
 
 
-(define r0_5 (list (bv 606415022527428 (bitvector 64))
-                   (bv 382 (bitvector 64))
-                   (bv 3459204 (bitvector 64))
-                   (bv 682899800223 (bitvector 64))
-                   (bv 70596 (bitvector 64))
-                   (bv 1906965479868 (bitvector 64))
-                   (bv 6 (bitvector 64))
-                   (bv 18446612985909035026 (bitvector 64))))
-
-
-(define r0_6 (list (bv 606415022527428 (bitvector 64))
-                   (bv 3582722048 (bitvector 64))
-                   (bv 3459204 (bitvector 64))
-                   (bv 682899800223 (bitvector 64))
-                   (bv 70596 (bitvector 64))
-                   (bv 1906965479868 (bitvector 64))
+(define r0_5 (list (bv 1348619731258 (bitvector 64))
+                   (bv 2031519531481 (bitvector 64))
+                   (bv 158913789989 (bitvector 64))
+                   (bv 1267015352615 (bitvector 64))
+                   (bv 497 (bitvector 64))
+                   (bv 1735166788004 (bitvector 64))
                    (bv 134 (bitvector 64))
                    (bv 18446612985909035031 (bitvector 64))))
 
 
-(define r0_7 (list (bv 606415022527428 (bitvector 64))
-                   (bv 3582722048 (bitvector 64))
-                   (bv 3388608 (bitvector 64))
-                   (bv 682899800223 (bitvector 64))
-                   (bv 70596 (bitvector 64))
-                   (bv 1906965479868 (bitvector 64))
-                   (bv 6 (bitvector 64))
-                   (bv 18446612985909035033 (bitvector 64))))
-
-
-(define r0_8 (list (bv 606415022527428 (bitvector 64))
-                   (bv 3582722048 (bitvector 64))
-                   (bv 3388608 (bitvector 64))
-                   (bv 682899800223 (bitvector 64))
-                   (bv 70596 (bitvector 64))
-                   (bv 1906965479868 (bitvector 64))
-                   (bv 6 (bitvector 64))
-                   (bv 18446612985909035037 (bitvector 64))))
-
-
-(define r0_9 (list (bv 5916986782927203856 (bitvector 64))
-                   (bv 3582722048 (bitvector 64))
-                   (bv 3388608 (bitvector 64))
-                   (bv 682899800223 (bitvector 64))
+(define r0_6 (list (bv 1348619731258 (bitvector 64))
+                   (bv 2031519531481 (bitvector 64))
+                   (bv 158913789989 (bitvector 64))
+                   (bv 1267015352615 (bitvector 64))
+                   (bv 497 (bitvector 64))
+                   (bv 420 (bitvector 64))
                    (bv 2 (bitvector 64))
-                   (bv 1906965479868 (bitvector 64))
-                   (bv 2051 (bitvector 64))
-                   (bv 18446612985909035040 (bitvector 64))))
+                   (bv 18446612985909035038 (bitvector 64))))
 
 
-(define r0_10 (list (bv 5916986782927217600 (bitvector 64))
-                    (bv 3582722048 (bitvector 64))
-                    (bv 3388608 (bitvector 64))
-                    (bv 682899800223 (bitvector 64))
-                    (bv 65393 (bitvector 64))
-                    (bv 1906965479868 (bitvector 64))
+(define r0_7 (list (bv 1348619731258 (bitvector 64))
+                   (bv 2031519531481 (bitvector 64))
+                   (bv 158913789989 (bitvector 64))
+                   (bv 1267015352615 (bitvector 64))
+                   (bv 497 (bitvector 64))
+                   (bv 420 (bitvector 64))
+                   (bv 2198 (bitvector 64))
+                   (bv 18446612985909035043 (bitvector 64))))
+
+
+(define r0_8 (list (bv 1348619731258 (bitvector 64))
+                   (bv 2031519531481 (bitvector 64))
+                   (bv 158913789989 (bitvector 64))
+                   (bv 1267015352615 (bitvector 64))
+                   (bv 497 (bitvector 64))
+                   (bv 420 (bitvector 64))
+                   (bv 2198 (bitvector 64))
+                   (bv 18446612985909035045 (bitvector 64))))
+
+
+(define r0_9 (list (bv 1348619731258 (bitvector 64))
+                   (bv 2031519531481 (bitvector 64))
+                   (bv 158913789989 (bitvector 64))
+                   (bv 1267015352615 (bitvector 64))
+                   (bv 497 (bitvector 64))
+                   (bv 420 (bitvector 64))
+                   (bv 2198 (bitvector 64))
+                   (bv 18446612985909035103 (bitvector 64))))
+
+
+(define r0_10 (list (bv 1348619731258 (bitvector 64))
+                    (bv 2031519531481 (bitvector 64))
+                    (bv 158913789989 (bitvector 64))
+                    (bv 1267015352615 (bitvector 64))
+                    (bv 497 (bitvector 64))
+                    (bv 420 (bitvector 64))
+                    (bv 150 (bitvector 64))
+                    (bv 18446612985909035106 (bitvector 64))))
+
+
+(define r0_11 (list (bv 1348619731258 (bitvector 64))
+                    (bv 2031519531481 (bitvector 64))
+                    (bv 158913789989 (bitvector 64))
+                    (bv 1267015352615 (bitvector 64))
+                    (bv 30746 (bitvector 64))
+                    (bv 420 (bitvector 64))
+                    (bv 2051 (bitvector 64))
+                    (bv 18446612985909035110 (bitvector 64))))
+
+
+(define r0_12 (list (bv 1348805612926 (bitvector 64))
+                    (bv 2031519531481 (bitvector 64))
+                    (bv 158913789989 (bitvector 64))
+                    (bv 1267015352615 (bitvector 64))
+                    (bv 30746 (bitvector 64))
+                    (bv 420 (bitvector 64))
+                    (bv 23 (bitvector 64))
+                    (bv 18446612985909035116 (bitvector 64))))
+
+
+(define r0_13 (list (bv 2820914892 (bitvector 64))
+                    (bv 2031519531481 (bitvector 64))
+                    (bv 158913789989 (bitvector 64))
+                    (bv 1267015352615 (bitvector 64))
+                    (bv 1330 (bitvector 64))
+                    (bv 420 (bitvector 64))
                     (bv 2183 (bitvector 64))
-                    (bv 18446612985909035043 (bitvector 64))))
+                    (bv 18446612985909035118 (bitvector 64))))
 
 
-(define r0_11 (list (bv 960 (bitvector 64))
-                    (bv 3582722048 (bitvector 64))
-                    (bv 3388608 (bitvector 64))
-                    (bv 682899800223 (bitvector 64))
-                    (bv 65393 (bitvector 64))
-                    (bv 1906965479868 (bitvector 64))
-                    (bv 6 (bitvector 64))
-                    (bv 18446612985909035049 (bitvector 64))))
+(define r0_14 (list (bv 2820914883 (bitvector 64))
+                    (bv 2031519531481 (bitvector 64))
+                    (bv 158913789989 (bitvector 64))
+                    (bv 1267015352615 (bitvector 64))
+                    (bv 1330 (bitvector 64))
+                    (bv 420 (bitvector 64))
+                    (bv 134 (bitvector 64))
+                    (bv 18446612985909035121 (bitvector 64))))
 
 
-(define r0_12 (list (bv 960 (bitvector 64))
-                    (bv 3582722048 (bitvector 64))
-                    (bv 3388608 (bitvector 64))
-                    (bv 682899800223 (bitvector 64))
-                    (bv 65530 (bitvector 64))
-                    (bv 1906965479868 (bitvector 64))
-                    (bv 151 (bitvector 64))
-                    (bv 18446612985909035053 (bitvector 64))))
-
-
-(define r0_13 (list (bv 960 (bitvector 64))
-                    (bv 3582722048 (bitvector 64))
-                    (bv 3388608 (bitvector 64))
-                    (bv 682899800223 (bitvector 64))
-                    (bv 65530 (bitvector 64))
-                    (bv 1906965479868 (bitvector 64))
-                    (bv 22 (bitvector 64))
-                    (bv 18446612985909035055 (bitvector 64))))
-
-
-(define r0_14 (list (bv 960 (bitvector 64))
-                    (bv 3582722048 (bitvector 64))
-                    (bv 3388608 (bitvector 64))
-                    (bv 682899800223 (bitvector 64))
-                    (bv 65530 (bitvector 64))
-                    (bv 1906965479868 (bitvector 64))
-                    (bv 22 (bitvector 64))
-                    (bv 18446612985909035057 (bitvector 64))))
-
-
-(define r0_15 (list (bv 960 (bitvector 64))
-                    (bv 3582722048 (bitvector 64))
-                    (bv 3388608 (bitvector 64))
-                    (bv 682899800223 (bitvector 64))
-                    (bv 65530 (bitvector 64))
-                    (bv 1906965479868 (bitvector 64))
-                    (bv 22 (bitvector 64))
-                    (bv 18446612985909035111 (bitvector 64))))
-
-
-(define r0_16 (list (bv 960 (bitvector 64))
-                    (bv 3582722048 (bitvector 64))
-                    (bv 3388608 (bitvector 64))
-                    (bv 682899800223 (bitvector 64))
-                    (bv 65530 (bitvector 64))
-                    (bv 1906965479868 (bitvector 64))
-                    (bv 22 (bitvector 64))
+(define r0_15 (list (bv 2820914883 (bitvector 64))
+                    (bv 2031519531481 (bitvector 64))
+                    (bv 158913789989 (bitvector 64))
+                    (bv 1267015352615 (bitvector 64))
+                    (bv 1330 (bitvector 64))
+                    (bv 420 (bitvector 64))
+                    (bv 134 (bitvector 64))
                     (bv -1 (bitvector 64))))
 
-(define r0 (list (make-run-step r0_0 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r0_1 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r0_2 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r0_3 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r0_4 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r0_5 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r0_6 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r0_7 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r0_8 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r0_9 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r0_10 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r0_11 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r0_12 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r0_13 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r0_14 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r0_15 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r0_16 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4))))))
+(define r0 (list (make-run-step r0_0 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r0_1 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r0_2 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r0_3 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r0_4 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r0_5 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r0_6 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r0_7 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r0_8 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r0_9 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r0_10 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r0_11 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r0_12 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r0_13 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r0_14 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r0_15 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4)))))
 
 
-(define r1_0 (list (bv 682899800223 (bitvector 64))
-                   (bv 1640677507454 (bitvector 64))
-                   (bv 210453397553 (bitvector 64))
-                   (bv 1249835483427 (bitvector 64))
-                   (bv 1915555414462 (bitvector 64))
-                   (bv 1906965479868 (bitvector 64))
-                   (bv 134 (bitvector 64))
+(define r1_0 (list (bv 1348619731258 (bitvector 64))
+                   (bv 2190433321470 (bitvector 64))
+                   (bv 322122547275 (bitvector 64))
+                   (bv 330712481869 (bitvector 64))
+                   (bv 2134598746609 (bitvector 64))
+                   (bv 1735166787988 (bitvector 64))
+                   (bv 214 (bitvector 64))
                    (bv 18446612985909035008 (bitvector 64))))
 
 
-(define r1_1 (list (bv 682899800223 (bitvector 64))
-                   (bv 1640677507454 (bitvector 64))
-                   (bv 210453397553 (bitvector 64))
-                   (bv 1249835483427 (bitvector 64))
-                   (bv 1915555414462 (bitvector 64))
-                   (bv 1906965479868 (bitvector 64))
-                   (bv 134 (bitvector 64))
+(define r1_1 (list (bv 1348619731258 (bitvector 64))
+                   (bv 2190433321470 (bitvector 64))
+                   (bv 322122547275 (bitvector 64))
+                   (bv 330712481869 (bitvector 64))
+                   (bv 2134598746609 (bitvector 64))
+                   (bv 1735166787988 (bitvector 64))
+                   (bv 214 (bitvector 64))
                    (bv 18446612985909035011 (bitvector 64))))
 
 
-(define r1_2 (list (bv 682899800223 (bitvector 64))
-                   (bv 1640677507454 (bitvector 64))
-                   (bv 210453397553 (bitvector 64))
-                   (bv 1249835483427 (bitvector 64))
-                   (bv 1915555414462 (bitvector 64))
-                   (bv 1906965479868 (bitvector 64))
-                   (bv 134 (bitvector 64))
+(define r1_2 (list (bv 1348619731258 (bitvector 64))
+                   (bv 2190433321470 (bitvector 64))
+                   (bv 322122547275 (bitvector 64))
+                   (bv 330712481869 (bitvector 64))
+                   (bv 2134598746609 (bitvector 64))
+                   (bv 1735166787988 (bitvector 64))
+                   (bv 214 (bitvector 64))
                    (bv 18446612985909035013 (bitvector 64))))
 
 
-(define r1_3 (list (bv 606415022527428 (bitvector 64))
-                   (bv 1640677507454 (bitvector 64))
-                   (bv 210453397553 (bitvector 64))
-                   (bv 1249835483427 (bitvector 64))
-                   (bv 70596 (bitvector 64))
-                   (bv 1906965479868 (bitvector 64))
-                   (bv 2051 (bitvector 64))
-                   (bv 18446612985909035016 (bitvector 64))))
+(define r1_3 (list (bv 1348619731258 (bitvector 64))
+                   (bv 2190433321470 (bitvector 64))
+                   (bv 322122547275 (bitvector 64))
+                   (bv 330712481869 (bitvector 64))
+                   (bv 2134598746609 (bitvector 64))
+                   (bv 1735166788004 (bitvector 64))
+                   (bv 130 (bitvector 64))
+                   (bv 18446612985909035017 (bitvector 64))))
 
 
-(define r1_4 (list (bv 606415022527428 (bitvector 64))
-                   (bv 1640677507454 (bitvector 64))
-                   (bv 3459204 (bitvector 64))
-                   (bv 1249835483427 (bitvector 64))
-                   (bv 70596 (bitvector 64))
-                   (bv 1906965479868 (bitvector 64))
-                   (bv 6 (bitvector 64))
-                   (bv 18446612985909035019 (bitvector 64))))
+(define r1_4 (list (bv 1348619731258 (bitvector 64))
+                   (bv 2190433321470 (bitvector 64))
+                   (bv 322122547275 (bitvector 64))
+                   (bv 330712481869 (bitvector 64))
+                   (bv 497 (bitvector 64))
+                   (bv 1735166788004 (bitvector 64))
+                   (bv 2 (bitvector 64))
+                   (bv 18446612985909035024 (bitvector 64))))
 
 
-(define r1_5 (list (bv 606415022527428 (bitvector 64))
-                   (bv 382 (bitvector 64))
-                   (bv 3459204 (bitvector 64))
-                   (bv 1249835483427 (bitvector 64))
-                   (bv 70596 (bitvector 64))
-                   (bv 1906965479868 (bitvector 64))
-                   (bv 6 (bitvector 64))
-                   (bv 18446612985909035026 (bitvector 64))))
-
-
-(define r1_6 (list (bv 606415022527428 (bitvector 64))
-                   (bv 3582722048 (bitvector 64))
-                   (bv 3459204 (bitvector 64))
-                   (bv 1249835483427 (bitvector 64))
-                   (bv 70596 (bitvector 64))
-                   (bv 1906965479868 (bitvector 64))
+(define r1_5 (list (bv 1348619731258 (bitvector 64))
+                   (bv 2190433321470 (bitvector 64))
+                   (bv 322122547275 (bitvector 64))
+                   (bv 330712481869 (bitvector 64))
+                   (bv 497 (bitvector 64))
+                   (bv 1735166788004 (bitvector 64))
                    (bv 134 (bitvector 64))
                    (bv 18446612985909035031 (bitvector 64))))
 
 
-(define r1_7 (list (bv 606415022527428 (bitvector 64))
-                   (bv 3582722048 (bitvector 64))
-                   (bv 3388608 (bitvector 64))
-                   (bv 1249835483427 (bitvector 64))
-                   (bv 70596 (bitvector 64))
-                   (bv 1906965479868 (bitvector 64))
-                   (bv 6 (bitvector 64))
-                   (bv 18446612985909035033 (bitvector 64))))
-
-
-(define r1_8 (list (bv 606415022527428 (bitvector 64))
-                   (bv 3582722048 (bitvector 64))
-                   (bv 3388608 (bitvector 64))
-                   (bv 1249835483427 (bitvector 64))
-                   (bv 70596 (bitvector 64))
-                   (bv 1906965479868 (bitvector 64))
-                   (bv 6 (bitvector 64))
-                   (bv 18446612985909035037 (bitvector 64))))
-
-
-(define r1_9 (list (bv 5916986782927203856 (bitvector 64))
-                   (bv 3582722048 (bitvector 64))
-                   (bv 3388608 (bitvector 64))
-                   (bv 1249835483427 (bitvector 64))
+(define r1_6 (list (bv 1348619731258 (bitvector 64))
+                   (bv 2190433321470 (bitvector 64))
+                   (bv 322122547275 (bitvector 64))
+                   (bv 330712481869 (bitvector 64))
+                   (bv 497 (bitvector 64))
+                   (bv 420 (bitvector 64))
                    (bv 2 (bitvector 64))
-                   (bv 1906965479868 (bitvector 64))
-                   (bv 2051 (bitvector 64))
-                   (bv 18446612985909035040 (bitvector 64))))
+                   (bv 18446612985909035038 (bitvector 64))))
 
 
-(define r1_10 (list (bv 5916986782927217600 (bitvector 64))
-                    (bv 3582722048 (bitvector 64))
-                    (bv 3388608 (bitvector 64))
-                    (bv 1249835483427 (bitvector 64))
-                    (bv 65393 (bitvector 64))
-                    (bv 1906965479868 (bitvector 64))
+(define r1_7 (list (bv 1348619731258 (bitvector 64))
+                   (bv 2190433321470 (bitvector 64))
+                   (bv 322122547275 (bitvector 64))
+                   (bv 330712481869 (bitvector 64))
+                   (bv 497 (bitvector 64))
+                   (bv 420 (bitvector 64))
+                   (bv 2198 (bitvector 64))
+                   (bv 18446612985909035043 (bitvector 64))))
+
+
+(define r1_8 (list (bv 1348619731258 (bitvector 64))
+                   (bv 2190433321470 (bitvector 64))
+                   (bv 322122547275 (bitvector 64))
+                   (bv 330712481869 (bitvector 64))
+                   (bv 497 (bitvector 64))
+                   (bv 420 (bitvector 64))
+                   (bv 2198 (bitvector 64))
+                   (bv 18446612985909035045 (bitvector 64))))
+
+
+(define r1_9 (list (bv 1348619731258 (bitvector 64))
+                   (bv 2190433321470 (bitvector 64))
+                   (bv 322122547275 (bitvector 64))
+                   (bv 330712481869 (bitvector 64))
+                   (bv 497 (bitvector 64))
+                   (bv 420 (bitvector 64))
+                   (bv 2198 (bitvector 64))
+                   (bv 18446612985909035103 (bitvector 64))))
+
+
+(define r1_10 (list (bv 1348619731258 (bitvector 64))
+                    (bv 2190433321470 (bitvector 64))
+                    (bv 322122547275 (bitvector 64))
+                    (bv 330712481869 (bitvector 64))
+                    (bv 497 (bitvector 64))
+                    (bv 420 (bitvector 64))
+                    (bv 150 (bitvector 64))
+                    (bv 18446612985909035106 (bitvector 64))))
+
+
+(define r1_11 (list (bv 1348619731258 (bitvector 64))
+                    (bv 2190433321470 (bitvector 64))
+                    (bv 322122547275 (bitvector 64))
+                    (bv 330712481869 (bitvector 64))
+                    (bv 30746 (bitvector 64))
+                    (bv 420 (bitvector 64))
+                    (bv 2051 (bitvector 64))
+                    (bv 18446612985909035110 (bitvector 64))))
+
+
+(define r1_12 (list (bv 1348805612926 (bitvector 64))
+                    (bv 2190433321470 (bitvector 64))
+                    (bv 322122547275 (bitvector 64))
+                    (bv 330712481869 (bitvector 64))
+                    (bv 30746 (bitvector 64))
+                    (bv 420 (bitvector 64))
+                    (bv 23 (bitvector 64))
+                    (bv 18446612985909035116 (bitvector 64))))
+
+
+(define r1_13 (list (bv 2820914892 (bitvector 64))
+                    (bv 2190433321470 (bitvector 64))
+                    (bv 322122547275 (bitvector 64))
+                    (bv 330712481869 (bitvector 64))
+                    (bv 1330 (bitvector 64))
+                    (bv 420 (bitvector 64))
                     (bv 2183 (bitvector 64))
-                    (bv 18446612985909035043 (bitvector 64))))
+                    (bv 18446612985909035118 (bitvector 64))))
 
 
-(define r1_11 (list (bv 960 (bitvector 64))
-                    (bv 3582722048 (bitvector 64))
-                    (bv 3388608 (bitvector 64))
-                    (bv 1249835483427 (bitvector 64))
-                    (bv 65393 (bitvector 64))
-                    (bv 1906965479868 (bitvector 64))
-                    (bv 6 (bitvector 64))
-                    (bv 18446612985909035049 (bitvector 64))))
+(define r1_14 (list (bv 2820914883 (bitvector 64))
+                    (bv 2190433321470 (bitvector 64))
+                    (bv 322122547275 (bitvector 64))
+                    (bv 330712481869 (bitvector 64))
+                    (bv 1330 (bitvector 64))
+                    (bv 420 (bitvector 64))
+                    (bv 134 (bitvector 64))
+                    (bv 18446612985909035121 (bitvector 64))))
 
 
-(define r1_12 (list (bv 960 (bitvector 64))
-                    (bv 3582722048 (bitvector 64))
-                    (bv 3388608 (bitvector 64))
-                    (bv 1249835483427 (bitvector 64))
-                    (bv 65530 (bitvector 64))
-                    (bv 1906965479868 (bitvector 64))
-                    (bv 151 (bitvector 64))
-                    (bv 18446612985909035053 (bitvector 64))))
-
-
-(define r1_13 (list (bv 960 (bitvector 64))
-                    (bv 3582722048 (bitvector 64))
-                    (bv 3388608 (bitvector 64))
-                    (bv 1249835483427 (bitvector 64))
-                    (bv 65530 (bitvector 64))
-                    (bv 1906965479868 (bitvector 64))
-                    (bv 22 (bitvector 64))
-                    (bv 18446612985909035055 (bitvector 64))))
-
-
-(define r1_14 (list (bv 960 (bitvector 64))
-                    (bv 3582722048 (bitvector 64))
-                    (bv 3388608 (bitvector 64))
-                    (bv 1249835483427 (bitvector 64))
-                    (bv 65530 (bitvector 64))
-                    (bv 1906965479868 (bitvector 64))
-                    (bv 22 (bitvector 64))
-                    (bv 18446612985909035057 (bitvector 64))))
-
-
-(define r1_15 (list (bv 960 (bitvector 64))
-                    (bv 3582722048 (bitvector 64))
-                    (bv 3388608 (bitvector 64))
-                    (bv 1249835483427 (bitvector 64))
-                    (bv 65530 (bitvector 64))
-                    (bv 1906965479868 (bitvector 64))
-                    (bv 22 (bitvector 64))
-                    (bv 18446612985909035111 (bitvector 64))))
-
-
-(define r1_16 (list (bv 960 (bitvector 64))
-                    (bv 3582722048 (bitvector 64))
-                    (bv 3388608 (bitvector 64))
-                    (bv 1249835483427 (bitvector 64))
-                    (bv 65530 (bitvector 64))
-                    (bv 1906965479868 (bitvector 64))
-                    (bv 22 (bitvector 64))
+(define r1_15 (list (bv 2820914883 (bitvector 64))
+                    (bv 2190433321470 (bitvector 64))
+                    (bv 322122547275 (bitvector 64))
+                    (bv 330712481869 (bitvector 64))
+                    (bv 1330 (bitvector 64))
+                    (bv 420 (bitvector 64))
+                    (bv 134 (bitvector 64))
                     (bv -1 (bitvector 64))))
 
-(define r1 (list (make-run-step r1_0 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r1_1 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r1_2 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r1_3 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r1_4 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r1_5 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r1_6 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r1_7 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r1_8 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r1_9 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r1_10 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r1_11 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r1_12 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r1_13 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r1_14 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r1_15 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4)))) (make-run-step r1_16 (INSTR (OPCODE (bv #b0111 (bitvector 4))) (OPERANDS (bv #b0111 (bitvector 4))) (bv #b0111 (bitvector 4))))))
+(define r1 (list (make-run-step r1_0 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r1_1 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r1_2 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r1_3 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r1_4 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r1_5 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r1_6 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r1_7 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r1_8 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r1_9 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r1_10 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r1_11 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r1_12 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r1_13 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r1_14 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4))) (make-run-step r1_15 (INSTR (OPCODE (bv #b0111 (bitvector 4)) (OPERANDS (bv #b0111 (bitvector 4)) (bv #b0111 (bitvector 4)))))
 
 (define myexpr (cexpr #:depth 1))
 
@@ -677,9 +640,7 @@
                                (diff 14 15 r0 14 15 r1 myexpr)
                                (diff 15 15 r0 15 15 r1 myexpr)
                                (diff 15 16 r0 15 16 r1 myexpr)
-                               (diff 16 16 r0 16 16 r1 myexpr)
-                               (diff 16 17 r0 16 17 r1 myexpr)
-                               (diff 17 16 r0 17 16 r1 myexpr)
+                               (diff 16 15 r0 16 15 r1 myexpr)
 ))))
 
 (print-forms sol)
