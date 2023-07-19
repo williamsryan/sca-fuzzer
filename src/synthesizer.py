@@ -67,7 +67,7 @@ class Synthesizer:
                 #     comment_obj += f" operands: {op.value}"
 
             # Run step registers object.
-            return f"\n(define {xstate_name} (list {regs}\n"
+            return f"\n\n(define {xstate_name} (list {regs}\n"
 
         with open(self.work_dir + "/" + self.filename, "a") as f:
             xstates = ''
