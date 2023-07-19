@@ -44,20 +44,19 @@ class Synthesizer:
             for reg in xstate.regs.values():
                 if regs != '':
                     regs += indentation
-                regs += "(bv {0} (bitvector 64))\n".format(str(reg)) # Each of these is the value of a given register.
+                regs += f"(bv {str(reg)} (bitvector 64))\t\t; Register state for instruction: {instrs[0]}\n"   # Each of these is the value of a given register.
             if xstate.pc is not None:
                 regs += indentation + \
-                    "(bv {0} (bitvector 64))".format(str(xstate.pc))
+                    f"(bv {str(xstate.pc)} (bitvector 64))"
             else:
                 # Meaning this is the final state; end with -1.
-                regs += indentation + "(bv {0} (bitvector 64))".format(str(-1))
+                regs += indentation + f"(bv {str(-1)} (bitvector 64))"
 
             # Annotate each register state object with the observed instruction.
             # Depending on results, we may actually use it in the tuple to help
             # guide the synthesizer to learning instructions vs. registers.
             for instr in instrs:
                 print(f"[synthesizer] Test instrs: {instr}: ")
-                regs += f" ; Register state for instruction: {instr}"
                 # for op in instr.operands:
                 #     print(f"[synthesizer]\toperands: {op.value}")
                 #     comment_obj += f" operands: {op.value}"
@@ -68,6 +67,9 @@ class Synthesizer:
         with open(self.work_dir + "/" + self.filename, "a") as f:
             xstates = ''
             for i, xstate in enumerate(run.archstates):
+                # Test for now.
+                print(f"[synthesizer] LEN TEST: {len(xstate)} vs {len(run.mem_instrs)}")
+
                 f.write(model(run.id, i, xstate, run.mem_instrs))
 
                 if xstates == '':

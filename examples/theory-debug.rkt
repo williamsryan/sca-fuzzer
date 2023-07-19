@@ -301,7 +301,6 @@
                                         (run-step-regs (list-ref r_ i_)))))))))
 
 ; ------------- END-CORE ------------------ ;
-; Register state @ instruction: PLACEHOLDER
 (define r0_0 (list (bv 176093659177 (bitvector 64))
                    (bv 1662152343939 (bitvector 64))
                    (bv 1524713390435 (bitvector 64))
@@ -311,7 +310,6 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439808 (bitvector 64))))
 
-; Register state @ instruction: PLACEHOLDER
 (define r0_1 (list (bv 176093659177 (bitvector 64))
                    (bv 1662152343939 (bitvector 64))
                    (bv 1524713390435 (bitvector 64))
@@ -326,7 +324,6 @@
                  (make-run-step r0_1 (INSTR (OPCODE (bv #b0000001010 (bitvector 8)))
                                             (OPERANDS (bv #b0110 (bitvector 4)) (bv #b0010 (bitvector 4)))))))
 
-; Register state @ instruction: PLACEHOLDER
 (define r1_0 (list (bv 176093659177 (bitvector 64))
                    (bv 1662152343939 (bitvector 64))
                    (bv 1524713390435 (bitvector 64))
@@ -336,7 +333,6 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439808 (bitvector 64))))
 
-; Register state @ instruction: PLACEHOLDER
 (define r1_1 (list (bv 176093659177 (bitvector 64))
                    (bv 1662152343939 (bitvector 64))
                    (bv 1524713390435 (bitvector 64))
