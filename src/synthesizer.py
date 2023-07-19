@@ -75,9 +75,9 @@ class Synthesizer:
                     xstates += f"(make-run-step {self.get_xstate_name(run.id, i)} 'LOAD)"
                     # (define r1 (list (make-run-step r1_0 (INSTR (OPCODE (bv #b0000001011 (bitvector 8))))))).
                     bv_test = "bv #b0111 (bitvector 4))"
-                    xstates += f"(make-run-step {self.get_xstate_name(run.id, i)} (INSTR (OPCODE ({bv_test}) (OPERANDS (({bv_test}) ({bv_test}))))))"
+                    xstates += f"(make-run-step {self.get_xstate_name(run.id, i)} (INSTR (OPCODE ({bv_test}) (OPERANDS (({bv_test}) ({bv_test}))))"
                 else:
-                    xstates += f"(make-run-step {self.get_xstate_name(run.id, i)} (INSTR (OPCODE ({bv_test}) (OPERANDS (({bv_test}) ({bv_test}))))))"
+                    xstates += ' ' + f"(make-run-step {self.get_xstate_name(run.id, i)} (INSTR (OPCODE ({bv_test}) (OPERANDS (({bv_test}) ({bv_test}))))"
             
             f.write("(define {0} (list {1}))\n\n".format(
                 self.get_run_name(run.id), xstates))
