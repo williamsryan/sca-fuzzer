@@ -66,8 +66,9 @@ class Synthesizer:
                 #     print(f"[synthesizer]\toperands: {op.value}")
                 #     comment_obj += f" operands: {op.value}"
 
+            violating_input = f"; Run on input: {inputs}"
             # Run step registers object.
-            return f"\n\n{inputs}\n(define {xstate_name} (list {regs}\n"
+            return f"\n\n{violating_input}\n(define {xstate_name} (list {regs}\n"
 
         with open(self.work_dir + "/" + self.filename, "a") as f:
             xstates = ''
