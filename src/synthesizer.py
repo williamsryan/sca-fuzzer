@@ -47,13 +47,15 @@ class Synthesizer:
                     regs += indentation
                 reg_idx = CONF.map_reg(idx)
                 reg_name = CONF.registers.get(reg_idx)
-                regs += f"(bv {str(reg)} (bitvector 64))\t\t\t; Register: {reg_name} instruction: {instrs[idx]}\n"
+                regs += f"(bv {str(reg)} (bitvector 64))\t; Register: {reg_name} instruction: {instrs[idx]}"
+                for op in instrs[idx].operands:
+                    regs += f"\t\t\t\t; operands: {op.value}"
             if xstate.pc is not None:
                 regs += indentation + \
-                    f"(bv {str(xstate.pc)} (bitvector 64))))\t\t\t; PC"
+                    f"(bv {str(xstate.pc)} (bitvector 64))))\t; PC"
             else:
                 # Meaning this is the final state; end with -1.
-                regs += indentation + f"(bv {str(-1)} (bitvector 64))))\t\t\t; Final state"
+                regs += indentation + f"(bv {str(-1)} (bitvector 64))))\t; Final state"
 
             # Annotate each register state object with the observed instruction.
             # Depending on results, we may actually use it in the tuple to help
