@@ -60,8 +60,8 @@ class Synthesizer:
             # Annotate each register state object with the observed instruction.
             # Depending on results, we may actually use it in the tuple to help
             # guide the synthesizer to learning instructions vs. registers.
-            # for instr in instrs:
-            #     print(f"[synthesizer] Test instrs: {instr}: ")
+            for instr in instrs:
+                print(f"[synthesizer] Test instrs: {instr}: Category: {instr.category}")
                 # for op in instr.operands:
                 #     print(f"[synthesizer]\toperands: {op.value}")
                 #     comment_obj += f" operands: {op.value}"
