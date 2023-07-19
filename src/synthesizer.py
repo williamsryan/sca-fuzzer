@@ -35,7 +35,7 @@ class Synthesizer:
         Separate method for generating Rosette structures for register values.
     """
     def map_regs(self, run):
-        def model(rid, xid, xstate, instrs):
+        def model(rid, xid, xstate, instrs, inputs):
             xstate_name = self.get_xstate_name(rid, xid)
             header = len('(define {0} (list '.format(xstate_name))
             indentation = ''
@@ -67,14 +67,14 @@ class Synthesizer:
                 #     comment_obj += f" operands: {op.value}"
 
             # Run step registers object.
-            return f"\n\n(define {xstate_name} (list {regs}\n"
+            return f"\n\n{inputs}\n(define {xstate_name} (list {regs}\n"
 
         with open(self.work_dir + "/" + self.filename, "a") as f:
             xstates = ''
             for i, xstate in enumerate(run.archstates):
                 # print(f"[synthesizer] LEN TEST: {len(run.archstates)} vs {len(run.mem_instrs)}")
 
-                f.write(model(run.id, i, xstate, run.mem_instrs))
+                f.write(model(run.id, i, xstate, run.mem_instrs, run.inputs))
 
                 if xstates == '':
                     opcode_test = "bv #b0000001011 (bitvector 8)"
