@@ -170,7 +170,7 @@ class Fuzzer:
     def capture(self, test_case, inputs):
         runs = {}
 
-        print(f"[fuzzer::capture] Capturing run data: {test_case} -> {inputs}")
+        # print(f"[fuzzer::capture] Capturing run data: {test_case} -> {inputs}")
 
         self.model.load_test_case(test_case)
         # self.executor.load_test_case(test_case)
@@ -180,7 +180,7 @@ class Fuzzer:
         for id, input in enumerate(inputs):
             run = self.model.execute(input) # Equivalent contract traces with different inputs. That should be correct.
             run.id = id
-            run.input = input
+            run.inputs.append(input)
             # self.store_run(run)
             runs[id] = run
 

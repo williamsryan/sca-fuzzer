@@ -691,12 +691,14 @@ Observations = List[Observation]
 
 class Run:
     id: int
+    inputs: List[int]
     instructions: List[str]
     mem_instrs: List[Instruction]  # Replace above list with this once tested (this object has more information than a str).
     archstates: List[ArchState]
     observations: List[Observations]
 
     def __init__(self) -> None:
+        self.inputs = []
         self.instructions = []
         self.mem_instrs = []
         self.archstates = []
