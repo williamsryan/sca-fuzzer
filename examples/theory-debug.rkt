@@ -95,6 +95,8 @@
 ; (IF (INSTR == `LOAD) REG[OPERAND2])   <-- In progress (leaked address from loads/stores).
 ; (IF (OPCODE (bs?)) REG[OPERAND2])     <-- Instead of INSTR, get the opcode and map back to INSTR later.
 ; (IF (OPCODE #b0000010011 (REG[op2])))
+; (IF (OPCODE #bxxxxxxx110 (ADDR 0x3C7E78F365E))
+;     (OPERANDS #b00001001 (REG 5678)))
 (define-grammar (cexpr)
   [expr (IF (pred) (bs))]
   [pred (choose (BOOL (?? boolean?))
