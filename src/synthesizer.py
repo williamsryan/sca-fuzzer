@@ -55,8 +55,8 @@ class Synthesizer:
                 # meaning this is the final state
                 regs += indentation + f"(bv {str(-1)} (bitvector 64))"
             return f"(define {xstate_name} \
-                            ; Registers.\n \
-                            (list {regs}))\t; Final state\n\n"
+                            (list\t Registers.\n \
+                            {regs}))\t; Final state\n\n"
 
         with open(self.work_dir + "/" + self.filename, "a") as f:   
             xstates = ''
