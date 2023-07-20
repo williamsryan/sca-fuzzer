@@ -79,7 +79,7 @@ class Synthesizer:
                 regs += f"(bv {str(reg)} (bitvector 64))\t; Register: {reg_name.upper()}\n"
             if xstate.pc is not None:
                 regs += indentation + f"(bv {str(xstate.pc)} (bitvector 64))\t; PC\n"
-                regs += indentation + f"; Instruction\n"
+                regs += indentation + f"; Opcode\n"
                 regs += indentation + f"(bv {instr} (bitvector 64))\n"
                 regs += indentation + f"; Operands\n"
                 regs += indentation + operand_bv + "))"
