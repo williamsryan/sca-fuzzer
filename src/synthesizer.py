@@ -47,6 +47,12 @@ class Synthesizer:
             for _ in range (0,header):
                 indentation += ' '
             regs = ''
+
+            # Opcode and operand encoding.
+            instr_bs = "".join(format(ord(c), '08b') for c in instrs[xid-1])
+            instr = int(instr_bs)
+            operand_bv = ""
+
             for idx, reg in enumerate(xstate.regs.values()):
                 if regs != '':
                     regs += indentation
@@ -57,6 +63,7 @@ class Synthesizer:
             if xstate.pc is not None:
                 regs += indentation + f"(bv {str(xstate.pc)} (bitvector 64))\t; PC\n"
                 regs += indentation + f"; Instruction\n"
+                regs += indentation + f"(bv {instr} (bitvector64))\n"
                 regs += indentation + f"; Operands\n))"
                 # End of archstate object. Add more information, e.g., opcode + operands.
             else:
