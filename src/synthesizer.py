@@ -37,8 +37,9 @@ class Synthesizer:
     def map(self, run):
         def model(rid, xid, xstate, instrs):
             # Test mapping xstate to instruction executed.
-            print(f"[synthesizer] xstate: {xid}; instruction: {instrs[xid-1]}")
-            print(f"[synthesizer] full instr: {instrs}")
+            # print(f"[synthesizer] xstate: {xid}; instruction: {instrs[xid-1]}")
+            # for instr in instrs:
+            #     print(f"[synthesizer] full instr: {instr}")
 
             xstate_name = self.get_xstate_name(rid, xid)
             header = len('(define {0} (list '.format(xstate_name))
@@ -61,7 +62,7 @@ class Synthesizer:
                 regs += indentation + f"(bv {str(-1)} (bitvector 64))))\t; Final state"
                 # End of archstate object. Add more information, e.g., opcode + operands.
 
-            return f"(define {xstate_name} (list\t ;Registers.\n\t\t  {regs}\n\n"
+            return f"; Instruction: {instrs[xid-1]}\n(define {xstate_name} (list\t ;Registers.\n\t\t  {regs}\n\n"
 
         with open(self.work_dir + "/" + self.filename, "a") as f:   
             xstates = ''
