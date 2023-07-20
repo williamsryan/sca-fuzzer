@@ -49,10 +49,6 @@ class Synthesizer:
     """
     def map(self, run):
         def model(rid, xid, xstate, instrs, opcodes):
-            # Test mapping xstate to instruction executed.
-            # print(f"[synthesizer] xstate: {xid}; instruction: {instrs[xid-1]}")
-            # for instr in instrs:
-            #     print(f"[synthesizer] full instr: {instr}")
 
             xstate_name = self.get_xstate_name(rid, xid)
             header = len('(define {0} (list '.format(xstate_name))
@@ -61,7 +57,7 @@ class Synthesizer:
                 indentation += ' '
             regs = ''
 
-            print(f"[synthesizer] Instr: {instrs[xid-1]} Opcode: {opcodes[xid-1]}")
+            # print(f"[synthesizer] Instr: {instrs[xid-1]} Opcode: {opcodes[xid-1]}")
 
             # Opcode and operand encoding.
             instr_bs = "".join(format(ord(c), '08b') for c in instrs[xid-1].name)
