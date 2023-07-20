@@ -276,7 +276,7 @@ def main() -> int:
                     for reg in regs.values():
                         reg_hex = hex(reg)
                         print(f"[cli] Reg value: {reg_hex}")
-                        print(f"[cli] Bool check: {reg_hex in mems}")
+                        print(f"[cli] Bool check: {reg_hex in mems.values()}")
 
                 # Instructions should always be the same, but the differences are in
                 # the register/address values from those instructions (e.g., a violation is input-dependent).
