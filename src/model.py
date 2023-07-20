@@ -434,6 +434,8 @@ class UnicornModel(Model, ABC):
                                                      model.code_start]
             instr_obj = model.test_case.address_map[address - model.code_start]
 
+            opcode = model.test_case.opcode_map[address - model.code_start]
+
             # print(f"[model] Instr name: {dbg_instr.name} Instr op: {dbg_instr.get_mem_operands()}")
             # print(f"[model] Instr name: {dbg_instr.name} Instr op: {dbg_instr.operands}")
 
@@ -444,6 +446,7 @@ class UnicornModel(Model, ABC):
                 instr += " #instrumentation"
             model.tracer.run.instructions.append(instr)
             model.tracer.run.mem_instrs.append(instr_obj)
+            model.tracer.run.opcodes.append(opcode)
 
             archstate = model.capture_state()
             archstate.pc = address

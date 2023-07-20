@@ -492,6 +492,7 @@ class TestCase:
     functions: List[Function]
     address_map: Dict[int, Instruction]
     instructions_map: Dict[int, str]
+    opcode_map: Dict[int, str]
     num_prologue_instructions: int = 0
     faulty_pte: PageTableModifier
 
@@ -500,6 +501,7 @@ class TestCase:
         self.address_map = {}
         self.faulty_pte = PageTableModifier()
         self.instructions_map = {}
+        self.opcode_map = {}
 
     def __iter__(self):
         for func in self.functions:
@@ -694,6 +696,7 @@ class Run:
     inputs: List[int]
     instructions: List[str]
     mem_instrs: List[Instruction]  # Replace above list with this once tested (this object has more information than a str).
+    opcodes: List[str]
     archstates: List[ArchState]
     observations: List[Observations]
 
@@ -701,6 +704,7 @@ class Run:
         self.inputs = []
         self.instructions = []
         self.mem_instrs = []
+        self.opcodes = []
         self.archstates = []
         self.observations = []
 
