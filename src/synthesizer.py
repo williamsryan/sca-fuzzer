@@ -30,6 +30,19 @@ class Synthesizer:
 
     def get_run_name(self, rid):
         return "r{0}".format(str(rid))
+    
+    def make_opcode(opcode_val, mod_rm_val):
+        # Convert the opcode value + mod_rm to bitstrings.
+        opcode_bits = bin(opcode_val)[2:].zfill(6)
+        mod_rm_bits = bin(mod_rm_val)[2:].zfill(8)
+
+        # Concat to make full opcode bitstring.
+        full_bits = opcode_bits + mod_rm_bits
+
+        # Convert to int.
+        full_opcode = int(full_bits, 2)
+
+        return full_opcode
 
     """
         Separate method for generating Rosette structures for architecture states.
