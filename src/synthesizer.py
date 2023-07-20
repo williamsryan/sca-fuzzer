@@ -55,13 +55,13 @@ class Synthesizer:
 
                 regs += f"(bv {str(reg)} (bitvector 64))\t; Register: {reg_name.upper()}\n"
             if xstate.pc is not None:
-                regs += indentation + f"(bv {str(xstate.pc)} (bitvector 64))\t; PC"
+                regs += indentation + f"(bv {str(xstate.pc)} (bitvector 64))\t; PC\n"
                 regs += indentation + f"; Instruction\n"
                 regs += indentation + f"; Operands\n))"
                 # End of archstate object. Add more information, e.g., opcode + operands.
             else:
                 # Meaning this is the final state
-                regs += indentation + f"(bv {str(-1)} (bitvector 64))\t; Final state"
+                regs += indentation + f"(bv {str(-1)} (bitvector 64))\t; Final state\n"
                 # End of archstate object. Add more information, e.g., opcode + operands.
                 regs += indentation + f"; Instruction\n"
                 regs += indentation + f"; Operands\n))"
