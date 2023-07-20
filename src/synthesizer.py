@@ -52,6 +52,10 @@ class Synthesizer:
             instr_bs = "".join(format(ord(c), '08b') for c in instrs[xid-1].name)
             instr = int(instr_bs, 2)
             operand_bv = ""
+            for operand in instrs[xid-1].operands:
+                op_bs = "".join(format(ord(c), '08b') for c in operand.value)
+                op = int(op_bs, 2)
+                operand_bv += f"(bv {op} (bitvector 64))\n"
 
             for idx, reg in enumerate(xstate.regs.values()):
                 if regs != '':
@@ -64,7 +68,8 @@ class Synthesizer:
                 regs += indentation + f"(bv {str(xstate.pc)} (bitvector 64))\t; PC\n"
                 regs += indentation + f"; Instruction\n"
                 regs += indentation + f"(bv {instr} (bitvector 64))\n"
-                regs += indentation + f"; Operands\n))"
+                regs += indentation + f"; Operands\n"
+                regs += indentation + operand_bv + "))"
                 # End of archstate object. Add more information, e.g., opcode + operands.
             else:
                 # Meaning this is the final state
@@ -72,7 +77,8 @@ class Synthesizer:
                 # End of archstate object. Add more information, e.g., opcode + operands.
                 regs += indentation + f"; Instruction\n"
                 regs += indentation + f"(bv {instr} (bitvector 64))\n"
-                regs += indentation + f"; Operands\n))"
+                regs += indentation + f"; Operands\n"
+                regs += indentation + operand_bv + "))"
 
             return f"; Instruction: {instrs[xid-1]}\n(define {xstate_name} (list\t ;Registers\n\t\t  {regs}\n\n"
 
