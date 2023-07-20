@@ -71,6 +71,7 @@ class Synthesizer:
                 regs += indentation + f"(bv {str(-1)} (bitvector 64))\t; Final state\n"
                 # End of archstate object. Add more information, e.g., opcode + operands.
                 regs += indentation + f"; Instruction\n"
+                regs += indentation + f"(bv {instr} (bitvector 64))\n"
                 regs += indentation + f"; Operands\n))"
 
             return f"; Instruction: {instrs[xid-1]}\n(define {xstate_name} (list\t ;Registers\n\t\t  {regs}\n\n"
