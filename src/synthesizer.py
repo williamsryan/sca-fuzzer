@@ -52,8 +52,8 @@ class Synthesizer:
             if xstate.pc is not None:
                 regs += indentation + f"(bv {str(xstate.pc)} (bitvector 64))))\t; PC"
             else:
-                # meaning this is the final state
-                regs += indentation + f"(bv {str(-1)} (bitvector 64))\t; Final state"
+                # Meaning this is the final state
+                regs += indentation + f"(bv {str(-1)} (bitvector 64))))\t; Final state"
             return f"(define {xstate_name} (list\t ;Registers.\n\t\t  {regs}\n\n"
 
         with open(self.work_dir + "/" + self.filename, "a") as f:   
