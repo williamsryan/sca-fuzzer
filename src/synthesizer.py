@@ -48,7 +48,7 @@ class Synthesizer:
         Separate method for generating Rosette structures for architecture states.
     """
     def map(self, run):
-        def model(rid, xid, xstate, instrs):
+        def model(rid, xid, xstate, instrs, opcodes):
             # Test mapping xstate to instruction executed.
             # print(f"[synthesizer] xstate: {xid}; instruction: {instrs[xid-1]}")
             # for instr in instrs:
@@ -60,6 +60,8 @@ class Synthesizer:
             for _ in range (0,header):
                 indentation += ' '
             regs = ''
+
+            print(f"[synthesizer] Instr: {instrs[xid-1]} Opcode: {opcodes[xid-1]}")
 
             # Opcode and operand encoding.
             instr_bs = "".join(format(ord(c), '08b') for c in instrs[xid-1].name)
@@ -90,7 +92,7 @@ class Synthesizer:
                 # Meaning this is the final state
                 regs += indentation + f"(bv {str(-1)} (bitvector 64))\t; Final state\n"
                 # End of archstate object. Add more information, e.g., opcode + operands.
-                regs += indentation + f"; Instruction\n"
+                regs += indentation + f"; Opcode\n"
                 regs += indentation + f"(bv {instr} (bitvector 64))\n"
                 regs += indentation + f"; Operands\n"
                 regs += indentation + operand_bv + "))"
@@ -100,7 +102,7 @@ class Synthesizer:
         with open(self.work_dir + "/" + self.filename, "a") as f:   
             xstates = ''
             for i, xstate in enumerate(run.archstates):  
-                f.write(model(run.id, i, xstate, run.mem_instrs))
+                f.write(model(run.id, i, xstate, run.mem_instrs, run.opcodes))
                 if xstates == '':
                     xstates += self.get_xstate_name(run.id, i)
                 else:
