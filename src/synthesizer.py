@@ -66,59 +66,6 @@ class Synthesizer:
                     xstates += ' ' + self.get_xstate_name(run.id, i) 
             f.write(f"(define {self.get_run_name(run.id)} (list {xstates}))\n\n")
 
-    # def map_regs(self, run):
-    #     def model(rid, xid, xstate, instrs, inputs):
-    #         xstate_name = self.get_xstate_name(rid, xid)
-    #         header = len('(define {0} (list '.format(xstate_name))
-    #         indentation = ''
-    #         for _ in range(0, header):
-    #             indentation += ' '
-    #         regs = ''
-    #         for idx, reg in enumerate(xstate.regs.values()):
-    #             if regs != '':
-    #                 regs += indentation
-    #             reg_idx = CONF.map_reg(idx)
-    #             reg_name = CONF.registers.get(reg_idx)
-    #             regs += f"(bv {str(reg)} (bitvector 64))\t; Register: {reg_name.upper()} instruction: {instrs[idx]}\n"
-    #             # for op in instrs[idx].operands:
-    #             #     regs += f"\t\t\t\t; operands: {op.value}\n"
-    #         if xstate.pc is not None:
-    #             regs += indentation + \
-    #                 f"(bv {str(xstate.pc)} (bitvector 64))))\t; PC"
-    #         else:
-    #             # Meaning this is the final state; end with -1.
-    #             regs += indentation + f"(bv {str(-1)} (bitvector 64))))\t; Final state\n\n"
-
-    #         # Annotate each register state object with the observed instruction.
-    #         # Depending on results, we may actually use it in the tuple to help
-    #         # guide the synthesizer to learning instructions vs. registers.
-    #         # for instr in instrs:
-    #         #     print(f"[synthesizer] Test instrs: {instr}: Category: {instr.category}")
-    #             # for op in instr.operands:
-    #             #     print(f"[synthesizer]\toperands: {op.value}")
-    #             #     comment_obj += f" operands: {op.value}"
-
-    #         violating_input = f"; Run on input: {inputs}"
-    #         # Run step registers object.
-    #         return f"\n{violating_input}\n(define {xstate_name} (list {regs}\n"
-
-    #     with open(self.work_dir + "/" + self.filename, "a") as f:
-    #         xstates = ''
-    #         for i, xstate in enumerate(run.archstates):
-    #             # print(f"[synthesizer] LEN TEST: {len(run.archstates)} vs {len(run.mem_instrs)}")
-
-    #             f.write(model(run.id, i, xstate, run.mem_instrs, run.inputs))
-
-    #             if xstates == '':
-    #                 opcode_test = "bv #b0000001011 (bitvector 8)"
-    #                 bv_test = "bv #b0111 (bitvector 4)"
-    #                 xstates += f"(make-run-step {self.get_xstate_name(run.id, i)} (INSTR (OPCODE ({opcode_test})) (OPERANDS ({bv_test}) ({bv_test}))))"
-    #             else:
-    #                 xstates += ' ' + f"(make-run-step {self.get_xstate_name(run.id, i)} (INSTR (OPCODE ({opcode_test})) (OPERANDS ({bv_test}) ({bv_test}))))"
-            
-    #         f.write("(define {0} (list {1}))\n\n".format(
-    #             self.get_run_name(run.id), xstates))
-
     # TODO: update to look at sequential traces, and ignore silent steps for now.
     def generate_constraints(self, pairs, run1, run2):
         with open(self.work_dir + "/" + self.filename, "a") as f:
