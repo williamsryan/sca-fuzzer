@@ -37,7 +37,8 @@ class Synthesizer:
     def map(self, run):
         def model(rid, xid, xstate, instrs):
             # Test mapping xstate to instruction executed.
-            print(f"[synthesizer] xstate: {xid}; instruction: {instrs[xid]}")
+            print(f"[synthesizer] xstate: {xid}; instruction: {instrs[xid-1]}")
+            print(f"[synthesizer] full instr: {instrs}")
 
             xstate_name = self.get_xstate_name(rid, xid)
             header = len('(define {0} (list '.format(xstate_name))
