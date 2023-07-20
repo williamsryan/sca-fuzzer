@@ -55,6 +55,8 @@ class Synthesizer:
             for operand in instrs[xid-1].operands:
                 op_bs = "".join(format(ord(c), '08b') for c in operand.value)
                 op = int(op_bs, 2)
+                if operand_bv != "":
+                    operand_bv += indentation
                 operand_bv += f"(bv {op} (bitvector 64))\n"
 
             for idx, reg in enumerate(xstate.regs.values()):
