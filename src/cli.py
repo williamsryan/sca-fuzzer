@@ -267,6 +267,13 @@ def main() -> int:
                 theory_fname = "theory-" + timestamp + ".rkt"
                 expr_fname = "expr-" + timestamp + ".txt"
 
+                # Dummy test.
+                xstate = run1.archstates
+                regs = xstate.regs
+                mems = xstate.mems
+
+                print(f"[cli] regs len: {len(regs)} mems len: {len(mems)}")
+
                 # Instructions should always be the same, but the differences are in
                 # the register/address values from those instructions (e.g., a violation is input-dependent).
                 
