@@ -268,11 +268,15 @@ def main() -> int:
                 expr_fname = "expr-" + timestamp + ".txt"
 
                 # Dummy test.
-                xstate = run1.archstates
-                regs = xstate.regs
-                mems = xstate.mems
+                xstates = run1.archstates
+                for xstate in xstates:
+                    regs = xstate.regs
+                    mems = xstate.mems
 
-                print(f"[cli] regs len: {len(regs)} mems len: {len(mems)}")
+                    for reg in regs.values():
+                        reg_hex = hex(reg)
+                        print(f"[cli] Reg value: {reg_hex}")
+                        print(f"[cli] Bool check: {reg_hex in mems}")
 
                 # Instructions should always be the same, but the differences are in
                 # the register/address values from those instructions (e.g., a violation is input-dependent).
