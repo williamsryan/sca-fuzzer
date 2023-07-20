@@ -321,10 +321,7 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439811 (bitvector 64))))
 
-(define r0 (list (make-run-step r0_0 (INSTR (OPCODE (bv #b0000001011 (bitvector 8)))
-                                            (OPERANDS (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4)))))
-                 (make-run-step r0_1 (INSTR (OPCODE (bv #b0000001010 (bitvector 8)))
-                                            (OPERANDS (bv #b0110 (bitvector 4)) (bv #b0010 (bitvector 4)))))))
+(define r0 (list r0_0 r0_1))
 
 (define r1_0 (list (bv 176093659177 (bitvector 64))
                    (bv 1662152343939 (bitvector 64))
@@ -344,10 +341,7 @@
                    (bv 66 (bitvector 64))
                    (bv 18446630612648439811 (bitvector 64))))
 
-(define r1 (list (make-run-step r1_0 (INSTR (OPCODE (bv #b0000001011 (bitvector 8)))
-                                            (OPERANDS (bv #b0111 (bitvector 4)) (bv #b1100 (bitvector 4)))))
-                 (make-run-step r1_1 (INSTR (OPCODE (bv #b0000001010 (bitvector 8)))
-                                            (OPERANDS (bv #b0110 (bitvector 4)) (bv #b0011 (bitvector 4)))))))
+(define r1 (list r1_0 r1_1))
 
 (define myexpr (cexpr #:depth 1))
 
