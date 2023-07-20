@@ -57,7 +57,7 @@ class Synthesizer:
                 indentation += ' '
             regs = ''
 
-            # print(f"[synthesizer] Instr: {instrs[xid-1]} Opcode: {opcodes[xid-1]}")
+            print(f"[synthesizer] Instr: {instrs[xid-1]} Opcode: {opcodes[xid-1]}")
 
             # Opcode and operand encoding.
             instr_bs = "".join(format(ord(c), '08b') for c in instrs[xid-1].name)
