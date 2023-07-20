@@ -31,9 +31,9 @@
 ; Struct definitions for our contract language.
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
 (struct OPCODE (bs) #:transparent)
-(struct OPERAND (bs) #:transparent)
-(struct OPERANDS (op1 op2) #:transparent)
-(struct INSTR (opcode operands) #:transparent) ; TODO: use INSTR for opcode + operands (pred + bs).
+; (struct OPERAND (bs) #:transparent)
+; (struct OPERANDS (op1 op2) #:transparent)
+(struct INSTR ())
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
 (struct RS1 ())                         ; Register RS1.
 (struct RS2 ())                         ; Register RS2.
@@ -44,7 +44,7 @@
 (struct BOOL (b))
 (struct BS (bs))                        ; Bitstring value.
 (struct REG (r) #:transparent)          ; Register value.
-(struct ADDR (a) #:transparent)         ; Address value.
+; (struct ADDR (a) #:transparent)         ; Address value.
 
 ; Aux structs.
 (struct INTEGER (value) #:transparent)
@@ -95,6 +95,8 @@
 ; (IF (INSTR == `LOAD) REG[OPERAND2])   <-- In progress (leaked address from loads/stores).
 ; (IF (OPCODE (bs?)) REG[OPERAND2])     <-- Instead of INSTR, get the opcode and map back to INSTR later.
 ; (IF (OPCODE #b0000010011 (REG[op2])))
+; (IF (OPCODE #bxxxxxxx110 (ADDR 0x3C7E78F365E))
+;     (OPERANDS #b00001001 (REG 5678)))
 (define-grammar (cexpr)
   [expr (IF (pred) (bs))]
   [pred (choose (BOOL (?? boolean?))
@@ -102,15 +104,15 @@
                 (AND (pred) (pred))
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
-                (OPCODE (bs))
-                (INSTR (bs) (OPERANDS))
+                ; (OPCODE (bs))
+                ; (INSTR (bs) (OPERANDS))
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
-              (ADDR (?? integer?))
+              ; (ADDR (?? integer?))
               ; (OPERANDS (?? integer?) (?? integer?)) ; Moving OPERANDS to part of INSTR.
-              (REG (choose (?? integer?)
-                           (OPERAND))) ; Make this option an OPERAND?
+              (REG (?? integer?))
+              INSTR
               )]
   )
 
@@ -131,40 +133,24 @@
             [(NOT some-p) (not (eval-pred some-p xstate))]
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
-            [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
-            [(OPCODE bs) (eval-opcode bs xstate)]
-            [(INSTR opcode ops) (eval-instr opcode ops xstate)]))
+            [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]))
+            ; [(OPCODE bs) (eval-opcode bs xstate)]
+            ; [(INSTR opcode ops) (eval-instr opcode ops xstate)]))
 
-; Format notes:
-; (IF (OPCODE #b0000001010) (REG[operand2])) : 
-; This clause represents the condition where a memory load opcode (#b0000001010) is encountered,
-; and the value stored in the register specified by operand2 is leaked.
-;
-; (IF (OPCODE #b0000010101) ADDR[operand1]) : 
-; This clause represents the condition where a memory store opcode (#b0000010101) is encountered,
-; and the address referenced by operand1 is considered leaked based on the leakage-expression function.
+; Evaluation function for bit sequences.
+(define (eval-bs bs xstate)
+  (destruct bs
+            [(BS b) b]
+            [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b xstate))]
+            [(REG reg) (eval-reg reg xstate)]
+            [INSTR (eval-reg PC xstate)]
+            ; [(OPERANDS op1 op2) (eval-operands op1 op2 xstate)]
+            ; [(OPERAND op) (eval-operand op xstate)]
+            ; [_ (log-error "Invalid expression for bitstring observation")]
+            ))
+
 (define (eval-opcode opcode xstate)
   (log-debug "[eval-opcode] TODO"))
-
-(define (extract-integer value)
-  (match value
-    [(bv i _) i]
-    [_ (log-error "Invalid integer value from bitvector")]))
-
-(define (extract-bits bs start-bit end-bit)
-  (bvextract start-bit (+ 1 (- end-bit start-bit)) bs))
-
-(define (bvextract start-bit width bs)
-  (bvlshr (bvand bs (bvneg (bvshl (bvneg (bvlshr (bvneg #b0) start-bit)) width))) start-bit))
-
-(define (bv-eq? bv1 bv2)
-  (bveq bv1 bv2))
-
-; (define (opcode-equal opcode1 opcode2)
-;   (bv-eq? opcode1 opcode2))
-
-; (define (get-instr xstate)
-;   (cdr xstate))
 
 ; TODO: update this with our desired constraints for instruction operands.
 (define (eval-operands op1 op2 xstate)
@@ -174,23 +160,12 @@
   ; (list ((list-ref xstate op2)
   ;        (list-ref xstate op1))))
 
-(define (eval-operand op xstate)
-  (log-info "[eval-operand]")
-  (match op
-    [(INTEGER value) value]
-    [(REG reg) (extract-integer (list-ref xstate reg))]
-    ))
-
-; Evaluation function for bit sequences.
-(define (eval-bs bs xstate)
-  (destruct bs
-            [(BS b) b]
-            [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b xstate))]
-            [(REG reg) (eval-reg reg xstate)]
-            ; [(OPERANDS op1 op2) (eval-operands op1 op2 xstate)]
-            [(OPERAND op) (eval-operand op xstate)]
-            ; [_ (log-error "Invalid expression for bitstring observation")]
-            ))
+; (define (eval-operand op xstate)
+;   (log-info "[eval-operand]")
+;   (match op
+;     [(INTEGER value) value]
+;     [(REG reg) (extract-integer (list-ref xstate reg))]
+;     ))
 
 ; Evaluation function for instructions.
 (define (eval-instr opcode op1 op2 xstate)
@@ -216,10 +191,7 @@
 ; Evaluation function for registers.
 (define (eval-reg reg xstate)
   ; (log-debug "[eval-reg]")
-  (match reg
-    [(? integer? reg-idx) (list-ref xstate reg-idx)]
-    [(OPERAND op) (eval-operand op xstate)]
-    [_ (log-error "Invalid register value in eval-reg: ~s" reg)]))
+  (list-ref xstate reg))
 
 ; obs() takes an expression and a xstate
 ;       returns its observation
@@ -232,11 +204,11 @@
 (define (empty-obs expr xstate)
   (empty? (eval expr xstate)))
 
-(define (instr-equal xstate1 xstate2)
-  ; TODO: do we care about equality, or value presence in regs?
-  (and (equal? (INSTR-opcode xstate1) (INSTR-opcode xstate2))
-       (equal? (OPERANDS-op1 (INSTR-operands xstate1)) (OPERANDS-op1 (INSTR-operands xstate2)))
-       (equal? (OPERANDS-op2 (INSTR-operands xstate1)) (OPERANDS-op2 (INSTR-operands xstate2)))))
+; (define (instr-equal xstate1 xstate2)
+;   ; TODO: do we care about equality, or value presence in regs?
+;   (and (equal? (INSTR-opcode xstate1) (INSTR-opcode xstate2))
+;        (equal? (OPERANDS-op1 (INSTR-operands xstate1)) (OPERANDS-op1 (INSTR-operands xstate2)))
+;        (equal? (OPERANDS-op2 (INSTR-operands xstate1)) (OPERANDS-op2 (INSTR-operands xstate2)))))
     
 ; obs-equal() takes an expression and two xstates
 ;             returns true if the two xstates produces same observations
@@ -244,11 +216,7 @@
 (define (obs-equal expr xstate1 xstate2)
   ; (log-debug "[obs-equal]")
   ; (log-debug (listbv-equal (obs expr xstate1) (obs expr xstate2)))
-  ; (listbv-equal (obs expr xstate1) (obs expr xstate2)))
-  ; (match-define (INSTR _ _) xstate1)
-  (if (and (INSTR? xstate1) (INSTR? xstate2))
-      (instr-equal xstate1 xstate2)
-      (listbv-equal (obs expr xstate1) (obs expr xstate2))))
+  (listbv-equal (obs expr xstate1) (obs expr xstate2)))
 
 ; listbv-equal() takes two observations
 ;                returns true if they are the same
@@ -263,11 +231,7 @@
 ; Take our grammar expression and archstate as input.
 ; Return a list of the operands for the run step.
 (define (obs-opcode xstate)
-  (log-debug "[obs-opcode] TODO")
-  (match xstate
-    [(INSTR opcode ops)
-     `(INSTR ,(obs opcode) ,(obs ops))]
-    [_ (log-error "Invalid expression for opcode observation")]))
+  (log-debug "[obs-opcode] TODO"))
   ; (match xstate
   ;   [(OPCODE opcode operands)
   ;    (list opcode operands)]
@@ -283,22 +247,19 @@
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
   (if (equal? i j)
-      (if (equal? i_ j_)
-          #f
-          (or (not (empty-obs expr (run-step-regs (list-ref r_ i_)))
-              (diff j j r (+ i_ 1) j_ r_ expr))))
-      (if (equal? i_ j_)
-          (or (not (empty-obs expr (run-step-regs (list-ref r i)))
-              (diff (+ i 1) j r j_ j_ r_ expr)))
-          (or (and (empty-obs expr (run-step-regs (list-ref r i)))
-                  (diff (+ i 1) j r i_ j_ r_ expr))
-              (and (empty-obs expr (run-step-regs (list-ref r_ i_)))
-                  (diff i j r (+ i_ 1) j_ r_ expr))
-              (not (obs-equal expr (run-step-instruction (list-ref r i)) (run-step-instruction (list-ref r_ i_))))
-              (and (not (empty-obs expr (run-step-regs (list-ref r i))))
-                   (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
-                   (not (obs-equal expr (run-step-regs (list-ref r i))
-                                        (run-step-regs (list-ref r_ i_)))))))))
+      (if (equal? i_ j_) #f
+                         (or (not (empty-obs expr (list-ref r_ i_)))
+                             (diff j j r (+ i_ 1) j_ r_ expr)))
+      (if (equal? i_ j_) (or (not (empty-obs expr (list-ref r i)))
+                             (diff (+ i 1) j r j_ j_ r_ expr))
+                         (or (and (empty-obs expr (list-ref r i))
+                                  (diff (+ i 1) j r i_ j_ r_ expr))
+                             (and (empty-obs expr (list-ref r_ i_))
+                                  (diff i j r (+ i_ 1) j_ r_ expr))
+                            ;  (not (obs-equal expr (run-step-instruction (list-ref r i)) (run-step-instruction (list-ref r_ i_))))
+                             (and (not (empty-obs expr (list-ref r i)))
+                                  (not (empty-obs expr (list-ref r_ i_)))
+                                  (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
 
 ; ------------- END-CORE ------------------ ;
 ; Instruction: UNMAPPED 
