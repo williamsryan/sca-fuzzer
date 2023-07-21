@@ -276,6 +276,7 @@
 
 ; ------------- END-CORE ------------------ ;
 ; Instruction: ADD RSI, RDX
+; TODO: label each individual list element so subsequent parsing is all done properly.
 (define r0_0 (list	 ;Registers
                    (bv 721554522859 (bitvector 64))	; Register: RAX
                    (bv 455266533482 (bitvector 64))	; Register: RBX
