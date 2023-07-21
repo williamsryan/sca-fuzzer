@@ -60,8 +60,9 @@ class Synthesizer:
             print(f"[synthesizer] Instr: {instrs[xid-1]} Opcode: {opcodes[xid-1]}")
 
             # Opcode and operand encoding.
-            instr_bs = "".join(format(ord(c), '08b') for c in instrs[xid-1].name)
-            instr = int(instr_bs, 2)
+            opcode_bs = bin(opcodes[xid-1])[2:]
+            opcode = int(opcode_bs, 2)
+
             operand_bv = ""
             for operand in instrs[xid-1].operands:
                 op_bs = "".join(format(ord(c), '08b') for c in operand.value)
@@ -80,7 +81,7 @@ class Synthesizer:
             if xstate.pc is not None:
                 regs += indentation + f"(bv {str(xstate.pc)} (bitvector 64))\t; PC\n"
                 regs += indentation + f"; Opcode\n"
-                regs += indentation + f"(bv {instr} (bitvector 64))\n"
+                regs += indentation + f"(bv {opcode} (bitvector 64))\n"
                 regs += indentation + f"; Operands\n"
                 regs += indentation + operand_bv + "))"
                 # End of archstate object. Add more information, e.g., opcode + operands.
