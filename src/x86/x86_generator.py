@@ -113,7 +113,7 @@ class X86Generator(ConfigurableGenerator, abc.ABC):
 
         # TODO: update to use objdump like above.
         decoder = Decoder(64, bin_file_contents)
-        formatter = Formatter(FormatterSyntax.INTEL)
+        # formatter = Formatter(FormatterSyntax.INTEL)
 
         # TODO: check the differences between address_map and instructions_map.
 
@@ -128,7 +128,6 @@ class X86Generator(ConfigurableGenerator, abc.ABC):
             test_case.instructions_map[instruction.ip] = str(instruction)
             # test_case.opcode_map[instruction.ip] = str(opcode.op_code_string)
             test_case.opcode_map[instruction.ip] = instruction.mnemonic
-            formatter.format(instruction.mnemonic, FormatMnemonicOptions.NO_PREFIXES)
 
         # connect them with instructions in the test case
         address_map: Dict[int, Instruction] = {}
