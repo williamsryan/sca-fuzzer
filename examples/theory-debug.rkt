@@ -32,7 +32,7 @@
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
 (struct OPCODE (bs) #:transparent)
 ; (struct OPERAND (bs) #:transparent)
-; (struct OPERANDS (op1 op2) #:transparent)
+(struct OPERANDS (op1 op2) #:transparent)
 (struct INSTR ())
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
 (struct RS1 ())                         ; Register RS1.
@@ -258,21 +258,55 @@
 ;
 ;        returns true if the trace produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable
 ;                false otherwise
+; (define (diff i j r i_ j_ r_ expr)
+;   (if (equal? i j)
+;       (if (equal? i_ j_) #f
+;                          (or (not (empty-obs expr (list-ref r_ i_)))
+;                              (diff j j r (+ i_ 1) j_ r_ expr)))
+;       (if (equal? i_ j_) (or (not (empty-obs expr (list-ref r i)))
+;                              (diff (+ i 1) j r j_ j_ r_ expr))
+;                          (or (and (empty-obs expr (list-ref r i))
+;                                   (diff (+ i 1) j r i_ j_ r_ expr))
+;                              (and (empty-obs expr (list-ref r_ i_))
+;                                   (diff i j r (+ i_ 1) j_ r_ expr))
+;                             ;  (not (obs-equal expr (run-step-instruction (list-ref r i)) (run-step-instruction (list-ref r_ i_))))
+;                              (and (not (empty-obs expr (list-ref r i)))
+;                                   (not (empty-obs expr (list-ref r_ i_)))
+;                                   (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
+
 (define (diff i j r i_ j_ r_ expr)
   (if (equal? i j)
-      (if (equal? i_ j_) #f
-                         (or (not (empty-obs expr (list-ref r_ i_)))
-                             (diff j j r (+ i_ 1) j_ r_ expr)))
-      (if (equal? i_ j_) (or (not (empty-obs expr (list-ref r i)))
-                             (diff (+ i 1) j r j_ j_ r_ expr))
-                         (or (and (empty-obs expr (list-ref r i))
-                                  (diff (+ i 1) j r i_ j_ r_ expr))
-                             (and (empty-obs expr (list-ref r_ i_))
-                                  (diff i j r (+ i_ 1) j_ r_ expr))
-                            ;  (not (obs-equal expr (run-step-instruction (list-ref r i)) (run-step-instruction (list-ref r_ i_))))
-                             (and (not (empty-obs expr (list-ref r i)))
-                                  (not (empty-obs expr (list-ref r_ i_)))
-                                  (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
+      (if (equal? i_ j_)
+          #f
+          (or (not (empty-obs expr (match (list-ref r_ i_)
+                                      [(REG reg) reg]
+                                      [(OPCODE opcode) #f]
+                                      [(OPERANDS op1 op2) #f])))
+              (diff j j r (+ i_ 1) j_ r_ expr)))
+      (if (equal? i_ j_)
+          (or (not (empty-obs expr (match (list-ref r i)
+                                      [(REG reg) reg]
+                                      [(OPCODE opcode) #f]
+                                      [(OPERANDS op1 op2) #f])))
+              (diff (+ i 1) j r j_ j_ r_ expr))
+          (or (and (empty-obs expr (match (list-ref r i)
+                                     [(REG reg) reg]
+                                     [(OPCODE opcode) #f]
+                                     [(OPERANDS op1 op2) #f]))
+                   (diff (+ i 1) j r i_ j_ r_ expr))
+              (and (empty-obs expr (match (list-ref r_ i_)
+                                     [(REG reg) reg]
+                                     [(OPCODE opcode) #f]
+                                     [(OPERANDS op1 op2) #f]))
+                   (diff i j r (+ i_ 1) j_ r_ expr))
+              (not (obs-equal expr (match (list-ref r i)
+                                      [(REG reg) reg]
+                                      [(OPCODE opcode) #f]
+                                      [(OPERANDS op1 op2) #f])
+                               (match (list-ref r_ i_)
+                                      [(REG reg) reg]
+                                      [(OPCODE opcode) #f]
+                                      [(OPERANDS op1 op2) #f])))))))
 
 ; ------------- END-CORE ------------------ ;
 ; Instruction: ADD RSI, RDX
