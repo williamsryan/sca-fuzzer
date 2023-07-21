@@ -119,15 +119,16 @@
 
 ; Evaluation function for expressions.
 (define (eval expr xstate)
-  ; (println "[eval]")
+  ; (log-debug "[eval]")
   (destruct expr
     [(IF pred bs) (if (eval-pred pred xstate) (list (eval-bs bs xstate)) EMPTY)]
-    [(IF OPCODE bs) (if (eval-opcode bs xstate) (list (eval-bs bs xstate)) EMPTY)]  ; Test this later.
+    ; [(IF OPCODE bs) (if (eval-opcode bs xstate) (list (eval-bs bs xstate)) EMPTY)]  ; Test this later.
     [_ EMPTY]))
 
 ; Evaluation function for predicates.
 (define (eval-pred pred xstate)
-  ; (println "[eval-pred]")
+  ; (log-debug "[eval-pred]")
+  ; (log-debug pred)
   (destruct pred
             [(BOOL b) b]
             [(NOT some-p) (not (eval-pred some-p xstate))]
@@ -200,6 +201,7 @@
 ; obs() takes an expression and a xstate
 ;       returns its observation
 (define (obs expr xstate)
+  ; (log-debug "[obs]")
   (eval expr xstate))
 
 ; obs() takes an expression and a xstate
