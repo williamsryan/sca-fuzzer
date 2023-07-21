@@ -104,7 +104,7 @@
                 (AND (pred) (pred))
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
-                ; (OPCODE (bs))
+                (OPCODE (bs))
                 ; (INSTR (bs) (OPERANDS))
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
@@ -133,8 +133,8 @@
             [(NOT some-p) (not (eval-pred some-p xstate))]
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
-            [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]))
-            ; [(OPCODE bs) (eval-opcode bs xstate)]
+            [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
+            [(OPCODE op) (eval-opcode op xstate)]))
             ; [(INSTR opcode ops) (eval-instr opcode ops xstate)]))
 
 ; Evaluation function for bit sequences.
@@ -143,6 +143,7 @@
             [(BS b) b]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b xstate))]
             [(REG reg) (eval-reg reg xstate)]
+            ; [(OPCODE op) (eval-opcode op xstate)]
             [INSTR (eval-reg PC xstate)]
             ; [(OPERANDS op1 op2) (eval-operands op1 op2 xstate)]
             ; [(OPERAND op) (eval-operand op xstate)]
