@@ -82,7 +82,7 @@
     (else #f)))
 
 ; New object that holds register values and instruction together.
-(struct run-step (regs instruction)
+(struct run-step (regs opcode operands)
   #:constructor-name make-run-step
   #:transparent)
 
@@ -103,7 +103,7 @@
                 (AND (pred) (pred))
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
-                (OPCODE (bs)) ; (?? (bitvector (?? integer?)))
+                (OPCODE (bs)) ; (?? (bitvector (?? integer?))) || BS
                 ; (INSTR (bs) (OPERANDS))
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
@@ -256,38 +256,21 @@
 ;
 ;        returns true if the trace produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable
 ;                false otherwise
-; (define (diff i j r i_ j_ r_ expr)
-;   (if (equal? i j)
-;       (if (equal? i_ j_) #f
-;                          (or (not (empty-obs expr (list-ref r_ i_)))
-;                              (diff j j r (+ i_ 1) j_ r_ expr)))
-;       (if (equal? i_ j_) (or (not (empty-obs expr (list-ref r i)))
-;                              (diff (+ i 1) j r j_ j_ r_ expr))
-;                          (or (and (empty-obs expr (list-ref r i))
-;                                   (diff (+ i 1) j r i_ j_ r_ expr))
-;                              (and (empty-obs expr (list-ref r_ i_))
-;                                   (diff i j r (+ i_ 1) j_ r_ expr))
-;                             ;  (not (obs-equal expr (run-step-instruction (list-ref r i)) (run-step-instruction (list-ref r_ i_))))
-;                              (and (not (empty-obs expr (list-ref r i)))
-;                                   (not (empty-obs expr (list-ref r_ i_)))
-;                                   (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
-
 (define (diff i j r i_ j_ r_ expr)
   (if (equal? i j)
-      (if (equal? i_ j_)
-          #f
-          (or (not (empty-obs expr (list-ref r_ i_)))
-              (diff j j r (+ i_ 1) j_ r_ expr)))
-      (if (equal? i_ j_)
-          (or (not (empty-obs expr (list-ref r i)))
-              (diff (+ i 1) j r j_ j_ r_ expr))
-          (or (and (empty-obs expr (list-ref r i))
-                   (diff (+ i 1) j r i_ j_ r_ expr))
-              (and (empty-obs expr (list-ref r_ i_))
-                   (diff i j r (+ i_ 1) j_ r_ expr))
-              (if (= i 8)
-                  (create-pred (list-ref r i) (list-ref r_ i_))
-                  (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
+      (if (equal? i_ j_) #f
+                         (or (not (empty-obs expr (list-ref r_ i_)))
+                             (diff j j r (+ i_ 1) j_ r_ expr)))
+      (if (equal? i_ j_) (or (not (empty-obs expr (list-ref r i)))
+                             (diff (+ i 1) j r j_ j_ r_ expr))
+                         (or (and (empty-obs expr (list-ref r i))
+                                  (diff (+ i 1) j r i_ j_ r_ expr))
+                             (and (empty-obs expr (list-ref r_ i_))
+                                  (diff i j r (+ i_ 1) j_ r_ expr))
+                            ;  (not (obs-equal expr (run-step-instruction (list-ref r i)) (run-step-instruction (list-ref r_ i_))))
+                             (and (not (empty-obs expr (list-ref r i)))
+                                  (not (empty-obs expr (list-ref r_ i_)))
+                                  (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
 
 ; ------------- END-CORE ------------------ ;
 ; Instruction: ADD RSI, RDX
