@@ -92,8 +92,7 @@
 ; Grammar for the actual contract.
 ; (IF (BOOL #t) (REG 12))               <-- Supported (leaked registers).
 ; (IF (BOOL #t) (PC))                   <-- Supported (leaked program counter).
-; (IF (INSTR == `LOAD) REG[OPERAND2])   <-- In progress (leaked address from loads/stores).
-; (IF (OPCODE (bs?)) REG[OPERAND2])     <-- Instead of INSTR, get the opcode and map back to INSTR later.
+; (IF (OPCODE (bs?)) REG[OPERAND2])
 ; (IF (OPCODE #b0000010011 (REG[op2])))
 ; (IF (OPCODE #bxxxxxxx110 (ADDR 0x3C7E78F365E))
 ;     (OPERANDS #b00001001 (REG 5678)))
@@ -104,7 +103,7 @@
                 (AND (pred) (pred))
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
-                (OPCODE (bs))
+                (OPCODE (bs)) ; (?? (bitvector (?? integer?)))
                 ; (INSTR (bs) (OPERANDS))
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
