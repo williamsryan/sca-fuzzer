@@ -61,7 +61,7 @@ class Synthesizer:
 
             # Opcode and operand encoding.
             opcode_bs = bin(opcodes[xid-1])[2:] # Ignore 0b.
-            opcode = int(opcode_bs, 2)
+            # opcode = int(opcode_bs, 2)
 
             operand_bv = ""
             for operand in instrs[xid-1].operands:
@@ -81,7 +81,7 @@ class Synthesizer:
             if xstate.pc is not None:
                 regs += indentation + f"(bv {str(xstate.pc)} (bitvector 64))\t; PC\n"
                 regs += indentation + f"; Opcode\n"
-                regs += indentation + f"(bv {opcode} (bitvector 64))\n"
+                regs += indentation + f"(bv {opcode_bs} (bitvector 64))\n"
                 regs += indentation + f"; Operands\n"
                 regs += indentation + operand_bv + "))"
                 # End of archstate object. Add more information, e.g., opcode + operands.
@@ -90,7 +90,7 @@ class Synthesizer:
                 regs += indentation + f"(bv {str(-1)} (bitvector 64))\t; Final state\n"
                 # End of archstate object. Add more information, e.g., opcode + operands.
                 regs += indentation + f"; Opcode\n"
-                regs += indentation + f"(bv {opcode} (bitvector 64))\n"
+                regs += indentation + f"(bv {opcode_bs} (bitvector 64))\n"
                 regs += indentation + f"; Operands\n"
                 regs += indentation + operand_bv + "))"
 
