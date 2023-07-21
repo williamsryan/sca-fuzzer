@@ -351,13 +351,16 @@
 
 (define r1 (list r1_0 r1_1))
 
-(define myexpr (cexpr #:depth 1)) ; Note: at depth 2, eval-opcode starts getting called.
+; (define myexpr (cexpr #:depth 1)) ; Note: at depth 2, eval-opcode starts getting called.
 
-(define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
-                               (diff 1 2 r0 1 2 r1 myexpr)
-))))
+; (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
+;                                (diff 1 2 r0 1 2 r1 myexpr)
+; ))))
 
-(print-forms sol)
+; (print-forms sol)
 
+
+; Dummy tests.
+(log-debug (get-regs r0_0))
 ; (diff 0 1 r0 0 1 r1 myexpr)
 ; (diff 1 2 r0 1 2 r1 myexpr)
