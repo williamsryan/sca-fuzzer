@@ -262,43 +262,75 @@
                                   (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
 
 ; ------------- END-CORE ------------------ ;
-(define r0_0 (list (bv 176093659177 (bitvector 64))
-                   (bv 1662152343939 (bitvector 64))
-                   (bv 1524713390435 (bitvector 64))
-                   (bv 176093659177 (bitvector 64))
-                   (bv 1984274891214 (bitvector 64))
-                   (bv 335007449166 (bitvector 64))
-                   (bv 66 (bitvector 64))
-                   (bv 18446630612648439808 (bitvector 64))))
+; Instruction: ADD RSI, RDX
+(define r0_0 (list	 ;Registers
+                   (bv 721554522859 (bitvector 64))	; Register: RAX
+                   (bv 455266533482 (bitvector 64))	; Register: RBX
+                   (bv 730144440490 (bitvector 64))	; Register: RCX
+                   (bv 107374182398 (bitvector 64))	; Register: RDI
+                   (bv 940597838044 (bitvector 64))	; Register: RDX
+                   (bv 1971389989324 (bitvector 64))	; Register: RSI
+                   (bv 6 (bitvector 64))	; Register: EFLAGS
+                   (bv 18446612985909035028 (bitvector 64))	; PC
+                   ; Opcode
+                   (bv 110 (bitvector 64))
+                   ; Operands
+                   (bv 5395273 (bitvector 64))
+                   (bv 5391448 (bitvector 64))
+))
 
-(define r0_1 (list (bv 176093659177 (bitvector 64))
-                   (bv 1662152343939 (bitvector 64))
-                   (bv 1524713390435 (bitvector 64))
-                   (bv 176093659177 (bitvector 64))
-                   (bv 1984274891214 (bitvector 64))
-                   (bv 335007449166 (bitvector 64))
-                   (bv 66 (bitvector 64))
-                   (bv 18446630612648439811 (bitvector 64))))
+; Instruction: IMUL EBX, EBX
+(define r0_1 (list	 ;Registers
+                   (bv 721554522859 (bitvector 64))	; Register: RAX
+                   (bv 11236 (bitvector 64))	; Register: RBX
+                   (bv 730144440490 (bitvector 64))	; Register: RCX
+                   (bv 107374182398 (bitvector 64))	; Register: RDI
+                   (bv 940597838044 (bitvector 64))	; Register: RDX
+                   (bv 1971389989324 (bitvector 64))	; Register: RSI
+                   (bv 6 (bitvector 64))	; Register: EFLAGS
+                   (bv 18446612985909035031 (bitvector 64))	; PC
+                   ; Opcode
+                   (bv 100010101 (bitvector 64))
+                   ; Operands
+                   (bv 4538968 (bitvector 64))
+                   (bv 4538968 (bitvector 64))
+))
 
 (define r0 (list r0_0 r0_1))
 
-(define r1_0 (list (bv 176093659177 (bitvector 64))
-                   (bv 1662152343939 (bitvector 64))
-                   (bv 1524713390435 (bitvector 64))
-                   (bv 176093659177 (bitvector 64))
-                   (bv 1984274891214 (bitvector 64))
-                   (bv 335007449166 (bitvector 64))
-                   (bv 66 (bitvector 64))
-                   (bv 18446630612648439808 (bitvector 64))))
+; Instruction: ADD RSI, RDX
+(define r1_0 (list	 ;Registers
+                   (bv 721554522859 (bitvector 64))	; Register: RAX
+                   (bv 455266533482 (bitvector 64))	; Register: RBX
+                   (bv 730144440490 (bitvector 64))	; Register: RCX
+                   (bv 107374182398 (bitvector 64))	; Register: RDI
+                   (bv 940597838044 (bitvector 64))	; Register: RDX
+                   (bv 1971389989324 (bitvector 64))	; Register: RSI
+                   (bv 6 (bitvector 64))	; Register: EFLAGS
+                   (bv 18446612985909035028 (bitvector 64))	; PC
+                   ; Opcode
+                   (bv 111 (bitvector 64))
+                   ; Operands
+                   (bv 5395273 (bitvector 64))
+                   (bv 5391448 (bitvector 64))
+))
 
-(define r1_1 (list (bv 176093659177 (bitvector 64))
-                   (bv 1662152343939 (bitvector 64))
-                   (bv 1524713390435 (bitvector 64))
-                   (bv 176093659177 (bitvector 64))
-                   (bv 1984274891214 (bitvector 64))
-                   (bv 335007449166 (bitvector 64))
-                   (bv 66 (bitvector 64))
-                   (bv 18446630612648439811 (bitvector 64))))
+; Instruction: IMUL EBX, EBX
+(define r1_1 (list	 ;Registers
+                   (bv 721554522859 (bitvector 64))	; Register: RAX
+                   (bv 11236 (bitvector 64))	; Register: RBX
+                   (bv 730144440490 (bitvector 64))	; Register: RCX
+                   (bv 107374182398 (bitvector 64))	; Register: RDI
+                   (bv 940597838044 (bitvector 64))	; Register: RDX
+                   (bv 1971389989324 (bitvector 64))	; Register: RSI
+                   (bv 6 (bitvector 64))	; Register: EFLAGS
+                   (bv 18446612985909035031 (bitvector 64))	; PC
+                   ; Opcode
+                   (bv 100010101 (bitvector 64))
+                   ; Operands
+                   (bv 4538968 (bitvector 64))
+                   (bv 4538968 (bitvector 64))
+))
 
 (define r1 (list r1_0 r1_1))
 
