@@ -112,7 +112,7 @@ class X86Generator(ConfigurableGenerator, abc.ABC):
             bin_file_contents = f.read()
 
         # TODO: update to use objdump like above.
-        decoder = iced_x86.Decoder(64, bin_file_contents)
+        decoder = Decoder(64, bin_file_contents)
 
         # TODO: check the differences between address_map and instructions_map.
 
