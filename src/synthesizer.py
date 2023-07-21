@@ -60,7 +60,7 @@ class Synthesizer:
             print(f"[synthesizer] Instr: {instrs[xid-1]} Opcode: {opcodes[xid-1]}")
 
             # Opcode and operand encoding.
-            opcode_bs = bin(opcodes[xid-1])[2:]
+            opcode_bs = bin(opcodes[xid-1])[2:] # Ignore 0b.
             opcode = int(opcode_bs, 2)
 
             operand_bv = ""
@@ -90,7 +90,7 @@ class Synthesizer:
                 regs += indentation + f"(bv {str(-1)} (bitvector 64))\t; Final state\n"
                 # End of archstate object. Add more information, e.g., opcode + operands.
                 regs += indentation + f"; Opcode\n"
-                regs += indentation + f"(bv {instr} (bitvector 64))\n"
+                regs += indentation + f"(bv {opcode} (bitvector 64))\n"
                 regs += indentation + f"; Operands\n"
                 regs += indentation + operand_bv + "))"
 
