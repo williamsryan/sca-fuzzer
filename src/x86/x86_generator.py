@@ -122,11 +122,12 @@ class X86Generator(ConfigurableGenerator, abc.ABC):
             # E.g., 3 --> jmp short 5.
             # print(f"[x86_generator] TEST MAPPING: {instruction.ip} --> {str(instruction)}")
             opcode = instruction.op_code()
+            opcode_int = instruction.code
             # print(f"[x86_generator] Instruction: {instruction} Opcode: {opcode.op_code_string}")
             # address_list.append(instruction.ip)
             test_case.instructions_map[instruction.ip] = str(instruction)
             # test_case.opcode_map[instruction.ip] = str(opcode.op_code_string)
-            opcode_enum = Mnemonic(instruction.mnemonic)
+            opcode_enum = Mnemonic(opcode_int)
             test_case.opcode_map[instruction.ip] = opcode_enum.name
 
         # connect them with instructions in the test case
