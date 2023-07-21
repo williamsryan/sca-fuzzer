@@ -123,6 +123,7 @@
   ; (println "[eval]")
   (destruct expr
     [(IF pred bs) (if (eval-pred pred xstate) (list (eval-bs bs xstate)) EMPTY)]
+    [(IF OPCODE bs) (if (eval-opcode bs xstate) (list (eval-bs bs xstate)) EMPTY)]  ; Test this later.
     [_ EMPTY]))
 
 ; Evaluation function for predicates.
@@ -152,6 +153,7 @@
 
 (define (eval-opcode opcode xstate)
   (log-debug "[eval-opcode] TODO"))
+  ; (list-ref xstate opcode))
 
 ; TODO: update this with our desired constraints for instruction operands.
 (define (eval-operands op1 op2 xstate)
@@ -215,7 +217,7 @@
 ;             returns true if the two xstates produces same observations
 ;                     false otherwise
 (define (obs-equal expr xstate1 xstate2)
-  ; (log-debug "[obs-equal]")
+  ; (log-debug "[obs-equal] ...")
   ; (log-debug (listbv-equal (obs expr xstate1) (obs expr xstate2)))
   (listbv-equal (obs expr xstate1) (obs expr xstate2)))
 
@@ -223,6 +225,7 @@
 ;                returns true if they are the same
 ;                        false otherwise
 (define (listbv-equal bvs1 bvs2)
+  ; (log-debug "[listbv-equal] ...")
   (if (empty? bvs1)
       (if (empty? bvs2) #t #f)
       (if (empty? bvs2)
@@ -335,7 +338,7 @@
 
 (define r1 (list r1_0 r1_1))
 
-(define myexpr (cexpr #:depth 1))
+(define myexpr (cexpr #:depth 1)) ; Note: at depth 2, eval-opcode starts getting called.
 
 (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
                                (diff 1 2 r0 1 2 r1 myexpr)
