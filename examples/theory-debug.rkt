@@ -253,7 +253,7 @@
 
 ; TODO: test later for parsing the updated struct.
 (define (get-regs xstate)
-  (filter (lambda (e1) (eq? (car e1) 'REG)) xstate))
+  (filter (lambda (el) (eq? (car el) 'REG)) xstate))
 
 ; diff() takes the following arguments:
 ;              i,j,i_,j_  : natural numbers such that i <= j and i_ <= j_
