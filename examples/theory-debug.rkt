@@ -82,7 +82,7 @@
     (else #f)))
 
 ; New object that holds register values and instruction together.
-(struct run-step (regs opcode operands)
+(struct run-step (regs opcode oeprands)
   #:constructor-name make-run-step
   #:transparent)
 
@@ -260,92 +260,90 @@
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
   (if (equal? i j)
-      (if (equal? i_ j_) #f
-                         (or (not (empty-obs expr (list-ref r_ i_)))
-                             (diff j j r (+ i_ 1) j_ r_ expr)))
-      (if (equal? i_ j_) (or (not (empty-obs expr (list-ref r i)))
-                             (diff (+ i 1) j r j_ j_ r_ expr))
-                         (or (and (empty-obs expr (list-ref r i))
-                                  (diff (+ i 1) j r i_ j_ r_ expr))
-                             (and (empty-obs expr (list-ref r_ i_))
-                                  (diff i j r (+ i_ 1) j_ r_ expr))
-                            ;  (not (obs-equal expr (run-step-instruction (list-ref r i)) (run-step-instruction (list-ref r_ i_))))
-                             (and (not (empty-obs expr (list-ref r i)))
-                                  (not (empty-obs expr (list-ref r_ i_)))
-                                  (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
+      (if (equal? i_ j_)
+          #f
+          (or (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
+              (diff j j r (+ i_ 1) j_ r_ expr)))
+      (if (equal? i_ j_)
+          (or (not (empty-obs expr (run-step-regs (list-ref r i))))
+              (diff (+ i 1) j r j_ j_ r_ expr))
+          (or (and (empty-obs expr (run-step-regs (list-ref r i)))
+                   (diff (+ i 1) j r i_ j_ r_ expr))
+              (and (empty-obs expr (run-step-regs (list-ref r_ i_)))
+                   (diff i j r (+ i_ 1) j_ r_ expr))
+              ; (not (obs-equal expr (run-step-instruction (list-ref r i))
+              ;                  (run-step-instruction (list-ref r_ i_))))
+              (and (not (empty-obs expr (run-step-regs (list-ref r i))))
+                   (not (empty-obs expr (run-step-regs (list-ref r_ i_))))
+                   (not (obs-equal expr (run-step-regs (list-ref r i))
+                                        (run-step-regs (list-ref r_ i_)))))))))
 
 ; ------------- END-CORE ------------------ ;
 ; Instruction: ADD RSI, RDX
-(define r0_0 (list	 ;Registers
-                   (bv 721554522859 (bitvector 64))	; Register: RAX
-                   (bv 455266533482 (bitvector 64))	; Register: RBX
-                   (bv 730144440490 (bitvector 64))	; Register: RCX
-                   (bv 107374182398 (bitvector 64))	; Register: RDI
-                   (bv 940597838044 (bitvector 64))	; Register: RDX
-                   (bv 1971389989324 (bitvector 64))	; Register: RSI
-                   (bv 6 (bitvector 64))	; Register: EFLAGS
-                   (bv 18446612985909035028 (bitvector 64))	; PC
-                   ; Opcode
-                   (bv 110 (bitvector 64))
-                   ; Operands
-                   (bv 5395273 (bitvector 64))
-                   (bv 5391448 (bitvector 64))
-))
+(define r0_0
+  (make-run-step
+   (list (bv 721554522859 64) ; Register: RAX
+         (bv 455266533482 64) ; Register: RBX
+         (bv 730144440491 64) ; Register: RCX
+         (bv 107374182398 64) ; Register: RDI
+         (bv 940597838044 64) ; Register: RDX
+         (bv 1971389989324 64) ; Register: RSI
+         (bv 6 64) ; Register: EFLAGS
+         (bv 18446612985909035028 64)) ; PC
+   (bv 110 64) ; Opcode
+   (list (bv 5395273 64) (bv 5391448 64)))) ; Operands
 
 ; Instruction: IMUL EBX, EBX
-(define r0_1 (list	 ;Registers
-                   (bv 721554522859 (bitvector 64))	; Register: RAX
-                   (bv 11236 (bitvector 64))	; Register: RBX
-                   (bv 730144440490 (bitvector 64))	; Register: RCX
-                   (bv 107374182398 (bitvector 64))	; Register: RDI
-                   (bv 940597838044 (bitvector 64))	; Register: RDX
-                   (bv 1971389989324 (bitvector 64))	; Register: RSI
-                   (bv 6 (bitvector 64))	; Register: EFLAGS
-                   (bv 18446612985909035031 (bitvector 64))	; PC
-                   ; Opcode
-                   (bv 100010101 (bitvector 64))
-                   ; Operands
-                   (bv 4538968 (bitvector 64))
-                   (bv 4538968 (bitvector 64))
-))
+; (define r0_1 (list	 ;Registers
+;                    (bv 721554522859 (bitvector 64))	; Register: RAX
+;                    (bv 11236 (bitvector 64))	; Register: RBX
+;                    (bv 730144440490 (bitvector 64))	; Register: RCX
+;                    (bv 107374182398 (bitvector 64))	; Register: RDI
+;                    (bv 940597838044 (bitvector 64))	; Register: RDX
+;                    (bv 1971389989324 (bitvector 64))	; Register: RSI
+;                    (bv 6 (bitvector 64))	; Register: EFLAGS
+;                    (bv 18446612985909035031 (bitvector 64))	; PC
+;                    ; Opcode
+;                    (bv 100010101 (bitvector 64))
+;                    ; Operands
+;                    (bv 4538968 (bitvector 64))
+;                    (bv 4538968 (bitvector 64))
+; ))
 
-(define r0 (list r0_0 r0_1))
+(define r0 (list r0_0))
 
 ; Instruction: ADD RSI, RDX
-(define r1_0 (list	 ;Registers
-                   (bv 721554522859 (bitvector 64))	; Register: RAX
-                   (bv 455266533482 (bitvector 64))	; Register: RBX
-                   (bv 730144440490 (bitvector 64))	; Register: RCX
-                   (bv 107374182398 (bitvector 64))	; Register: RDI
-                   (bv 940597838044 (bitvector 64))	; Register: RDX
-                   (bv 1971389989324 (bitvector 64))	; Register: RSI
-                   (bv 6 (bitvector 64))	; Register: EFLAGS
-                   (bv 18446612985909035028 (bitvector 64))	; PC
-                   ; Opcode
-                   (bv 111 (bitvector 64))
-                   ; Operands
-                   (bv 5395273 (bitvector 64))
-                   (bv 5391448 (bitvector 64))
-))
+(define r1_0
+  (make-run-step
+   (list (bv 721554522859 64) ; Register: RAX
+         (bv 455266533482 64) ; Register: RBX
+         (bv 730144440490 64) ; Register: RCX
+         (bv 107374182398 64) ; Register: RDI
+         (bv 940597838044 64) ; Register: RDX
+         (bv 1971389989324 64) ; Register: RSI
+         (bv 6 64) ; Register: EFLAGS
+         (bv 18446612985909035028 64)) ; PC
+   (bv 111 64) ; Opcode
+   (list (bv 5395273 64) (bv 5391448 64)))) ; Operands
 
 ; Instruction: IMUL EBX, EBX
-(define r1_1 (list	 ;Registers
-                   (bv 721554522859 (bitvector 64))	; Register: RAX
-                   (bv 11236 (bitvector 64))	; Register: RBX
-                   (bv 730144440490 (bitvector 64))	; Register: RCX
-                   (bv 107374182398 (bitvector 64))	; Register: RDI
-                   (bv 940597838044 (bitvector 64))	; Register: RDX
-                   (bv 1971389989324 (bitvector 64))	; Register: RSI
-                   (bv 6 (bitvector 64))	; Register: EFLAGS
-                   (bv 18446612985909035031 (bitvector 64))	; PC
-                   ; Opcode
-                   (bv 100010101 (bitvector 64))
-                   ; Operands
-                   (bv 4538968 (bitvector 64))
-                   (bv 4538968 (bitvector 64))
-))
+; (define r1_1 (list	 ;Registers
+;                    (bv 721554522859 (bitvector 64))	; Register: RAX
+;                    (bv 11236 (bitvector 64))	; Register: RBX
+;                    (bv 730144440490 (bitvector 64))	; Register: RCX
+;                    (bv 107374182398 (bitvector 64))	; Register: RDI
+;                    (bv 940597838044 (bitvector 64))	; Register: RDX
+;                    (bv 1971389989324 (bitvector 64))	; Register: RSI
+;                    (bv 6 (bitvector 64))	; Register: EFLAGS
+;                    (bv 18446612985909035031 (bitvector 64))	; PC
+;                    ; Opcode
+;                    (bv 100010101 (bitvector 64))
+;                    ; Operands
+;                    (bv 4538968 (bitvector 64))
+;                    (bv 4538968 (bitvector 64))
+; ))
 
-(define r1 (list r1_0 r1_1))
+(define r1 (list r1_0))
 
 (define myexpr (cexpr #:depth 1)) ; Note: at depth 2, eval-opcode starts getting called.
 
