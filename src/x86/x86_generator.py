@@ -11,7 +11,7 @@ import random
 from typing import List, Dict, Set, Optional, Tuple
 from subprocess import run
 
-import iced_x86
+from iced_x86 import *
 
 from isa_loader import InstructionSet
 from interfaces import TestCase, Operand, RegisterOperand, FlagsOperand, MemoryOperand, \
@@ -126,7 +126,8 @@ class X86Generator(ConfigurableGenerator, abc.ABC):
             # address_list.append(instruction.ip)
             test_case.instructions_map[instruction.ip] = str(instruction)
             # test_case.opcode_map[instruction.ip] = str(opcode.op_code_string)
-            test_case.opcode_map[instruction.ip] = instruction.mnemonic
+            opcode_enum = Mnemonic(instruction.mnemonic)
+            test_case.opcode_map[instruction.ip] = opcode_enum.name
 
         # connect them with instructions in the test case
         address_map: Dict[int, Instruction] = {}
