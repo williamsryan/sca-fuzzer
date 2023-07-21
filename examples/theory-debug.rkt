@@ -32,7 +32,7 @@
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
 (struct OPCODE (bs) #:transparent)
 ; (struct OPERAND (bs) #:transparent)
-(struct OPERANDS (op1 op2) #:transparent)
+; (struct OPERANDS (op1 op2) #:transparent)
 (struct INSTR ())
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
 (struct RS1 ())                         ; Register RS1.
@@ -220,7 +220,7 @@
 ;             returns true if the two xstates produces same observations
 ;                     false otherwise
 (define (obs-equal expr xstate1 xstate2)
-  ; (log-debug "[obs-equal] ...")
+  (log-debug "[obs-equal] ...")
   ; (log-debug (listbv-equal (obs expr xstate1) (obs expr xstate2)))
   (listbv-equal (obs expr xstate1) (obs expr xstate2)))
 
@@ -280,37 +280,30 @@
           #f
           (or (not (empty-obs expr (match (list-ref r_ i_)
                                       [(REG reg) reg]
-                                      [(OPCODE opcode) #f]
-                                      [(OPERANDS op1 op2) #f])))
+                                      [(OPCODE opcode) (bitvector 0)]))) ; Ignore opcode
               (diff j j r (+ i_ 1) j_ r_ expr)))
       (if (equal? i_ j_)
           (or (not (empty-obs expr (match (list-ref r i)
                                       [(REG reg) reg]
-                                      [(OPCODE opcode) #f]
-                                      [(OPERANDS op1 op2) #f])))
+                                      [(OPCODE opcode) (bitvector 0)]))) ; Ignore opcode
               (diff (+ i 1) j r j_ j_ r_ expr))
           (or (and (empty-obs expr (match (list-ref r i)
                                      [(REG reg) reg]
-                                     [(OPCODE opcode) #f]
-                                     [(OPERANDS op1 op2) #f]))
+                                     [(OPCODE opcode) (bitvector 0)])) ; Ignore opcode
                    (diff (+ i 1) j r i_ j_ r_ expr))
               (and (empty-obs expr (match (list-ref r_ i_)
                                      [(REG reg) reg]
-                                     [(OPCODE opcode) #f]
-                                     [(OPERANDS op1 op2) #f]))
+                                     [(OPCODE opcode) (bitvector 0)])) ; Ignore opcode
                    (diff i j r (+ i_ 1) j_ r_ expr))
               (not (obs-equal expr (match (list-ref r i)
                                       [(REG reg) reg]
-                                      [(OPCODE opcode) #f]
-                                      [(OPERANDS op1 op2) #f])
+                                      [(OPCODE opcode) (bitvector 0)])) ; Ignore opcode
                                (match (list-ref r_ i_)
                                       [(REG reg) reg]
-                                      [(OPCODE opcode) #f]
-                                      [(OPERANDS op1 op2) #f])))))))
+                                      [(OPCODE opcode) (bitvector 0)]))))))
 
 ; ------------- END-CORE ------------------ ;
 ; Instruction: ADD RSI, RDX
-; TODO: label each individual list element so subsequent parsing is all done properly.
 (define r0_0 (list	 ;Registers
                    (REG (bv 721554522859 (bitvector 64)))	; Register: RAX
                    (REG (bv 455266533482 (bitvector 64)))	; Register: RBX
