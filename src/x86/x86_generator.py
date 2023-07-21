@@ -125,7 +125,8 @@ class X86Generator(ConfigurableGenerator, abc.ABC):
             # print(f"[x86_generator] Instruction: {instruction} Opcode: {opcode.op_code_string}")
             # address_list.append(instruction.ip)
             test_case.instructions_map[instruction.ip] = str(instruction)
-            test_case.opcode_map[instruction.ip] = str(opcode.op_code_string)
+            # test_case.opcode_map[instruction.ip] = str(opcode.op_code_string)
+            test_case.opcode_map[instruction.ip] = instruction.mnemonic
 
         # connect them with instructions in the test case
         address_map: Dict[int, Instruction] = {}

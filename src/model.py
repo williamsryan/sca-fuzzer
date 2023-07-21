@@ -429,12 +429,13 @@ class UnicornModel(Model, ABC):
         if model.traceable:
             model.tracer.run.observations.append([])
 
-            # Aux code.
-            instr = model.test_case.instructions_map[address -
-                                                     model.code_start]
-            instr_obj = model.test_case.address_map[address - model.code_start]
+            instr_idx = address - model.code_start
 
-            opcode = model.test_case.opcode_map[address - model.code_start]
+            # Aux code.
+            instr = model.test_case.instructions_map[instr_idx]
+            instr_obj = model.test_case.address_map[instr_idx]
+
+            opcode = model.test_case.opcode_map[instr_idx]
 
             # print(f"[model] Instr name: {dbg_instr.name} Instr op: {dbg_instr.get_mem_operands()}")
             # print(f"[model] Instr name: {dbg_instr.name} Instr op: {dbg_instr.operands}")
