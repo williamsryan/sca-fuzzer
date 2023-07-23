@@ -103,7 +103,7 @@
                 (AND (pred) (pred))
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
-                (OPCODE (bv 64)) ; (?? (bitvector (?? integer?))) || BS || pred
+                (OPCODE (?? integer?)) ; (?? (bitvector (?? integer?))) || BS || pred
                 ; (INSTR (bs) (OPERANDS))
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
@@ -134,7 +134,7 @@
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
-            [(OPCODE op) (log-debug "Got an opcode") (eval-opcode op)]
+            [(OPCODE op) (eval-opcode op)]
             [bs (log-error "Got an unknown pred") (log-error bs) #f]))
             ; [(INSTR opcode ops) (eval-instr opcode ops xstate)]))
 
@@ -152,10 +152,11 @@
             ))
 
 (define (eval-opcode opcode)
-  (log-debug "[eval-opcode]")
+  ; (log-debug "[eval-opcode]")
+  ; (log-debug opcode)
   (match opcode
-    [(bv op (bitvector 64)) ; Match the bitvector value.
-      (list 'OPCODE op)]    ; Return the bv value of the opcode.
+    [op ; Match the integer value.
+      (list 'OPCODE op)] ; Return the opcode as an integer.
     [_ (log-error "Got unknown opcode") #f]))
 
 ; TODO: update this with our desired constraints for instruction operands.
@@ -258,7 +259,7 @@
   (define (process-item item)
     (match item
       [(REG reg) reg]
-      [(OPCODE opcode) (eval-opcode opcode)]    ; Don't check for diff like with registers.
+      [(OPCODE opcode) #f]    ; Don't check for diff like with registers.
       [(OPERAND operand) #f]  ; TODO: utilize this later.
       [_ (log-error "Got an unknown struct")]))
 
@@ -268,12 +269,12 @@
 ;              i,j,i_,j_  : natural numbers such that i <= j and i_ <= j_
 ;              r, r_      : two run objects
 ;              expr       : our grammar expression
-;
+;eval
 ;        returns true if the trace produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
   ; (log-debug expr)
-  (log-debug (get-structs (list-ref r i)))
+  ; (log-debug (get-structs (list-ref r i)))
   (if (equal? i j)
       (if (equal? i_ j_) #f
                          (or (not (empty-obs expr (get-structs (list-ref r_ i_))))
@@ -294,14 +295,14 @@
 (define r0_0 (list	 ;Registers
                    (REG (bv 721554522859 (bitvector 64)))	; Register: RAX
                    (REG (bv 455266533482 (bitvector 64)))	; Register: RBX
-                   (REG (bv 730144440491 (bitvector 64)))	; Register: RCX ; FOR TESTING: leak is here.
+                   (REG (bv 730144440490 (bitvector 64)))	; Register: RCX
                    (REG (bv 107374182398 (bitvector 64)))	; Register: RDI
                    (REG (bv 940597838044 (bitvector 64)))	; Register: RDX
                    (REG (bv 1971389989324 (bitvector 64)))	; Register: RSI
-                   (REG (bv 6 (bitvector 64)))	; Register: EFLAGS
+                   (REG (bv 61 (bitvector 64)))	; Register: EFLAGS          ; FOR TESTING: leak is here.
                    (REG (bv 18446612985909035028 (bitvector 64)))	; PC
                    ; Opcode
-                   (OPCODE (bv 110 (bitvector 64)))
+                   (OPCODE 110)
                    ; Operands
                    (OPERAND (bv 5395273 (bitvector 64)))
                    (OPERAND (bv 5391448 (bitvector 64)))
@@ -318,7 +319,7 @@
                    (REG (bv 6 (bitvector 64)))	; Register: EFLAGS
                    (REG (bv 18446612985909035028 (bitvector 64)))	; PC
                    ; Opcode
-                   (OPCODE (bv 100010101 (bitvector 64)))
+                   (OPCODE 100010101)
                    ; Operands
                    (OPERAND (bv 4538968 (bitvector 64)))
                    (OPERAND (bv 4538968 (bitvector 64)))
@@ -337,7 +338,7 @@
                    (REG (bv 6 (bitvector 64)))	; Register: EFLAGS
                    (REG (bv 18446612985909035028 (bitvector 64)))	; PC
                    ; Opcode
-                   (OPCODE (bv 111 (bitvector 64)))
+                   (OPCODE 111)
                    ; Operands
                    (OPERAND (bv 5395273 (bitvector 64)))
                    (OPERAND (bv 5391448 (bitvector 64)))
@@ -354,7 +355,7 @@
                    (REG (bv 6 (bitvector 64)))	; Register: EFLAGS
                    (REG (bv 18446612985909035028 (bitvector 64)))	; PC
                    ; Opcode
-                   (OPCODE (bv 100010101 (bitvector 64)))
+                   (OPCODE 100010101)
                    ; Operands
                    (OPERAND (bv 4538968 (bitvector 64)))
                    (OPERAND (bv 4538968 (bitvector 64)))
