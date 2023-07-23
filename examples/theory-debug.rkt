@@ -135,7 +135,7 @@
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
-            [(OPCODE op) (eval-opcode op)]
+            [(OPCODE op) (eval-opcode op xstate)]
             [bs (log-error "Got an unknown pred") (log-error bs) #f]))
             ; [(INSTR opcode ops) (eval-instr opcode ops xstate)]))
 
@@ -156,6 +156,7 @@
   ; (log-debug "[eval-opcode]")
   ; (log-debug opcode)
   (match opcode
+    [(OPCODE op) (log-debug "Got a different op?")]
     [op
      (list 'OPCODE op)] ; Return the opcode as an integer.
     [_ (log-error "Got unknown opcode") #f]))
@@ -198,7 +199,8 @@
 
 ; Evaluation function for registers.
 (define (eval-reg reg xstate)
-  ; (log-debug "[eval-reg]")
+  (log-debug "[eval-reg]")
+  (log-debug (list-ref xstate reg))
   (list-ref xstate reg))
 
 ; obs() takes an expression and a xstate
