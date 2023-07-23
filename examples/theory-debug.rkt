@@ -135,7 +135,8 @@
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
-            [(OPCODE op) (eval-opcode op xstate)]))
+            [(OPCODE op) (eval-opcode op xstate)]
+            [bs (log-error "Got an unknown pred") (log-error bs)]))
             ; [(INSTR opcode ops) (eval-instr opcode ops xstate)]))
 
 ; Evaluation function for bit sequences.
@@ -253,13 +254,13 @@
 
 ; TODO: test later for parsing the updated struct.
 (define (get-structs xstate)
-  (log-debug "[get-structs]")
+  ; (log-debug "[get-structs]")
   (define (process-item item)
     (match item
       [(REG reg) reg]
-      [(OPCODE opcode) #f]
+      [(OPCODE opcode) opcode]
       [(OPERAND operand) #f]
-      [_ (log-debug "Got an unknown structure")]))
+      [_ (log-error "Got an unknown structure")]))
 
   (map process-item xstate))
 
@@ -271,7 +272,7 @@
 ;        returns true if the trace produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
-  ; (get-structs (list-ref r i))
+  (log-debug (get-structs (list-ref r i)))
   (if (equal? i j)
       (if (equal? i_ j_) #f
                          (or (not (empty-obs expr (get-structs (list-ref r_ i_))))
