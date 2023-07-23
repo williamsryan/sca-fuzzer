@@ -271,7 +271,7 @@
     (match item
       [(REG reg) reg]
       [(OPCODE opcode) opcode]    ; Don't check for diff like with registers.
-      [(OPERAND operand) #f]  ; TODO: utilize this later.
+      [(OPERAND operand) #f]      ; TODO: utilize this later.
       [_ (log-error "Got an unknown struct")]))
 
   (map process-item xstate))
@@ -295,6 +295,8 @@
                          (or (and (empty-obs expr (get-structs (list-ref r i)))
                                   (diff (+ i 1) j r i_ j_ r_ expr))
                              (and (empty-obs expr (get-structs (list-ref r_ i_)))
+                                  (diff i j r (+ i_ 1) j_ r_ expr))
+                             (and (opcode-equal (get-structs (list-ref r_ i_)))
                                   (diff i j r (+ i_ 1) j_ r_ expr))
                             ;  (not (obs-equal expr (run-step-instruction (list-ref r i)) (run-step-instruction (list-ref r_ i_))))
                              (and (not (empty-obs expr (get-structs (list-ref r i))))
