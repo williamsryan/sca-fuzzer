@@ -50,14 +50,14 @@
 (struct INTEGER (value) #:transparent)
 
 ; Some logging stuff.
-(define (log-info message)
-  (printf "[INFO]: ~a\n" message))
+(define (log-info . messages)
+  (apply printf "[INFO]: ~a\n" messages))
 
-(define (log-debug message)
-  (printf "[DEBUG]: ~a\n" message))
+(define (log-debug . messages)
+  (apply printf "[DEBUG]: ~a\n" messages))
 
-(define (log-error message)
-  (printf "[ERROR]: ~a\n" message))
+(define (log-error . messages)
+  (apply printf "[ERROR]: ~a\n" messages))
 
 ;; Helper function to get the register name from the register index.
 (define (get-register-name reg-index registers)
@@ -135,8 +135,8 @@
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
-            [(OPCODE op) (eval-opcode op xstate)]
-            [bs (log-error "Got an unknown pred") (log-error bs)]))
+            [(OPCODE op) (eval-opcode xstate)]
+            [bs (log-error "Got an unknown pred") (log-error bs) #f]))
             ; [(INSTR opcode ops) (eval-instr opcode ops xstate)]))
 
 ; Evaluation function for bit sequences.
@@ -153,11 +153,12 @@
             ))
 
 (define (eval-opcode opcode)
+  ; (log-debug "[eval-opcode]")
   (match opcode
     [(bv 110 (bitvector 64)) (list 'OPCODE 110)]
     [(bv 111 (bitvector 64)) (list 'OPCODE 111)]
     [(bv 100010101 (bitvector 64)) (list 'OPCODE 100010101)]
-    [_ (log-error "Got unknown opcode")]))
+    [_ (log-error "Got unknown opcode") #f]))
 
 ; TODO: update this with our desired constraints for instruction operands.
 (define (eval-operands op1 op2 xstate)
@@ -259,8 +260,8 @@
   (define (process-item item)
     (match item
       [(REG reg) reg]
-      [(OPCODE opcode) (eval-opcode opcode)]
-      [(OPERAND operand) #f]
+      [(OPCODE opcode) (eval-opcode opcode)]  ; Don't check for diff like with registers.
+      [(OPERAND operand) #f]                  ; TODO: utilize this later.
       [_ (log-error "Got an unknown structure")]))
 
   (map process-item xstate))
@@ -273,7 +274,7 @@
 ;        returns true if the trace produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
-  ; (log-debug (get-structs (list-ref r i)))
+  (log-debug (get-structs (list-ref r i)))
   (if (equal? i j)
       (if (equal? i_ j_) #f
                          (or (not (empty-obs expr (get-structs (list-ref r_ i_))))
@@ -294,7 +295,7 @@
 (define r0_0 (list	 ;Registers
                    (REG (bv 721554522859 (bitvector 64)))	; Register: RAX
                    (REG (bv 455266533482 (bitvector 64)))	; Register: RBX
-                   (REG (bv 730144440491 (bitvector 64)))	; Register: RCX
+                   (REG (bv 730144440491 (bitvector 64)))	; Register: RCX ; FOR TESTING: leak is here.
                    (REG (bv 107374182398 (bitvector 64)))	; Register: RDI
                    (REG (bv 940597838044 (bitvector 64)))	; Register: RDX
                    (REG (bv 1971389989324 (bitvector 64)))	; Register: RSI
