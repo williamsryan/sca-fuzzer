@@ -152,11 +152,12 @@
             ; [_ (log-error "Invalid expression for bitstring observation")]
             ))
 
-(define (eval-opcode opcode xstate)
-  (log-debug "[eval-opcode] :")
-  (log-debug (list-ref xstate 8))
-  (list-ref xstate 8))  ; List index 8 contains the OPCODE.
-  ; (list-ref xstate opcode))
+(define (eval-opcode opcode)
+  (match opcode
+    [(bv 110 (bitvector 64)) (list 'OPCODE 110)]
+    [(bv 111 (bitvector 64)) (list 'OPCODE 111)]
+    [(bv 100010101 (bitvector 64)) (list 'OPCODE 100010101)]
+    [_ (log-error "Got unknown opcode")]))
 
 ; TODO: update this with our desired constraints for instruction operands.
 (define (eval-operands op1 op2 xstate)
@@ -258,7 +259,7 @@
   (define (process-item item)
     (match item
       [(REG reg) reg]
-      [(OPCODE opcode) opcode]
+      [(OPCODE opcode) (eval-opcode opcode)]
       [(OPERAND operand) #f]
       [_ (log-error "Got an unknown structure")]))
 
