@@ -104,7 +104,7 @@
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
                 ; (OPCODE (?? integer?)) ; (?? (bitvector (?? integer?))) || BS || pred
-                (OPCODE (?? (bitvector (16))))
+                (OPCODE (bv (?? integer?) (bitvector (16))))
                 ; (INSTR (bs) (OPERANDS))
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
@@ -153,10 +153,10 @@
             ))
 
 (define (eval-opcode opcode xstate)
-  (log-debug "[eval-opcode]")
+  ; (log-debug "[eval-opcode]")
   ; (log-debug opcode)
   (match opcode
-    [(OPCODE bv) bv]
+    [bv bv]
     [_ (log-error "Invalid opcode")]))
   ; (define opcode-value (match opcode
   ;                       [bv bv]
@@ -269,7 +269,7 @@
   (define (process-item item)
     (match item
       [(REG reg) reg]
-      [(OPCODE opcode) opcode]    ; Don't check for diff like with registers.
+      [(OPCODE opcode) (eval-opcode opcode xstate)]    ; Don't check for diff like with registers.
       [(OPERAND operand) #f]  ; TODO: utilize this later.
       [_ (log-error "Got an unknown struct")]))
 
