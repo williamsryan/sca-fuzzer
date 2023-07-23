@@ -135,7 +135,7 @@
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
-            [(OPCODE op) (log-debug "Got an opcode") (eval-opcode op xstate)]
+            [(OPCODE op) (log-debug "Got an opcode") (eval-opcode op)]
             [bs (log-error "Got an unknown pred") (log-error bs) #f]))
             ; [(INSTR opcode ops) (eval-instr opcode ops xstate)]))
 
@@ -145,18 +145,18 @@
             [(BS b) b]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b xstate))]
             [(REG reg) (eval-reg reg xstate)]
-            ; [(OPCODE op) (eval-opcode op xstate)]
             [INSTR (eval-reg PC xstate)]
             ; [(OPERANDS op1 op2) (eval-operands op1 op2 xstate)]
             ; [(OPERAND op) (eval-operand op xstate)]
             ; [_ (log-error "Invalid expression for bitstring observation")]
             ))
 
-(define (eval-opcode opcode xstate)
+(define (eval-opcode opcode)
   ; (log-debug "[eval-opcode]")
   (match opcode
-    [(bv op (bitvector 64)) ; Match the bitvector value.
-      (list 'OPCODE (bv op (bitvector 64)))]  ; Return the bv value of the opcode.
+    [(bv 110 (bitvector 64)) (list 'OPCODE 110)]
+    [(bv 111 (bitvector 64)) (list 'OPCODE 111)]
+    [(bv 100010101 (bitvector 64)) (list 'OPCODE 100010101)]
     [_ (log-error "Got unknown opcode") #f]))
 
 ; TODO: update this with our desired constraints for instruction operands.
@@ -253,15 +253,15 @@
         (list 'OPCODE opcode-val)
         (list 'REG reg-val)))
 
-; TODO: test later for parsing the updated struct.
+; Extract the list of struct values from the xstate (REG, OPCODE, OPERAND).
 (define (get-structs xstate)
   ; (log-debug "[get-structs]")
   (define (process-item item)
     (match item
       [(REG reg) reg]
-      [(OPCODE opcode) (eval-opcode opcode xstate)]  ; Don't check for diff like with registers.
-      [(OPERAND operand) #f]                  ; TODO: utilize this later.
-      [_ (log-error "Got an unknown structure")]))
+      [(OPCODE opcode) (eval-opcode opcode)]    ; Don't check for diff like with registers.
+      [(OPERAND operand) #f]  ; TODO: utilize this later.
+      [_ (log-error "Got an unknown struct")]))
 
   (map process-item xstate))
 
