@@ -270,11 +270,17 @@
   (define (process-item item)
     (match item
       [(REG reg) reg]
-      [(OPCODE opcode) opcode]    ; Don't check for diff like with registers.
+      [(OPCODE opcode) #f]    ; Don't check for diff like with registers.
       [(OPERAND operand) #f]      ; TODO: utilize this later.
       [_ (log-error "Got an unknown struct")]))
 
   (map process-item xstate))
+
+(define (opcode-equal r r_)
+  (define op1 (car (get-structs r)))
+  (define op2 (car (get-structs r_)))
+  
+  (equal? op1 op2))
 
 ; diff() takes the following arguments:
 ;              i,j,i_,j_  : natural numbers such that i <= j and i_ <= j_
@@ -296,9 +302,9 @@
                                   (diff (+ i 1) j r i_ j_ r_ expr))
                              (and (empty-obs expr (get-structs (list-ref r_ i_)))
                                   (diff i j r (+ i_ 1) j_ r_ expr))
-                             (and (opcode-equal (get-structs (list-ref r i)) (get-structs (list-ref r_ i_))))
                             ;  (not (obs-equal expr (run-step-instruction (list-ref r i)) (run-step-instruction (list-ref r_ i_))))
-                             (and (not (empty-obs expr (get-structs (list-ref r i))))
+                             (and (opcode-equal (list-ref r i) (list-ref r_ i_))
+                                  (not (empty-obs expr (get-structs (list-ref r i))))
                                   (not (empty-obs expr (get-structs (list-ref r_ i_))))
                                   (not (obs-equal expr (get-structs (list-ref r i)) (get-structs (list-ref r_ i_)))))))))
 
