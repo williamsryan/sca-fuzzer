@@ -222,7 +222,7 @@
 ;             returns true if the two xstates produces same observations
 ;                     false otherwise
 (define (obs-equal expr xstate1 xstate2)
-  (log-debug "[obs-equal] ...")
+  ; (log-debug "[obs-equal] ...")
   ; (log-debug (listbv-equal (obs expr xstate1) (obs expr xstate2)))
   (listbv-equal (obs expr xstate1) (obs expr xstate2)))
 
@@ -273,7 +273,7 @@
 ;        returns true if the trace produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
-  (log-debug (get-structs (list-ref r i)))
+  ; (log-debug (get-structs (list-ref r i)))
   (if (equal? i j)
       (if (equal? i_ j_) #f
                          (or (not (empty-obs expr (get-structs (list-ref r_ i_))))
@@ -294,7 +294,7 @@
 (define r0_0 (list	 ;Registers
                    (REG (bv 721554522859 (bitvector 64)))	; Register: RAX
                    (REG (bv 455266533482 (bitvector 64)))	; Register: RBX
-                   (REG (bv 730144440490 (bitvector 64)))	; Register: RCX
+                   (REG (bv 730144440491 (bitvector 64)))	; Register: RCX
                    (REG (bv 107374182398 (bitvector 64)))	; Register: RDI
                    (REG (bv 940597838044 (bitvector 64)))	; Register: RDX
                    (REG (bv 1971389989324 (bitvector 64)))	; Register: RSI
