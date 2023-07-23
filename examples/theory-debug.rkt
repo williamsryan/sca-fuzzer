@@ -155,10 +155,9 @@
 (define (eval-opcode opcode xstate)
   ; (log-debug "[eval-opcode]")
   (match opcode
-    [(bv 110 (bitvector 64)) (list 'OPCODE 110)]
-    [(bv 111 (bitvector 64)) (list 'OPCODE 111)]
-    [(bv 100010101 (bitvector 64)) (list 'OPCODE 100010101)]
-    [bs (log-error "Got unknown opcode") #f]))
+    [(bv op (bitvector 64)) ; Match the bitvector value.
+      (list 'OPCODE (bv op (bitvector 64)))]  ; Return the bv value of the opcode.
+    [_ (log-error "Got unknown opcode") #f]))
 
 ; TODO: update this with our desired constraints for instruction operands.
 (define (eval-operands op1 op2 xstate)
