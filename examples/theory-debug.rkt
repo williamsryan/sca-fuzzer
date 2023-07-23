@@ -103,8 +103,8 @@
                 (AND (pred) (pred))
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
-                (OPCODE (?? integer?)) ; (?? (bitvector (?? integer?))) || BS || pred
-                ; (OPCODE (?? (bitvector (?? integer?))))
+                ; (OPCODE (?? integer?)) ; (?? (bitvector (?? integer?))) || BS || pred
+                (OPCODE (?? (bitvector (16))))
                 ; (INSTR (bs) (OPERANDS))
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
@@ -112,7 +112,7 @@
               ; (ADDR (?? integer?))
               ; (OPERANDS (?? integer?) (?? integer?)) ; Moving OPERANDS to part of INSTR.
               (REG (?? integer?))
-              INSTR
+              ; INSTR
               )]
   )
 
@@ -152,14 +152,21 @@
             ; [_ (log-error "Invalid expression for bitstring observation")]
             ))
 
-(define (eval-opcode opcode)
-  ; (log-debug "[eval-opcode]")
+(define (eval-opcode opcode xstate)
+  (log-debug "[eval-opcode]")
   ; (log-debug opcode)
   (match opcode
-    [(OPCODE op) (log-debug "Got a different op?")]
-    [op
-     (list 'OPCODE op)] ; Return the opcode as an integer.
-    [_ (log-error "Got unknown opcode") #f]))
+    [(OPCODE bv) bv]
+    [_ (log-error "Invalid opcode")]))
+  ; (define opcode-value (match opcode
+  ;                       [bv bv]
+  ;                       [_ (log-error "Invalid opcode")]))
+  ; (define pc-value (match (list-ref xstate 7)
+  ;                       [(REG bv) bv]
+  ;                       [_ (log-error "Invalid PC")]))
+
+  ; (log-debug opcode-value)
+  ; (bveq opcode-value pc-value))
 
 ; TODO: update this with our desired constraints for instruction operands.
 (define (eval-operands op1 op2 xstate)
@@ -199,8 +206,8 @@
 
 ; Evaluation function for registers.
 (define (eval-reg reg xstate)
-  (log-debug "[eval-reg]")
-  (log-debug (list-ref xstate reg))
+  ; (log-debug "[eval-reg]")
+  ; (log-debug (list-ref xstate reg))
   (list-ref xstate reg))
 
 ; obs() takes an expression and a xstate
@@ -262,7 +269,7 @@
   (define (process-item item)
     (match item
       [(REG reg) reg]
-      [(OPCODE opcode) (eval-opcode opcode)]    ; Don't check for diff like with registers.
+      [(OPCODE opcode) opcode]    ; Don't check for diff like with registers.
       [(OPERAND operand) #f]  ; TODO: utilize this later.
       [_ (log-error "Got an unknown struct")]))
 
@@ -305,7 +312,7 @@
                    (REG (bv 61 (bitvector 64)))	; Register: EFLAGS          ; FOR TESTING: leak is here.
                    (REG (bv 18446612985909035028 (bitvector 64)))	; PC
                    ; Opcode
-                   (OPCODE 110)
+                   (OPCODE (bv 111 (bitvector 16)))
                    ; Operands
                    (OPERAND (bv 5395273 (bitvector 64)))
                    (OPERAND (bv 5391448 (bitvector 64)))
@@ -322,7 +329,7 @@
                    (REG (bv 6 (bitvector 64)))	; Register: EFLAGS
                    (REG (bv 18446612985909035028 (bitvector 64)))	; PC
                    ; Opcode
-                   (OPCODE 100010101)
+                   (OPCODE (bv 100010101 (bitvector 16)))
                    ; Operands
                    (OPERAND (bv 4538968 (bitvector 64)))
                    (OPERAND (bv 4538968 (bitvector 64)))
@@ -341,7 +348,7 @@
                    (REG (bv 6 (bitvector 64)))	; Register: EFLAGS
                    (REG (bv 18446612985909035028 (bitvector 64)))	; PC
                    ; Opcode
-                   (OPCODE 111)
+                   (OPCODE (bv 111 (bitvector 16)))
                    ; Operands
                    (OPERAND (bv 5395273 (bitvector 64)))
                    (OPERAND (bv 5391448 (bitvector 64)))
@@ -358,7 +365,7 @@
                    (REG (bv 6 (bitvector 64)))	; Register: EFLAGS
                    (REG (bv 18446612985909035028 (bitvector 64)))	; PC
                    ; Opcode
-                   (OPCODE 100010101)
+                   (OPCODE (bv 100010101 (bitvector 16)))
                    ; Operands
                    (OPERAND (bv 4538968 (bitvector 64)))
                    (OPERAND (bv 4538968 (bitvector 64)))
@@ -366,7 +373,7 @@
 
 (define r1 (list r1_0 r1_1))
 
-(define myexpr (cexpr #:depth 1)) ; Note: need depth 2 to reach clauses like OPCODE as a predicate.
+(define myexpr (cexpr #:depth 2)) ; Note: need depth 2 to reach clauses like OPCODE as a predicate.
 
 (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
                                (diff 1 2 r0 1 2 r1 myexpr)
