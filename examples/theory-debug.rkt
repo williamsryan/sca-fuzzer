@@ -256,9 +256,9 @@
   (log-debug "[get-structs]")
   (define (process-item item)
     (match item
-      [(REG reg) (log-debug "Got a REG")]
-      [(OPCODE opcode) (log-debug "Got an OPCODE")]
-      [(OPERAND operand) (log-debug "Got an OPERAND")]
+      [(REG reg) reg]
+      [(OPCODE opcode) #f]
+      [(OPERAND operand) #f]
       [_ (log-debug "Got an unknown structure")]))
 
   (map process-item xstate))
@@ -271,21 +271,21 @@
 ;        returns true if the trace produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
-  (get-structs (list-ref r i))
+  ; (get-structs (list-ref r i))
   (if (equal? i j)
       (if (equal? i_ j_) #f
-                         (or (not (empty-obs expr (list-ref r_ i_)))
+                         (or (not (empty-obs expr (get-structs (list-ref r_ i_))))
                              (diff j j r (+ i_ 1) j_ r_ expr)))
-      (if (equal? i_ j_) (or (not (empty-obs expr (list-ref r i)))
+      (if (equal? i_ j_) (or (not (empty-obs expr (get-structs (list-ref r i))))
                              (diff (+ i 1) j r j_ j_ r_ expr))
-                         (or (and (empty-obs expr (list-ref r i))
+                         (or (and (empty-obs expr (get-structs (list-ref r i)))
                                   (diff (+ i 1) j r i_ j_ r_ expr))
-                             (and (empty-obs expr (list-ref r_ i_))
+                             (and (empty-obs expr (get-structs (list-ref r_ i_)))
                                   (diff i j r (+ i_ 1) j_ r_ expr))
                             ;  (not (obs-equal expr (run-step-instruction (list-ref r i)) (run-step-instruction (list-ref r_ i_))))
-                             (and (not (empty-obs expr (list-ref r i)))
-                                  (not (empty-obs expr (list-ref r_ i_)))
-                                  (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
+                             (and (not (empty-obs expr (get-structs (list-ref r i))))
+                                  (not (empty-obs expr (get-structs (list-ref r_ i_))))
+                                  (not (obs-equal expr (get-structs (list-ref r i)) (get-structs (list-ref r_ i_)))))))))
 
 ; ------------- END-CORE ------------------ ;
 ; Instruction: ADD RSI, RDX
@@ -372,12 +372,5 @@
 ; Dummy tests.
 ; (define reg-test (cdr (get-regs r0_0)))
 ; (log-debug "TEST")
-; (define (test-func i j r)
-;   (log-debug r)
-;   (match (list-ref r i)
-;     [(REG reg) reg]
-;     [(OPCODE opcode) opcode]
-;     [(OPERAND operand) operand]))
-; (log-debug (test-func 0 1 r0))
 ; (diff 0 1 r0 0 1 r1 myexpr)
 ; (diff 1 2 r0 1 2 r1 myexpr)
