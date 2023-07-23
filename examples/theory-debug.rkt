@@ -127,8 +127,8 @@
 
 ; Evaluation function for predicates.
 (define (eval-pred pred xstate)
-  (log-debug "[eval-pred]")
-  (log-debug pred)
+  ; (log-debug "[eval-pred]")
+  ; (log-debug pred)
   (destruct pred
             [(BOOL b) b]
             [(NOT some-p) (not (eval-pred some-p xstate))]
@@ -155,7 +155,7 @@
 (define (eval-opcode opcode xstate)
   ; (log-debug "[eval-opcode]")
   (match opcode
-    [(bv 110 (bitvector 64)) (eval-pred opcode xstate)]
+    [(bv 110 (bitvector 64)) (list 'OPCODE 110)]
     [(bv 111 (bitvector 64)) (list 'OPCODE 111)]
     [(bv 100010101 (bitvector 64)) (list 'OPCODE 100010101)]
     [_ (log-error "Got unknown opcode") #f]))
