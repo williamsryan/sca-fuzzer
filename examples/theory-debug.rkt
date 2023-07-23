@@ -103,7 +103,7 @@
                 (AND (pred) (pred))
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
-                (OPCODE (bs)) ; (?? (bitvector (?? integer?))) || BS
+                (OPCODE (bs)) ; (?? (bitvector (?? integer?))) || BS || pred
                 ; (INSTR (bs) (OPERANDS))
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
@@ -158,7 +158,7 @@
     [(bv 110 (bitvector 64)) (list 'OPCODE 110)]
     [(bv 111 (bitvector 64)) (list 'OPCODE 111)]
     [(bv 100010101 (bitvector 64)) (list 'OPCODE 100010101)]
-    [_ (log-error "Got unknown opcode") #f]))
+    [bs (log-error "Got unknown opcode") #f]))
 
 ; TODO: update this with our desired constraints for instruction operands.
 (define (eval-operands op1 op2 xstate)
