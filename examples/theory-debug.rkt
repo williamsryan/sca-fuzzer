@@ -104,6 +104,7 @@
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
                 (OPCODE (?? integer?)) ; (?? (bitvector (?? integer?))) || BS || pred
+                ; (OPCODE (?? (bitvector (?? integer?))))
                 ; (INSTR (bs) (OPERANDS))
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
@@ -155,8 +156,8 @@
   ; (log-debug "[eval-opcode]")
   ; (log-debug opcode)
   (match opcode
-    [op ; Match the integer value.
-      (list 'OPCODE op)] ; Return the opcode as an integer.
+    [op
+     (list 'OPCODE op)] ; Return the opcode as an integer.
     [_ (log-error "Got unknown opcode") #f]))
 
 ; TODO: update this with our desired constraints for instruction operands.
@@ -259,7 +260,7 @@
   (define (process-item item)
     (match item
       [(REG reg) reg]
-      [(OPCODE opcode) #f]    ; Don't check for diff like with registers.
+      [(OPCODE opcode) (eval-opcode opcode)]    ; Don't check for diff like with registers.
       [(OPERAND operand) #f]  ; TODO: utilize this later.
       [_ (log-error "Got an unknown struct")]))
 
@@ -274,7 +275,7 @@
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
   ; (log-debug expr)
-  ; (log-debug (get-structs (list-ref r i)))
+  (log-debug (get-structs (list-ref r i)))
   (if (equal? i j)
       (if (equal? i_ j_) #f
                          (or (not (empty-obs expr (get-structs (list-ref r_ i_))))
@@ -363,7 +364,7 @@
 
 (define r1 (list r1_0 r1_1))
 
-(define myexpr (cexpr #:depth 2)) ; Note: need depth 2 to reach clauses like OPCODE as a predicate.
+(define myexpr (cexpr #:depth 1)) ; Note: need depth 2 to reach clauses like OPCODE as a predicate.
 
 (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
                                (diff 1 2 r0 1 2 r1 myexpr)
