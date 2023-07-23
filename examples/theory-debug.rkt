@@ -103,7 +103,7 @@
                 (AND (pred) (pred))
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
-                (OPCODE (?? (bitvector (?? integer?)))) ; (?? (bitvector (?? integer?))) || BS || pred
+                (OPCODE (bv 64)) ; (?? (bitvector (?? integer?))) || BS || pred
                 ; (INSTR (bs) (OPERANDS))
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
@@ -145,6 +145,7 @@
             [(BS b) b]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b xstate))]
             [(REG reg) (eval-reg reg xstate)]
+            ; [(OPCODE op) (log-debug "Got an opcode") (eval-opcode op xstate)]
             [INSTR (eval-reg PC xstate)]
             ; [(OPERANDS op1 op2) (eval-operands op1 op2 xstate)]
             ; [(OPERAND op) (eval-operand op xstate)]
@@ -152,7 +153,7 @@
             ))
 
 (define (eval-opcode opcode xstate)
-  ; (log-debug "[eval-opcode]")
+  (log-debug "[eval-opcode]")
   (match opcode
     [(bv op (bitvector 64)) ; Match the bitvector value.
       (list 'OPCODE (bv op (bitvector 64)))]  ; Return the bv value of the opcode.
@@ -258,7 +259,7 @@
   (define (process-item item)
     (match item
       [(REG reg) reg]
-      [(OPCODE opcode) (eval-opcode opcode xstate)]    ; Don't check for diff like with registers.
+      [(OPCODE opcode) #f]    ; Don't check for diff like with registers.
       [(OPERAND operand) #f]  ; TODO: utilize this later.
       [_ (log-error "Got an unknown struct")]))
 
@@ -272,6 +273,7 @@
 ;        returns true if the trace produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
+  (log-debug expr)
   (log-debug (get-structs (list-ref r i)))
   (if (equal? i j)
       (if (equal? i_ j_) #f
@@ -361,7 +363,7 @@
 
 (define r1 (list r1_0 r1_1))
 
-(define myexpr (cexpr #:depth 1)) ; Note: at depth 2, eval-opcode starts getting called.
+(define myexpr (cexpr #:depth 2)) ; Note: at depth 2, eval-opcode starts getting called.
 
 (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
                                (diff 1 2 r0 1 2 r1 myexpr)
