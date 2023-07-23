@@ -31,7 +31,7 @@
 ; Struct definitions for our contract language.
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
 (struct OPCODE (bs) #:transparent)
-; (struct OPERAND (bs) #:transparent)
+(struct OPERAND (bs) #:transparent)
 ; (struct OPERANDS (op1 op2) #:transparent)
 (struct INSTR ())
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
@@ -252,8 +252,16 @@
         (list 'REG reg-val)))
 
 ; TODO: test later for parsing the updated struct.
-(define (get-regs xstate)
-  (filter (lambda (el) (eq? (car el) 'REG)) xstate))
+(define (get-structs xstate)
+  (log-debug "[get-structs]")
+  (define (process-item item)
+    (match item
+      [(REG reg) (log-debug "Got a REG")]
+      [(OPCODE opcode) (log-debug "Got an OPCODE")]
+      [(OPERAND operand) (log-debug "Got an OPERAND")]
+      [_ (log-debug "Got an unknown structure")]))
+
+  (map process-item xstate))
 
 ; diff() takes the following arguments:
 ;              i,j,i_,j_  : natural numbers such that i <= j and i_ <= j_
@@ -263,6 +271,7 @@
 ;        returns true if the trace produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
+  (get-structs (list-ref r i))
   (if (equal? i j)
       (if (equal? i_ j_) #f
                          (or (not (empty-obs expr (list-ref r_ i_)))
@@ -292,8 +301,8 @@
                    ; Opcode
                    (OPCODE (bv 110 (bitvector 64)))
                    ; Operands
-                   (bv 5395273 (bitvector 64))
-                   (bv 5391448 (bitvector 64))
+                   (OPERAND (bv 5395273 (bitvector 64)))
+                   (OPERAND (bv 5391448 (bitvector 64)))
 ))
 
 ; Instruction: IMUL EBX, EBX
@@ -309,8 +318,8 @@
                    ; Opcode
                    (OPCODE (bv 100010101 (bitvector 64)))
                    ; Operands
-                   (bv 4538968 (bitvector 64))
-                   (bv 4538968 (bitvector 64))
+                   (OPERAND (bv 4538968 (bitvector 64)))
+                   (OPERAND (bv 4538968 (bitvector 64)))
 ))
 
 (define r0 (list r0_0 r0_1))
@@ -328,8 +337,8 @@
                    ; Opcode
                    (OPCODE (bv 111 (bitvector 64)))
                    ; Operands
-                   (bv 5395273 (bitvector 64))
-                   (bv 5391448 (bitvector 64))
+                   (OPERAND (bv 5395273 (bitvector 64)))
+                   (OPERAND (bv 5391448 (bitvector 64)))
 ))
 
 ; Instruction: IMUL EBX, EBX
@@ -345,22 +354,30 @@
                    ; Opcode
                    (OPCODE (bv 100010101 (bitvector 64)))
                    ; Operands
-                   (bv 4538968 (bitvector 64))
-                   (bv 4538968 (bitvector 64))
+                   (OPERAND (bv 4538968 (bitvector 64)))
+                   (OPERAND (bv 4538968 (bitvector 64)))
 ))
 
 (define r1 (list r1_0 r1_1))
 
-; (define myexpr (cexpr #:depth 1)) ; Note: at depth 2, eval-opcode starts getting called.
+(define myexpr (cexpr #:depth 1)) ; Note: at depth 2, eval-opcode starts getting called.
 
-; (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
-;                                (diff 1 2 r0 1 2 r1 myexpr)
-; ))))
+(define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
+                               (diff 1 2 r0 1 2 r1 myexpr)
+))))
 
-; (print-forms sol)
+(print-forms sol)
 
 
 ; Dummy tests.
-(log-debug (get-regs r0_0))
+; (define reg-test (cdr (get-regs r0_0)))
+; (log-debug "TEST")
+; (define (test-func i j r)
+;   (log-debug r)
+;   (match (list-ref r i)
+;     [(REG reg) reg]
+;     [(OPCODE opcode) opcode]
+;     [(OPERAND operand) operand]))
+; (log-debug (test-func 0 1 r0))
 ; (diff 0 1 r0 0 1 r1 myexpr)
 ; (diff 1 2 r0 1 2 r1 myexpr)
