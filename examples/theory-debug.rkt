@@ -102,7 +102,7 @@
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
-              (OPCODE (bs))
+              ; (OPCODE (bs))
               (REG (?? integer?))
               )]
   )
@@ -126,7 +126,6 @@
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
-            ; [(OPCODE op) (eval-opcode op xstate)]
             [bs (log-error "Got an unknown pred") (log-error bs) #f]))
             ; [(INSTR opcode ops) (eval-instr opcode ops xstate)]))
 
@@ -138,13 +137,13 @@
             [(BS b) b]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b xstate))]
             [(REG reg) (eval-reg reg xstate)]
-            [(OPCODE op) (eval-opcode op xstate)]
+            ; [(OPCODE op) (eval-opcode op xstate)]
             [INSTR (eval-reg PC xstate)]
             [_ (log-error "Invalid expression for bitstring observation")]
             ))
 
 (define (eval-opcode opcode xstate)
-  ; (log-debug "[eval-opcode]")
+  (log-debug "[eval-opcode]")
   ; (log-debug opcode)
   (match opcode
     [(OPCODE (bv bv-value (bitvector _))) bv-value]
@@ -160,8 +159,8 @@
   ; (bveq opcode-value pc-value))
 
 ; TODO: update this with our desired constraints for instruction operands.
-(define (eval-operands op1 op2 xstate)
-  (log-debug "[eval-operands] TODO"))
+; (define (eval-operands op1 op2 xstate)
+;   (log-debug "[eval-operands] TODO"))
   ; (list-ref xstate op2)
   ; (list-ref xstate op1))
   ; (list ((list-ref xstate op2)
@@ -188,8 +187,8 @@
 ;   ))))
 
 ; Evaluation function for addresses.
-(define (eval-addr addr xstate)
-  (list-ref xstate addr))
+; (define (eval-addr addr xstate)
+;   (list-ref xstate addr))
   ; (eval-bs addr xstate))
   ; (destruct addr
   ;   [(MEM-LOAD a) (eval-bs a xstate)]
@@ -200,7 +199,7 @@
   ; (log-debug "[eval-reg]")
   ; (log-debug (list-ref xstate reg))
   ; (match reg
-  ;   [(REG reg) reg]
+  ;   [bv bv]
   ;   [_ (log-error "Invalid register expression")]))
   ; (log-debug (list-ref xstate reg))
   (list-ref xstate reg))
@@ -242,12 +241,12 @@
       (if (empty? bvs2) #t #f)
       (if (empty? bvs2)
           #f
-          (and (bveq (first bvs1) (first bvs2)) (listbv-equal (rest bvs1) (rest bvs2))))))
+          (and (equal? (first bvs1) (first bvs2)) (listbv-equal (rest bvs1) (rest bvs2))))))
 
 ; Take our grammar expression and archstate as input.
 ; Return a list of the operands for the run step.
-(define (obs-opcode xstate)
-  (log-debug "[obs-opcode] TODO"))
+; (define (obs-opcode xstate)
+;   (log-debug "[obs-opcode] TODO"))
   ; (match xstate
   ;   [(OPCODE opcode operands)
   ;    (list opcode operands)]
@@ -256,10 +255,10 @@
 
 ; Extract the list of register values from the xstate.
 (define (parse-state xstate)
-  ; (log-debug "[get-regs]")
+  ; (log-debug "[parse-state]")
   (define (process-item item)
     (match item
-      [(REG reg) reg]
+      [(REG reg) (list 'REG reg)]
       [(OPCODE opcode) (list 'OPCODE opcode)]
       [(OPERAND op) (list 'OPERAND op)]
       [_ (log-error "Invalid state object") #f]))
@@ -299,10 +298,10 @@
                    (REG (bv 107374182398 (bitvector 64)))	; Register: RDI
                    (REG (bv 940597838044 (bitvector 64)))	; Register: RDX
                    (REG (bv 1971389989324 (bitvector 64)))	; Register: RSI
-                   (REG (bv 61 (bitvector 64)))	; Register: EFLAGS
+                   (REG (bv 6 (bitvector 64)))	; Register: EFLAGS
                    (REG (bv 18446612985909035028 (bitvector 64)))	; PC
                    ; Opcode
-                   (OPCODE (bv 100 (bitvector 16)))
+                   (OPCODE (bv 110 (bitvector 16)))
                    ; Operands
                    (OPERAND (bv 5395273 (bitvector 64)))
                    (OPERAND (bv 5391448 (bitvector 64)))
@@ -370,7 +369,6 @@
 ))))
 
 (print-forms sol)
-
 
 ; NOTES.
 
