@@ -102,7 +102,7 @@
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
-              ; (OPCODE (bs))
+              (OPCODE (bs))
               (REG (?? integer?))
               )]
   )
@@ -117,36 +117,36 @@
     [_ EMPTY]))
 
 ; Evaluation function for predicates.
-(define (eval-pred pred xstate)
+(define (eval-pred p x)
   ; (log-debug "[eval-pred]")
   ; (log-debug pred)
-  (destruct pred
+  (destruct p
             [(BOOL b) b]
-            [(NOT some-p) (not (eval-pred some-p xstate))]
-            [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
-            [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
-            [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
+            [(NOT some-p) (not (eval-pred some-p x))]
+            [(AND p1 p2) (and (eval-pred p1 x) (eval-pred p2 x))]
+            [(OR p1 p2) (or (eval-pred p1 x) (eval-pred p2 x))]
+            [(EQ bs1 bs2) (bveq (eval-bs bs1 x) (eval-bs bs2 x))]
             [bs (log-error "Got an unknown pred") (log-error bs) #f]))
             ; [(INSTR opcode ops) (eval-instr opcode ops xstate)]))
 
 ; Evaluation function for bit sequences.
-(define (eval-bs bs xstate)
+(define (eval-bs bs x)
   ; (log-debug "[eval-bs]")
   ; (log-debug bs)
   (destruct bs
             [(BS b) b]
-            [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b xstate))]
-            [(REG reg) (eval-reg reg xstate)]
-            ; [(OPCODE op) (eval-opcode op xstate)]
-            [INSTR (eval-reg PC xstate)]
+            [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
+            [(REG reg) (eval-reg reg x)]
+            [(OPCODE op) (eval-opcode op x)]
+            [INSTR (eval-reg PC x)]
             [_ (log-error "Invalid expression for bitstring observation")]
             ))
 
 (define (eval-opcode opcode xstate)
-  (log-debug "[eval-opcode]")
+  ; (log-debug "[eval-opcode]")
   ; (log-debug opcode)
   (match opcode
-    [(OPCODE (bv bv-value (bitvector _))) bv-value]
+    [(list 'OPCODE op) op]
     [_ (log-error "Invalid opcode")]))
   ; (define opcode-value (match opcode
   ;                       [bv bv]
@@ -198,11 +198,11 @@
 (define (eval-reg reg xstate)
   ; (log-debug "[eval-reg]")
   ; (log-debug (list-ref xstate reg))
-  ; (match reg
-  ;   [bv bv]
-  ;   [_ (log-error "Invalid register expression")]))
+  (match reg
+    [(list 'REG (bv value _)) value]
+    [_ (log-error "Invalid register expression")]))
   ; (log-debug (list-ref xstate reg))
-  (list-ref xstate reg))
+  ; (list-ref xstate reg))
 
 ; obs() takes an expression and a xstate
 ;       returns its observation
@@ -241,7 +241,7 @@
       (if (empty? bvs2) #t #f)
       (if (empty? bvs2)
           #f
-          (and (equal? (first bvs1) (first bvs2)) (listbv-equal (rest bvs1) (rest bvs2))))))
+          (and (bveq (first bvs1) (first bvs2)) (listbv-equal (rest bvs1) (rest bvs2))))))
 
 ; Take our grammar expression and archstate as input.
 ; Return a list of the operands for the run step.
