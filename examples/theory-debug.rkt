@@ -133,6 +133,7 @@
 ; Evaluation function for bit sequences.
 (define (eval-bs bs xstate)
   ; (log-debug "[eval-bs]")
+  ; (log-debug bs)
   (destruct bs
             [(BS b) b]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b xstate))]
@@ -143,10 +144,10 @@
             ))
 
 (define (eval-opcode opcode xstate)
-  (log-debug "[eval-opcode]")
-  (log-debug opcode)
+  ; (log-debug "[eval-opcode]")
+  ; (log-debug opcode)
   (match opcode
-    [bv bv]
+    [(OPCODE (bv bv-value (bitvector _))) bv-value]
     [_ (log-error "Invalid opcode")]))
   ; (define opcode-value (match opcode
   ;                       [bv bv]
@@ -197,6 +198,10 @@
 ; Evaluation function for registers.
 (define (eval-reg reg xstate)
   ; (log-debug "[eval-reg]")
+  ; (log-debug (list-ref xstate reg))
+  ; (match reg
+  ;   [(REG reg) reg]
+  ;   [_ (log-error "Invalid register expression")]))
   ; (log-debug (list-ref xstate reg))
   (list-ref xstate reg))
 
