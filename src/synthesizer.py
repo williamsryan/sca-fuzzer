@@ -69,7 +69,7 @@ class Synthesizer:
                 op = int(op_bs, 2)
                 if operand_bv != "":
                     operand_bv += indentation
-                operand_bv += f"(bv {op} (bitvector 64))\n"
+                operand_bv += f"(OPERAND (bv {op} (bitvector 64)))\n"
 
             for idx, reg in enumerate(xstate.regs.values()):
                 if regs != '':
@@ -77,20 +77,20 @@ class Synthesizer:
                 reg_idx = CONF.map_reg(idx)
                 reg_name = CONF.registers.get(reg_idx)
 
-                regs += f"(bv {str(reg)} (bitvector 64))\t; Register: {reg_name.upper()}\n"
+                regs += f"(REG (bv {str(reg)} (bitvector 64)))\t; Register: {reg_name.upper()}\n"
             if xstate.pc is not None:
-                regs += indentation + f"(bv {str(xstate.pc)} (bitvector 64))\t; PC\n"
+                regs += indentation + f"(REG (bv {str(xstate.pc)} (bitvector 64)))\t; PC\n"
                 regs += indentation + f"; Opcode\n"
-                regs += indentation + f"(bv {opcode_bs} (bitvector 64))\n"
+                regs += indentation + f"(OPCODE (bv {opcode_bs} (bitvector 64)))\n"
                 regs += indentation + f"; Operands\n"
                 regs += indentation + operand_bv + "))"
                 # End of archstate object. Add more information, e.g., opcode + operands.
             else:
                 # Meaning this is the final state
-                regs += indentation + f"(bv {str(-1)} (bitvector 64))\t; Final state\n"
+                regs += indentation + f"(REG (bv {str(-1)} (bitvector 64)))\t; Final state\n"
                 # End of archstate object. Add more information, e.g., opcode + operands.
                 regs += indentation + f"; Opcode\n"
-                regs += indentation + f"(bv {opcode_bs} (bitvector 64))\n"
+                regs += indentation + f"(OPCODE (bv {opcode_bs} (bitvector 64)))\n"
                 regs += indentation + f"; Operands\n"
                 regs += indentation + operand_bv + "))"
 
