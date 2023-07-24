@@ -400,3 +400,54 @@
 ; (log-debug "TEST")
 ; (diff 0 1 r0 0 1 r1 myexpr)
 ; (diff 1 2 r0 1 2 r1 myexpr)
+
+
+; NOTES.
+; SUB AX, -23911
+
+; OPCODE --> bitstring representing SUB
+
+; // op1 is AX
+; OPERAND1 (bv $AX-ENCODING)
+; OPERAND1-VAL (bv Value-of-AX)
+; OPERAND1-TYPE (REG)
+
+; // op2 is -23911
+; OPERAND1 (bv -23911)
+; OPERAND1-VAL (bv  -23911)
+; OPERAND1-TYPE (IMMEDIATE)
+
+; #  sub rsp,200h
+; #     OpCode: o64 81 /5 id
+; #     Instruction: SUB r/m64, imm32
+; #     Encoding: LEGACY
+; #     Mnemonic: SUB
+; #     Code: SUB_RM64_IMM32
+; #     CpuidFeature: X64
+; #     FlowControl: NEXT
+; #     Immediate offset = 3, size = 4
+; #     RFLAGS Written: OF, SF, ZF, AF, CF, PF
+; #     RFLAGS Modified: OF, SF, ZF, AF, CF, PF
+; #     Op0Access: READ_WRITE
+; #     Op1Access: READ
+; #     Op0: R64_OR_MEM
+; #     Op1: IMM32SEX64
+; #     Used reg: RSP:READ_WRITE
+
+; 00007FFAC46ACDA9 mov [rsp+18h],rsi
+;     OpCode: o64 89 /r
+;     Instruction: MOV r/m64, r64
+;     Encoding: Legacy
+;     Mnemonic: Mov
+;     Code: Mov_rm64_r64
+;     CpuidFeature: X64
+;     FlowControl: Next
+;     Displacement offset = 4, size = 1
+;     Memory size: 8
+;     Op0Access: Write
+;     Op1Access: Read
+;     Op0: r64_or_mem
+;     Op1: r64_reg
+;     Used reg: RSP:Read
+;     Used reg: RSI:Read
+;     Used mem: [SS:RSP+0x18;UInt64;Write]

@@ -31,7 +31,9 @@
 ; Struct definitions for our contract language.
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
 (struct OPCODE (bs) #:transparent)
-(struct OPERAND (bs) #:transparent)
+(struct OPERAND (bs) #:transparent);
+; OPERAND1-VAL
+; operand-type
 ; (struct OPERANDS (op1 op2) #:transparent)
 (struct INSTR ())
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
@@ -94,43 +96,27 @@
 ; (IF (BOOL #t) (PC))                   <-- Supported (leaked program counter).
 ; (IF (OPCODE (bs?)) REG[OPERAND2])
 ; (IF (OPCODE #b0000010011 (REG[op2])))
-; (IF (OPCODE #bxxxxxxx110 (ADDR 0x3C7E78F365E))
-;     (OPERANDS #b00001001 (REG 5678)))
 (define-grammar (cexpr)
   [expr (IF (pred) (bs))]
   [pred (choose (BOOL (?? boolean?))
-                (OPCODE (bitvector 64))
+                ; (OPCODE (bitvector 64))
+                ; OP TYPES.
                 (NOT (pred))
                 (AND (pred) (pred))
                 (OR (pred) (pred))
-                ;(EQ (bs) (bs))
+                (EQ (bs) (bs))
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
-              ; (ADDR (?? integer?))
+              ; (OPCODE ...)
+              ; (ADDR (bs))
+              ; (ADDR (b1, bs2, bs3))
               ; (OPERANDS (?? integer?) (?? integer?)) ; Moving OPERANDS to part of INSTR.
-              (REG (?? integer?))
+              (REG (?? integer?)) ; REG[op1]
               ; INSTR
+              ; MEM[op2]
               )]
   )
-
-; TEST: applying weights to force bias in grammar rule choices during synthesis.
-; (define (weighted-choose lst weights)
-;   (define total-weight (apply + weights))
-;   (define (random-weighted n)
-;     (let loop ((i 0) (acc 0))
-;       (if (< acc n)
-;           (loop (+ i 1) (+ acc (list-ref weights i)))
-;           i)))
-;   (let* ((n (random-weighted (random total-weight)))
-;          (rule (list-ref lst n))
-;          (rest-rules (remove-nth lst n))
-;          (rest-weights (remove-nth weights n)))
-;     (if (null? rest-rules)
-;         rule
-;         (if (zero? (random 2))
-;             rule
-;             (weighted-choose rest-rules rest-weights)))))
 
 (define EMPTY (list '()))
 
