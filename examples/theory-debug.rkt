@@ -143,8 +143,8 @@
             ))
 
 (define (eval-opcode opcode xstate)
-  ; (log-debug "[eval-opcode]")
-  ; (log-debug opcode)
+  (log-debug "[eval-opcode]")
+  (log-debug opcode)
   (match opcode
     [bv bv]
     [_ (log-error "Invalid opcode")]))
@@ -174,17 +174,17 @@
 ;     ))
 
 ; Evaluation function for instructions.
-(define (eval-instr opcode op1 op2 xstate)
-  (log-info "[eval-instr]")
-  (let* ((opcode-value (eval-bs opcode xstate))
-         (op1-value (eval-bs op1 xstate))
-         (op2-value (eval-bs op2 xstate)))
-    (cond
-      ((eq? opcode-value 'memory-store) op1-value)  ; Update instruction opcode later.
-      ((eq? opcode-value 'memory-load) op2-value)   ; Update instruction opcode later.
-      (else
-        (log-error "Invalid opcode value")
-  ))))
+; (define (eval-instr opcode op1 op2 xstate)
+;   (log-info "[eval-instr]")
+;   (let* ((opcode-value (eval-bs opcode xstate))
+;          (op1-value (eval-bs op1 xstate))
+;          (op2-value (eval-bs op2 xstate)))
+;     (cond
+;       ((eq? opcode-value 'memory-store) op1-value)  ; Update instruction opcode later.
+;       ((eq? opcode-value 'memory-load) op2-value)   ; Update instruction opcode later.
+;       (else
+;         (log-error "Invalid opcode value")
+;   ))))
 
 ; Evaluation function for addresses.
 (define (eval-addr addr xstate)
