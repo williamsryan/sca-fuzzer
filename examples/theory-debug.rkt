@@ -112,6 +112,7 @@
 ; Evaluation function for expressions.
 (define (eval expr xstate)
   ; (log-debug "[eval]")
+  ; (log-debug expr)
   (destruct expr
     [(IF pred bs) (if (eval-pred pred xstate) (list (eval-bs bs xstate)) EMPTY)]
     [_ EMPTY]))
@@ -125,8 +126,8 @@
             [(NOT some-p) (not (eval-pred some-p x))]
             [(AND p1 p2) (and (eval-pred p1 x) (eval-pred p2 x))]
             [(OR p1 p2) (or (eval-pred p1 x) (eval-pred p2 x))]
-            [(EQ bs1 bs2) (bveq (eval-bs bs1 x) (eval-bs bs2 x))]
-            [bs (log-error "Got an unknown pred") (log-error bs) #f]))
+            [(EQ bs1 bs2) (bveq (eval-bs bs1 x) (eval-bs bs2 x))]))
+            ; [bs (log-error "Got an unknown pred") (log-error bs) #f]))
             ; [(INSTR opcode ops) (eval-instr opcode ops xstate)]))
 
 ; Evaluation function for bit sequences.
@@ -134,16 +135,16 @@
   ; (log-debug "[eval-bs]")
   ; (log-debug bs)
   (destruct bs
-            [(BS b) b]
+            [(BS b) (log-debug "BS") b]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
             [(REG reg) (eval-reg reg x)]
-            [(OPCODE op) (eval-opcode op x)]
+            ; [(OPCODE op) (eval-opcode op x)]
             [INSTR (eval-reg PC x)]
             [_ (log-error "Invalid expression for bitstring observation")]
             ))
 
 (define (eval-opcode opcode xstate)
-  ; (log-debug "[eval-opcode]")
+  (log-debug "[eval-opcode]")
   ; (log-debug opcode)
   (match opcode
     [op (log-debug op)]
@@ -197,12 +198,13 @@
 ; Evaluation function for registers.
 (define (eval-reg reg xstate)
   ; (log-debug "[eval-reg]")
+  ; (log-debug reg)
   ; (log-debug (list-ref xstate reg))
-  (match reg
-    [reg-val (list-ref xstate reg-val)]
-    [_ (log-error "Invalid register expression")]))
+  ; (match reg
+  ;   [(list 'REG _) (log-debug "TODO")]
+  ;   [bs (log-error "Invalid register format") (log-error bs)]))
   ; (log-debug (list-ref xstate reg))
-  ; (list-ref xstate reg))
+  (list-ref xstate reg))
 
 ; obs() takes an expression and a xstate
 ;       returns its observation
@@ -226,17 +228,20 @@
 ;             returns true if the two xstates produces same observations
 ;                     false otherwise
 (define (obs-equal expr xstate1 xstate2)
-  ; (log-debug "[obs-equal] ...")
+  (log-debug "[obs-equal]")
+  ; (log-debug (type-of xstate1))
   ; (log-debug xstate1)
   ; (log-debug xstate2)
   ; (log-debug (listbv-equal (obs expr xstate1) (obs expr xstate2)))
-  (listbv-equal (obs expr xstate1) (obs expr xstate2)))
+  ; (listbv-equal (obs expr xstate1) (obs expr xstate2)))
+  (equal? (obs expr xstate1) (obs expr xstate2))) ; TODO: check out what happened with our labels from before.
 
 ; listbv-equal() takes two observations
 ;                returns true if they are the same
 ;                        false otherwise
 (define (listbv-equal bvs1 bvs2)
-  ; (log-debug "[listbv-equal] ...")
+  (log-debug "[listbv-equal]")
+  ; (log-debug (equal? bvs1 bvs2))
   (if (empty? bvs1)
       (if (empty? bvs2) #t #f)
       (if (empty? bvs2)
@@ -258,9 +263,9 @@
   ; (log-debug "[parse-state]")
   (define (process-item item)
     (match item
-      [(REG (bv value _)) (list 'REG value)]
-      [(OPCODE (bv opcode _)) (list 'OPCODE opcode)]
-      [(OPERAND (bv op _)) (list 'OPERAND op)]
+      [(REG reg) (list 'REG reg)]
+      [(OPCODE opcode) (list 'OPCODE opcode)]
+      [(OPERAND operand) (list 'OPERAND operand)]
       [_ (log-error "Invalid state object") #f]))
 
   (map process-item xstate))
@@ -274,7 +279,7 @@
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
   ; (log-debug expr)
-  (log-debug (parse-state (list-ref r i)))
+  ; (log-debug (parse-state (list-ref r i)))
   (if (equal? i j)
       (if (equal? i_ j_) #f
                          (or (not (empty-obs expr (parse-state (list-ref r_ i_))))
@@ -301,7 +306,7 @@
                    (REG (bv 61 (bitvector 64)))	; Register: EFLAGS
                    (REG (bv 18446612985909035028 (bitvector 64)))	; PC
                    ; Opcode
-                   (OPCODE (bv 110 (bitvector 16)))
+                   (OPCODE (bv 111 (bitvector 16)))
                    ; Operands
                    (OPERAND (bv 5395273 (bitvector 64)))
                    (OPERAND (bv 5391448 (bitvector 64)))
