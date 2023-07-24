@@ -103,7 +103,7 @@
                 (AND (pred) (pred))
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
-                (OPCODE (?? integer?))
+                (OPCODE (bv (?? integer?) (bitvector 16)))
                 ; (OPCODE (?? (bitvector (16)))) ; (?? (bitvector (?? integer?))) || BS || pred
                 ; (OPCODE (bv (?? integer?) (bitvector (16))))
                 ; (INSTR (bs) (OPERANDS))
@@ -154,7 +154,7 @@
             ))
 
 (define (eval-opcode opcode xstate)
-  ; (log-debug "[eval-opcode]")
+  (log-debug "[eval-opcode]")
   ; (log-debug opcode)
   (match opcode
     [bv bv]
@@ -387,7 +387,7 @@
 
 (define r1 (list r1_0 r1_1))
 
-(define myexpr (cexpr #:depth 1)) ; Note: need depth 2 to reach clauses like OPCODE as a predicate.
+(define myexpr (cexpr #:depth 2)) ; Note: need depth 2 to reach clauses like OPCODE as a predicate.
 
 (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
                                (diff 1 2 r0 1 2 r1 myexpr)
