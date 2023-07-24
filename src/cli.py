@@ -308,7 +308,7 @@ def main() -> int:
                 # unique_mems = {k: run1_mems[k] for k in run1_mems if k in run2_mems and run1_mems[k] != run2_mems[k]}
                 # print(f"[+] Testing unique mems between runs: {unique_mems}")
                 
-                synth = Synthesizer(theory_fname, args.working_directory, 2)
+                synth = Synthesizer(theory_fname, args.working_directory, 1)
                 # Each run object corresponds to an execution of a same program with different inputs
                 # that produce the same contract trace and different hardware trace.
                 synth.map(run1)

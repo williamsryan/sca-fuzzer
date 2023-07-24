@@ -102,8 +102,8 @@
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
+              (OPCODE (bs))
               (REG (?? integer?))
-              ; (OPCODE ...)
               )]
   )
 
@@ -132,17 +132,18 @@
 
 ; Evaluation function for bit sequences.
 (define (eval-bs bs xstate)
+  ; (log-debug "[eval-bs]")
   (destruct bs
             [(BS b) b]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b xstate))]
             [(REG reg) (eval-reg reg xstate)]
-            ; [(OPCODE op) (log-debug "Got an opcode") (eval-opcode op xstate)]
+            [(OPCODE op) (eval-opcode op xstate)]
             [INSTR (eval-reg PC xstate)]
-            ; [_ (log-error "Invalid expression for bitstring observation")]
+            [_ (log-error "Invalid expression for bitstring observation")]
             ))
 
 (define (eval-opcode opcode xstate)
-  (log-debug "[eval-opcode]")
+  ; (log-debug "[eval-opcode]")
   ; (log-debug opcode)
   (match opcode
     [bv bv]
@@ -256,7 +257,7 @@
       [(REG reg) reg]
       [(OPCODE opcode) (list 'OPCODE opcode)]
       [(OPERAND op) (list 'OPERAND op)]
-      [_ #f]))
+      [_ (log-error "Invalid state object") #f]))
 
   (map process-item xstate))
 
@@ -293,10 +294,10 @@
                    (REG (bv 107374182398 (bitvector 64)))	; Register: RDI
                    (REG (bv 940597838044 (bitvector 64)))	; Register: RDX
                    (REG (bv 1971389989324 (bitvector 64)))	; Register: RSI
-                   (REG (bv 61 (bitvector 64)))	; Register: EFLAGS          ; FOR TESTING: leak is here.
+                   (REG (bv 61 (bitvector 64)))	; Register: EFLAGS
                    (REG (bv 18446612985909035028 (bitvector 64)))	; PC
                    ; Opcode
-                   (OPCODE (bv 111 (bitvector 16)))
+                   (OPCODE (bv 100 (bitvector 16)))
                    ; Operands
                    (OPERAND (bv 5395273 (bitvector 64)))
                    (OPERAND (bv 5391448 (bitvector 64)))

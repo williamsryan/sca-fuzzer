@@ -492,7 +492,7 @@ class TestCase:
     functions: List[Function]
     address_map: Dict[int, Instruction]
     instructions_map: Dict[int, str]
-    opcode_map: Dict[int, ByteString]
+    opcode_map: Dict[int, Instruction]
     num_prologue_instructions: int = 0
     faulty_pte: PageTableModifier
 
@@ -695,7 +695,7 @@ class Run:
     id: int
     inputs: List[int]
     instructions: List[str]
-    mem_instrs: List[Instruction]  # Replace above list with this once tested (this object has more information than a str).
+    mem_instrs: List[Instruction]  # TODO: use this later instead of 'opcodes' as it has all information.
     opcodes: List[ByteString]
     archstates: List[ArchState]
     observations: List[Observations]
