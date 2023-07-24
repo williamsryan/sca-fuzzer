@@ -69,7 +69,7 @@ class Synthesizer:
                 op = int(op_bs, 2)
                 if operand_bv != "":
                     operand_bv += indentation
-                operand_bv += f"(OPERAND (bv {op} (bitvector 64)))\n"
+                operand_bv += f"(OPERAND (bv {op} (bitvector 8)))\n"
 
             for idx, reg in enumerate(xstate.regs.values()):
                 if regs != '':
@@ -81,7 +81,7 @@ class Synthesizer:
             if xstate.pc is not None:
                 regs += indentation + f"(REG (bv {str(xstate.pc)} (bitvector 64)))\t; PC\n"
                 regs += indentation + f"; Opcode\n"
-                regs += indentation + f"(OPCODE (bv {opcode_bs} (bitvector 64)))\n"
+                regs += indentation + f"(OPCODE (bv {opcode_bs} (bitvector 16)))\n"
                 regs += indentation + f"; Operands\n"
                 regs += indentation + operand_bv + "))"
                 # End of archstate object. Add more information, e.g., opcode + operands.
@@ -90,7 +90,7 @@ class Synthesizer:
                 regs += indentation + f"(REG (bv {str(-1)} (bitvector 64)))\t; Final state\n"
                 # End of archstate object. Add more information, e.g., opcode + operands.
                 regs += indentation + f"; Opcode\n"
-                regs += indentation + f"(OPCODE (bv {opcode_bs} (bitvector 64)))\n"
+                regs += indentation + f"(OPCODE (bv {opcode_bs} (bitvector 16)))\n"
                 regs += indentation + f"; Operands\n"
                 regs += indentation + operand_bv + "))"
 

@@ -99,14 +99,11 @@
 (define-grammar (cexpr)
   [expr (IF (pred) (bs))]
   [pred (choose (BOOL (?? boolean?))
+                (OPCODE (bitvector 64))
                 (NOT (pred))
                 (AND (pred) (pred))
                 (OR (pred) (pred))
-                (EQ (bs) (bs))
-                ; (OPCODE (bv (?? integer?) (bitvector 16)))
-                ; (OPCODE (?? (bitvector (16)))) ; (?? (bitvector (?? integer?))) || BS || pred
-                (OPCODE (bv (?? integer?) (bitvector (16))))
-                ; (INSTR (bs) (OPERANDS))
+                ;(EQ (bs) (bs))
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
@@ -116,6 +113,24 @@
               ; INSTR
               )]
   )
+
+; TEST: applying weights to force bias in grammar rule choices during synthesis.
+; (define (weighted-choose lst weights)
+;   (define total-weight (apply + weights))
+;   (define (random-weighted n)
+;     (let loop ((i 0) (acc 0))
+;       (if (< acc n)
+;           (loop (+ i 1) (+ acc (list-ref weights i)))
+;           i)))
+;   (let* ((n (random-weighted (random total-weight)))
+;          (rule (list-ref lst n))
+;          (rest-rules (remove-nth lst n))
+;          (rest-weights (remove-nth weights n)))
+;     (if (null? rest-rules)
+;         rule
+;         (if (zero? (random 2))
+;             rule
+;             (weighted-choose rest-rules rest-weights)))))
 
 (define EMPTY (list '()))
 
@@ -136,7 +151,7 @@
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
-            [(OPCODE op) op]
+            [(OPCODE op) (eval-opcode op xstate)]
             [bs (log-error "Got an unknown pred") (log-error bs) #f]))
             ; [(INSTR opcode ops) (eval-instr opcode ops xstate)]))
 
@@ -157,8 +172,8 @@
   ; (log-debug "[eval-opcode]")
   ; (log-debug opcode)
   (match opcode
-    [bv bv]
-    [_ (log-error "Invalid opcode")]))
+    [op op]
+    [_ (log-error "Invalid opcode") #f]))
   ; (define opcode-value (match opcode
   ;                       [bv bv]
   ;                       [_ (log-error "Invalid opcode")]))
@@ -280,7 +295,7 @@
   ; (log-debug "[get-opcode]")
   (define (process-item item)
     (match item
-      [(OPCODE opcode) (eval-opcode opcode xstate)]
+      [(OPCODE opcode) (eval-opcode (list 'OPCODE opcode) xstate)]  ; Use OPCODE label for consistency.
       [_ #f]))        ; Ignore non-opcode values.
 
   (map process-item xstate))

@@ -81,11 +81,11 @@
 (define-grammar (cexpr)
   [expr (IF (pred) (bs))]
   [pred (choose (BOOL (?? boolean?))
+                (OPCODE (bitvector 16))
                 (NOT (pred))
                 (AND (pred) (pred))
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
-                (OPCODE (bv (?? integer?) (bitvector (16))))
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
