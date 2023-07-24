@@ -154,7 +154,7 @@
             ))
 
 (define (eval-opcode opcode xstate)
-  (log-debug "[eval-opcode]")
+  ; (log-debug "[eval-opcode]")
   ; (log-debug opcode)
   (match opcode
     [bv bv]
@@ -234,6 +234,8 @@
 ;                     false otherwise
 (define (obs-equal expr xstate1 xstate2)
   ; (log-debug "[obs-equal] ...")
+  ; (log-debug xstate1)
+  ; (log-debug xstate2)
   ; (log-debug (listbv-equal (obs expr xstate1) (obs expr xstate2)))
   (listbv-equal (obs expr xstate1) (obs expr xstate2)))
 
@@ -264,23 +266,28 @@
         (list 'OPCODE opcode-val)
         (list 'REG reg-val)))
 
-; Extract the list of struct values from the xstate (REG, OPCODE, OPERAND).
-(define (get-structs xstate)
-  ; (log-debug "[get-structs]")
+; Extract the list of register values from the xstate.
+(define (get-regs xstate)
+  ; (log-debug "[get-regs]")
   (define (process-item item)
     (match item
       [(REG reg) reg]
-      [(OPCODE opcode) #f]    ; Don't check for diff like with registers.
-      [(OPERAND operand) #f]      ; TODO: utilize this later.
-      [_ (log-error "Got an unknown struct")]))
+      [_ #f]))        ; Ignore non-register values.
 
   (map process-item xstate))
 
-(define (opcode-equal r r_)
-  (define op1 (car (get-structs r)))
-  (define op2 (car (get-structs r_)))
-  
-  (equal? op1 op2))
+(define (get-opcode xstate)
+  ; (log-debug "[get-opcode]")
+  (define (process-item item)
+    (match item
+      [(OPCODE opcode) opcode]
+      [_ #f]))        ; Ignore non-opcode values.
+
+  (map process-item xstate))
+
+(define (opcode-equal xstate1 xstate2)
+  ; (log-debug "[opcode-equal]")
+  (eq? (get-opcode xstate1) (get-opcode xstate2)))
 
 ; diff() takes the following arguments:
 ;              i,j,i_,j_  : natural numbers such that i <= j and i_ <= j_
@@ -294,19 +301,18 @@
   ; (log-debug (get-structs (list-ref r i)))
   (if (equal? i j)
       (if (equal? i_ j_) #f
-                         (or (not (empty-obs expr (get-structs (list-ref r_ i_))))
+                         (or (not (empty-obs expr (get-regs (list-ref r_ i_))))
                              (diff j j r (+ i_ 1) j_ r_ expr)))
-      (if (equal? i_ j_) (or (not (empty-obs expr (get-structs (list-ref r i))))
+      (if (equal? i_ j_) (or (not (empty-obs expr (get-regs (list-ref r i))))
                              (diff (+ i 1) j r j_ j_ r_ expr))
-                         (or (and (empty-obs expr (get-structs (list-ref r i)))
+                         (or (and (empty-obs expr (get-regs (list-ref r i)))
                                   (diff (+ i 1) j r i_ j_ r_ expr))
-                             (and (empty-obs expr (get-structs (list-ref r_ i_)))
+                             (and (empty-obs expr (get-regs (list-ref r_ i_)))
                                   (diff i j r (+ i_ 1) j_ r_ expr))
-                            ;  (not (obs-equal expr (run-step-instruction (list-ref r i)) (run-step-instruction (list-ref r_ i_))))
-                             (and (opcode-equal (list-ref r i) (list-ref r_ i_))
-                                  (not (empty-obs expr (get-structs (list-ref r i))))
-                                  (not (empty-obs expr (get-structs (list-ref r_ i_))))
-                                  (not (obs-equal expr (get-structs (list-ref r i)) (get-structs (list-ref r_ i_)))))))))
+                             (and (opcode-equal (get-opcode (list-ref r i)) (get-opcode (list-ref r_ i_)))
+                                  (not (empty-obs expr (get-regs (list-ref r i))))
+                                  (not (empty-obs expr (get-regs (list-ref r_ i_))))
+                                  (not (obs-equal expr (get-regs (list-ref r i)) (get-regs (list-ref r_ i_)))))))))
 
 ; ------------- END-CORE ------------------ ;
 ; Instruction: ADD RSI, RDX
@@ -381,14 +387,13 @@
 
 (define r1 (list r1_0 r1_1))
 
-(define myexpr (cexpr #:depth 2)) ; Note: need depth 2 to reach clauses like OPCODE as a predicate.
+(define myexpr (cexpr #:depth 1)) ; Note: need depth 2 to reach clauses like OPCODE as a predicate.
 
 (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
                                (diff 1 2 r0 1 2 r1 myexpr)
 ))))
 
 (print-forms sol)
-
 
 ; Dummy tests.
 ; (define reg-test (cdr (get-regs r0_0)))
