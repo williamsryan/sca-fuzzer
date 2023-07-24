@@ -146,7 +146,7 @@
   ; (log-debug "[eval-opcode]")
   ; (log-debug opcode)
   (match opcode
-    [(list 'OPCODE op) op]
+    [op (log-debug op)]
     [_ (log-error "Invalid opcode")]))
   ; (define opcode-value (match opcode
   ;                       [bv bv]
@@ -199,7 +199,7 @@
   ; (log-debug "[eval-reg]")
   ; (log-debug (list-ref xstate reg))
   (match reg
-    [(list 'REG (bv value _)) value]
+    [reg-val (list-ref xstate reg-val)]
     [_ (log-error "Invalid register expression")]))
   ; (log-debug (list-ref xstate reg))
   ; (list-ref xstate reg))
@@ -258,9 +258,9 @@
   ; (log-debug "[parse-state]")
   (define (process-item item)
     (match item
-      [(REG reg) (list 'REG reg)]
-      [(OPCODE opcode) (list 'OPCODE opcode)]
-      [(OPERAND op) (list 'OPERAND op)]
+      [(REG (bv value _)) (list 'REG value)]
+      [(OPCODE (bv opcode _)) (list 'OPCODE opcode)]
+      [(OPERAND (bv op _)) (list 'OPERAND op)]
       [_ (log-error "Invalid state object") #f]))
 
   (map process-item xstate))
@@ -274,7 +274,7 @@
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
   ; (log-debug expr)
-  ; (log-debug (parse-state (list-ref r i)))
+  (log-debug (parse-state (list-ref r i)))
   (if (equal? i j)
       (if (equal? i_ j_) #f
                          (or (not (empty-obs expr (parse-state (list-ref r_ i_))))
@@ -298,7 +298,7 @@
                    (REG (bv 107374182398 (bitvector 64)))	; Register: RDI
                    (REG (bv 940597838044 (bitvector 64)))	; Register: RDX
                    (REG (bv 1971389989324 (bitvector 64)))	; Register: RSI
-                   (REG (bv 6 (bitvector 64)))	; Register: EFLAGS
+                   (REG (bv 61 (bitvector 64)))	; Register: EFLAGS
                    (REG (bv 18446612985909035028 (bitvector 64)))	; PC
                    ; Opcode
                    (OPCODE (bv 110 (bitvector 16)))
@@ -362,7 +362,7 @@
 
 (define r1 (list r1_0 r1_1))
 
-(define myexpr (cexpr #:depth 2))
+(define myexpr (cexpr #:depth 1))
 
 (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
                                (diff 1 2 r0 1 2 r1 myexpr)
