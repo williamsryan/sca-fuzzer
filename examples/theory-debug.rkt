@@ -32,7 +32,8 @@
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
 (struct OPCODE (bs) #:transparent)
 (struct OPERAND (bs) #:transparent)
-; (struct OPERANDS (op1 op2) #:transparent)
+(struct OPERAND-TYPE (bs) #:transparent)
+(struct OPERAND-VALUE (bs) #:transparent)
 (struct INSTR ())
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
 (struct RS1 ())                         ; Register RS1.
@@ -90,30 +91,19 @@
   (cdr step))
 
 ; Grammar for the actual contract.
-; (IF (BOOL #t) (REG 12))               <-- Supported (leaked registers).
-; (IF (BOOL #t) (PC))                   <-- Supported (leaked program counter).
-; (IF (OPCODE (bs?)) REG[OPERAND2])
-; (IF (OPCODE #b0000010011 (REG[op2])))
-; (IF (OPCODE #bxxxxxxx110 (ADDR 0x3C7E78F365E))
-;     (OPERANDS #b00001001 (REG 5678)))
 (define-grammar (cexpr)
   [expr (IF (pred) (bs))]
   [pred (choose (BOOL (?? boolean?))
+                ; (OPERAND-TYPE ...)
                 (NOT (pred))
                 (AND (pred) (pred))
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
-                ; (OPCODE (bv (?? integer?) (bitvector 16)))
-                ; (OPCODE (?? (bitvector (16)))) ; (?? (bitvector (?? integer?))) || BS || pred
-                (OPCODE (bv (?? integer?) (bitvector (16))))
-                ; (INSTR (bs) (OPERANDS))
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
-              ; (ADDR (?? integer?))
-              ; (OPERANDS (?? integer?) (?? integer?)) ; Moving OPERANDS to part of INSTR.
               (REG (?? integer?))
-              ; INSTR
+              ; (OPCODE ...)
               )]
   )
 
@@ -136,7 +126,7 @@
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
-            [(OPCODE op) (eval-opcode op xstate)]
+            ; [(OPCODE op) (eval-opcode op xstate)]
             [bs (log-error "Got an unknown pred") (log-error bs) #f]))
             ; [(INSTR opcode ops) (eval-instr opcode ops xstate)]))
 
@@ -148,8 +138,6 @@
             [(REG reg) (eval-reg reg xstate)]
             ; [(OPCODE op) (log-debug "Got an opcode") (eval-opcode op xstate)]
             [INSTR (eval-reg PC xstate)]
-            ; [(OPERANDS op1 op2) (eval-operands op1 op2 xstate)]
-            ; [(OPERAND op) (eval-operand op xstate)]
             ; [_ (log-error "Invalid expression for bitstring observation")]
             ))
 
@@ -260,34 +248,17 @@
   ;   [_
   ;    (println "Invalid expression for opcode observation")]))
 
-(define (create-pred opcode-val reg-val)
-  (log-debug "[create-pred] TODO")
-  (list 'IF
-        (list 'OPCODE opcode-val)
-        (list 'REG reg-val)))
-
 ; Extract the list of register values from the xstate.
-(define (get-regs xstate)
+(define (parse-state xstate)
   ; (log-debug "[get-regs]")
   (define (process-item item)
     (match item
       [(REG reg) reg]
-      [_ #f]))        ; Ignore non-register values.
+      [(OPCODE opcode) (list 'OPCODE opcode)]
+      [(OPERAND op) (list 'OPERAND op)]
+      [_ #f]))
 
   (map process-item xstate))
-
-(define (get-opcode xstate)
-  ; (log-debug "[get-opcode]")
-  (define (process-item item)
-    (match item
-      [(OPCODE opcode) opcode]
-      [_ #f]))        ; Ignore non-opcode values.
-
-  (map process-item xstate))
-
-(define (opcode-equal xstate1 xstate2)
-  ; (log-debug "[opcode-equal]")
-  (eq? (get-opcode xstate1) (get-opcode xstate2)))
 
 ; diff() takes the following arguments:
 ;              i,j,i_,j_  : natural numbers such that i <= j and i_ <= j_
@@ -298,21 +269,20 @@
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
   ; (log-debug expr)
-  ; (log-debug (get-structs (list-ref r i)))
+  ; (log-debug (parse-state (list-ref r i)))
   (if (equal? i j)
       (if (equal? i_ j_) #f
-                         (or (not (empty-obs expr (get-regs (list-ref r_ i_))))
+                         (or (not (empty-obs expr (parse-state (list-ref r_ i_))))
                              (diff j j r (+ i_ 1) j_ r_ expr)))
-      (if (equal? i_ j_) (or (not (empty-obs expr (get-regs (list-ref r i))))
+      (if (equal? i_ j_) (or (not (empty-obs expr (parse-state (list-ref r i))))
                              (diff (+ i 1) j r j_ j_ r_ expr))
-                         (or (and (empty-obs expr (get-regs (list-ref r i)))
+                         (or (and (empty-obs expr (parse-state (list-ref r i)))
                                   (diff (+ i 1) j r i_ j_ r_ expr))
-                             (and (empty-obs expr (get-regs (list-ref r_ i_)))
+                             (and (empty-obs expr (parse-state (list-ref r_ i_)))
                                   (diff i j r (+ i_ 1) j_ r_ expr))
-                             (and (opcode-equal (get-opcode (list-ref r i)) (get-opcode (list-ref r_ i_)))
-                                  (not (empty-obs expr (get-regs (list-ref r i))))
-                                  (not (empty-obs expr (get-regs (list-ref r_ i_))))
-                                  (not (obs-equal expr (get-regs (list-ref r i)) (get-regs (list-ref r_ i_)))))))))
+                             (and (not (empty-obs expr (parse-state (list-ref r i))))
+                                  (not (empty-obs expr (parse-state (list-ref r_ i_))))
+                                  (not (obs-equal expr (parse-state (list-ref r i)) (parse-state (list-ref r_ i_)))))))))
 
 ; ------------- END-CORE ------------------ ;
 ; Instruction: ADD RSI, RDX
@@ -387,7 +357,7 @@
 
 (define r1 (list r1_0 r1_1))
 
-(define myexpr (cexpr #:depth 2)) ; Note: need depth 2 to reach clauses like OPCODE as a predicate.
+(define myexpr (cexpr #:depth 2))
 
 (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
                                (diff 1 2 r0 1 2 r1 myexpr)
@@ -395,16 +365,10 @@
 
 (print-forms sol)
 
-; Dummy tests.
-; (define reg-test (cdr (get-regs r0_0)))
-; (log-debug "TEST")
-; (diff 0 1 r0 0 1 r1 myexpr)
-; (diff 1 2 r0 1 2 r1 myexpr)
-
 
 ; NOTES.
-; SUB AX, -23911
 
+; SUB AX, -23911
 ; OPCODE --> bitstring representing SUB
 
 ; // op1 is AX
@@ -413,9 +377,10 @@
 ; OPERAND1-TYPE (REG)
 
 ; // op2 is -23911
-; OPERAND1 (bv -23911)
-; OPERAND1-VAL (bv  -23911)
-; OPERAND1-TYPE (IMMEDIATE)
+; OPERAND2 (bv -23911)
+; OPERAND2-VAL (bv  -23911)
+; OPERAND2-TYPE (IMMEDIATE)
+
 
 ; #  sub rsp,200h
 ; #     OpCode: o64 81 /5 id
@@ -433,21 +398,3 @@
 ; #     Op0: R64_OR_MEM
 ; #     Op1: IMM32SEX64
 ; #     Used reg: RSP:READ_WRITE
-
-; 00007FFAC46ACDA9 mov [rsp+18h],rsi
-;     OpCode: o64 89 /r
-;     Instruction: MOV r/m64, r64
-;     Encoding: Legacy
-;     Mnemonic: Mov
-;     Code: Mov_rm64_r64
-;     CpuidFeature: X64
-;     FlowControl: Next
-;     Displacement offset = 4, size = 1
-;     Memory size: 8
-;     Op0Access: Write
-;     Op1Access: Read
-;     Op0: r64_or_mem
-;     Op1: r64_reg
-;     Used reg: RSP:Read
-;     Used reg: RSI:Read
-;     Used mem: [SS:RSP+0x18;UInt64;Write]
