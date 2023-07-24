@@ -78,6 +78,7 @@ class Synthesizer:
                 reg_name = CONF.registers.get(reg_idx)
 
                 regs += f"(REG (bv {str(reg)} (bitvector 64)))\t; Register: {reg_name.upper()}\n"
+                
             if xstate.pc is not None:
                 regs += indentation + f"(REG (bv {str(xstate.pc)} (bitvector 64)))\t; PC\n"
                 regs += indentation + f"; Opcode\n"
