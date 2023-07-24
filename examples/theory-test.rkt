@@ -293,7 +293,7 @@
 ;              i,j,i_,j_  : natural numbers such that i <= j and i_ <= j_
 ;              r, r_      : two run objects
 ;              expr       : our grammar expression
-;eval
+;
 ;        returns true if the trace produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
