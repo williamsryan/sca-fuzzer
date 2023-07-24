@@ -31,7 +31,7 @@
 ; Struct definitions for our contract language.
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
 (struct OPCODE (bs) #:transparent)
-; (struct OPERAND (bs) #:transparent)
+(struct OPERAND (bs) #:transparent)
 ; (struct OPERANDS (op1 op2) #:transparent)
 (struct INSTR ())
 (struct SLIDE (i1 i2 bs) #:transparent) ; A sliding window operation.
@@ -50,14 +50,14 @@
 (struct INTEGER (value) #:transparent)
 
 ; Some logging stuff.
-(define (log-info message)
-  (printf "[INFO]: ~a\n" message))
+(define (log-info . messages)
+  (apply printf "[INFO]: ~a\n" messages))
 
-(define (log-debug message)
-  (printf "[DEBUG]: ~a\n" message))
+(define (log-debug . messages)
+  (apply printf "[DEBUG]: ~a\n" messages))
 
-(define (log-error message)
-  (printf "[ERROR]: ~a\n" message))
+(define (log-error . messages)
+  (apply printf "[ERROR]: ~a\n" messages))
 
 ;; Helper function to get the register name from the register index.
 (define (get-register-name reg-index registers)
@@ -82,7 +82,7 @@
     (else #f)))
 
 ; New object that holds register values and instruction together.
-(struct run-step (regs instruction)
+(struct run-step (regs opcode operands)
   #:constructor-name make-run-step
   #:transparent)
 
@@ -92,8 +92,7 @@
 ; Grammar for the actual contract.
 ; (IF (BOOL #t) (REG 12))               <-- Supported (leaked registers).
 ; (IF (BOOL #t) (PC))                   <-- Supported (leaked program counter).
-; (IF (INSTR == `LOAD) REG[OPERAND2])   <-- In progress (leaked address from loads/stores).
-; (IF (OPCODE (bs?)) REG[OPERAND2])     <-- Instead of INSTR, get the opcode and map back to INSTR later.
+; (IF (OPCODE (bs?)) REG[OPERAND2])
 ; (IF (OPCODE #b0000010011 (REG[op2])))
 ; (IF (OPCODE #bxxxxxxx110 (ADDR 0x3C7E78F365E))
 ;     (OPERANDS #b00001001 (REG 5678)))
@@ -104,7 +103,9 @@
                 (AND (pred) (pred))
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
-                ; (OPCODE (bs))
+                ; (OPCODE (bv (?? integer?) (bitvector 16)))
+                ; (OPCODE (?? (bitvector (16)))) ; (?? (bitvector (?? integer?))) || BS || pred
+                (OPCODE (bv (?? integer?) (bitvector (16))))
                 ; (INSTR (bs) (OPERANDS))
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
@@ -112,7 +113,7 @@
               ; (ADDR (?? integer?))
               ; (OPERANDS (?? integer?) (?? integer?)) ; Moving OPERANDS to part of INSTR.
               (REG (?? integer?))
-              INSTR
+              ; INSTR
               )]
   )
 
@@ -120,21 +121,23 @@
 
 ; Evaluation function for expressions.
 (define (eval expr xstate)
-  ; (println "[eval]")
+  ; (log-debug "[eval]")
   (destruct expr
     [(IF pred bs) (if (eval-pred pred xstate) (list (eval-bs bs xstate)) EMPTY)]
     [_ EMPTY]))
 
 ; Evaluation function for predicates.
 (define (eval-pred pred xstate)
-  ; (println "[eval-pred]")
+  ; (log-debug "[eval-pred]")
+  ; (log-debug pred)
   (destruct pred
             [(BOOL b) b]
             [(NOT some-p) (not (eval-pred some-p xstate))]
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
-            [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]))
-            ; [(OPCODE bs) (eval-opcode bs xstate)]
+            [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
+            [(OPCODE op) (eval-opcode op xstate)]
+            [bs (log-error "Got an unknown pred") (log-error bs) #f]))
             ; [(INSTR opcode ops) (eval-instr opcode ops xstate)]))
 
 ; Evaluation function for bit sequences.
@@ -143,6 +146,7 @@
             [(BS b) b]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b xstate))]
             [(REG reg) (eval-reg reg xstate)]
+            ; [(OPCODE op) (log-debug "Got an opcode") (eval-opcode op xstate)]
             [INSTR (eval-reg PC xstate)]
             ; [(OPERANDS op1 op2) (eval-operands op1 op2 xstate)]
             ; [(OPERAND op) (eval-operand op xstate)]
@@ -150,7 +154,20 @@
             ))
 
 (define (eval-opcode opcode xstate)
-  (log-debug "[eval-opcode] TODO"))
+  (log-debug "[eval-opcode]")
+  ; (log-debug opcode)
+  (match opcode
+    [bv bv]
+    [_ (log-error "Invalid opcode")]))
+  ; (define opcode-value (match opcode
+  ;                       [bv bv]
+  ;                       [_ (log-error "Invalid opcode")]))
+  ; (define pc-value (match (list-ref xstate 7)
+  ;                       [(REG bv) bv]
+  ;                       [_ (log-error "Invalid PC")]))
+
+  ; (log-debug opcode-value)
+  ; (bveq opcode-value pc-value))
 
 ; TODO: update this with our desired constraints for instruction operands.
 (define (eval-operands op1 op2 xstate)
@@ -191,11 +208,13 @@
 ; Evaluation function for registers.
 (define (eval-reg reg xstate)
   ; (log-debug "[eval-reg]")
+  ; (log-debug (list-ref xstate reg))
   (list-ref xstate reg))
 
 ; obs() takes an expression and a xstate
 ;       returns its observation
 (define (obs expr xstate)
+  ; (log-debug "[obs]")
   (eval expr xstate))
 
 ; obs() takes an expression and a xstate
@@ -214,7 +233,9 @@
 ;             returns true if the two xstates produces same observations
 ;                     false otherwise
 (define (obs-equal expr xstate1 xstate2)
-  ; (log-debug "[obs-equal]")
+  ; (log-debug "[obs-equal] ...")
+  ; (log-debug xstate1)
+  ; (log-debug xstate2)
   ; (log-debug (listbv-equal (obs expr xstate1) (obs expr xstate2)))
   (listbv-equal (obs expr xstate1) (obs expr xstate2)))
 
@@ -222,6 +243,7 @@
 ;                returns true if they are the same
 ;                        false otherwise
 (define (listbv-equal bvs1 bvs2)
+  ; (log-debug "[listbv-equal] ...")
   (if (empty? bvs1)
       (if (empty? bvs2) #t #f)
       (if (empty? bvs2)
@@ -238,27 +260,58 @@
   ;   [_
   ;    (println "Invalid expression for opcode observation")]))
 
+(define (create-pred opcode-val reg-val)
+  (log-debug "[create-pred] TODO")
+  (list 'IF
+        (list 'OPCODE opcode-val)
+        (list 'REG reg-val)))
+
+; Extract the list of register values from the xstate.
+(define (get-regs xstate)
+  ; (log-debug "[get-regs]")
+  (define (process-item item)
+    (match item
+      [(REG reg) reg]
+      [_ #f]))        ; Ignore non-register values.
+
+  (map process-item xstate))
+
+(define (get-opcode xstate)
+  ; (log-debug "[get-opcode]")
+  (define (process-item item)
+    (match item
+      [(OPCODE opcode) opcode]
+      [_ #f]))        ; Ignore non-opcode values.
+
+  (map process-item xstate))
+
+(define (opcode-equal xstate1 xstate2)
+  ; (log-debug "[opcode-equal]")
+  (eq? (get-opcode xstate1) (get-opcode xstate2)))
+
 ; diff() takes the following arguments:
 ;              i,j,i_,j_  : natural numbers such that i <= j and i_ <= j_
 ;              r, r_      : two run objects
 ;              expr       : our grammar expression
-;
+;eval
 ;        returns true if the trace produced by r[i]->r[j] and r_[i_]->r_[j_] are distinguishable
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
+  ; (log-debug expr)
+  ; (log-debug (get-structs (list-ref r i)))
   (if (equal? i j)
       (if (equal? i_ j_) #f
-                         (or (not (empty-obs expr (list-ref r_ i_)))
+                         (or (not (empty-obs expr (get-regs (list-ref r_ i_))))
                              (diff j j r (+ i_ 1) j_ r_ expr)))
-      (if (equal? i_ j_) (or (not (empty-obs expr (list-ref r i)))
+      (if (equal? i_ j_) (or (not (empty-obs expr (get-regs (list-ref r i))))
                              (diff (+ i 1) j r j_ j_ r_ expr))
-                         (or (and (empty-obs expr (list-ref r i))
+                         (or (and (empty-obs expr (get-regs (list-ref r i)))
                                   (diff (+ i 1) j r i_ j_ r_ expr))
-                             (and (empty-obs expr (list-ref r_ i_))
+                             (and (empty-obs expr (get-regs (list-ref r_ i_)))
                                   (diff i j r (+ i_ 1) j_ r_ expr))
-                            ;  (not (obs-equal expr (run-step-instruction (list-ref r i)) (run-step-instruction (list-ref r_ i_))))
-                             (and (not (empty-obs expr (list-ref r i)))
-                                  (not (empty-obs expr (list-ref r_ i_)))
-                                  (not (obs-equal expr (list-ref r i) (list-ref r_ i_))))))))
+                             (and (opcode-equal (get-opcode (list-ref r i)) (get-opcode (list-ref r_ i_)))
+                                  (not (empty-obs expr (get-regs (list-ref r i))))
+                                  (not (empty-obs expr (get-regs (list-ref r_ i_))))
+                                  (not (obs-equal expr (get-regs (list-ref r i)) (get-regs (list-ref r_ i_)))))))))
 
 ; ------------- END-CORE ------------------ ;
