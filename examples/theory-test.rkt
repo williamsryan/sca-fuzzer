@@ -82,12 +82,12 @@
     (else #f)))
 
 ; New object that holds register values and instruction together.
-(struct run-step (regs opcode operands)
-  #:constructor-name make-run-step
-  #:transparent)
+; (struct run-step (regs opcode operands)
+;   #:constructor-name make-run-step
+;   #:transparent)
 
-(define (run-step-reg-index step)
-  (cdr step))
+; (define (run-step-reg-index step)
+;   (cdr step))
 
 ; Grammar for the actual contract.
 ; (IF (BOOL #t) (REG 12))               <-- Supported (leaked registers).
@@ -136,7 +136,7 @@
             [(AND p1 p2) (and (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(OR p1 p2) (or (eval-pred p1 xstate) (eval-pred p2 xstate))]
             [(EQ bs1 bs2) (bveq (eval-bs bs1 xstate) (eval-bs bs2 xstate))]
-            [(OPCODE op) (eval-opcode op xstate)]
+            [(OPCODE op) op]
             [bs (log-error "Got an unknown pred") (log-error bs) #f]))
             ; [(INSTR opcode ops) (eval-instr opcode ops xstate)]))
 
@@ -154,7 +154,7 @@
             ))
 
 (define (eval-opcode opcode xstate)
-  (log-debug "[eval-opcode]")
+  ; (log-debug "[eval-opcode]")
   ; (log-debug opcode)
   (match opcode
     [bv bv]
@@ -280,7 +280,7 @@
   ; (log-debug "[get-opcode]")
   (define (process-item item)
     (match item
-      [(OPCODE opcode) opcode]
+      [(OPCODE opcode) (eval-opcode opcode xstate)]
       [_ #f]))        ; Ignore non-opcode values.
 
   (map process-item xstate))
@@ -813,37 +813,37 @@
 
 (define r1 (list r1_0 r1_1 r1_2 r1_3 r1_4 r1_5 r1_6 r1_7 r1_8 r1_9 r1_10 r1_11 r1_12 r1_13 r1_14))
 
-(define myexpr (cexpr #:depth 1))
+(define myexpr (cexpr #:depth 2))
 
 (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
                                (diff 1 2 r0 1 2 r1 myexpr)
-                               (diff 2 2 r0 2 2 r1 myexpr)
-                               (diff 2 3 r0 2 3 r1 myexpr)
-                               (diff 3 3 r0 3 3 r1 myexpr)
-                               (diff 3 4 r0 3 4 r1 myexpr)
-                               (diff 4 4 r0 4 4 r1 myexpr)
-                               (diff 4 5 r0 4 5 r1 myexpr)
-                               (diff 5 5 r0 5 5 r1 myexpr)
-                               (diff 5 6 r0 5 6 r1 myexpr)
-                               (diff 6 6 r0 6 6 r1 myexpr)
-                               (diff 6 7 r0 6 7 r1 myexpr)
-                               (diff 7 7 r0 7 7 r1 myexpr)
-                               (diff 7 8 r0 7 8 r1 myexpr)
-                               (diff 8 8 r0 8 8 r1 myexpr)
-                               (diff 8 9 r0 8 9 r1 myexpr)
-                               (diff 9 9 r0 9 9 r1 myexpr)
-                               (diff 9 10 r0 9 10 r1 myexpr)
-                               (diff 10 10 r0 10 10 r1 myexpr)
-                               (diff 10 11 r0 10 11 r1 myexpr)
-                               (diff 11 11 r0 11 11 r1 myexpr)
-                               (diff 11 12 r0 11 12 r1 myexpr)
-                               (diff 12 12 r0 12 12 r1 myexpr)
-                               (diff 12 13 r0 12 13 r1 myexpr)
-                               (diff 13 13 r0 13 13 r1 myexpr)
-                               (diff 13 14 r0 13 14 r1 myexpr)
-                               (diff 14 14 r0 14 14 r1 myexpr)
-                               (diff 14 15 r0 14 15 r1 myexpr)
-                               (diff 15 14 r0 15 14 r1 myexpr)
+                              ;  (diff 2 2 r0 2 2 r1 myexpr)
+                              ;  (diff 2 3 r0 2 3 r1 myexpr)
+                              ;  (diff 3 3 r0 3 3 r1 myexpr)
+                              ;  (diff 3 4 r0 3 4 r1 myexpr)
+                              ;  (diff 4 4 r0 4 4 r1 myexpr)
+                              ;  (diff 4 5 r0 4 5 r1 myexpr)
+                              ;  (diff 5 5 r0 5 5 r1 myexpr)
+                              ;  (diff 5 6 r0 5 6 r1 myexpr)
+                              ;  (diff 6 6 r0 6 6 r1 myexpr)
+                              ;  (diff 6 7 r0 6 7 r1 myexpr)
+                              ;  (diff 7 7 r0 7 7 r1 myexpr)
+                              ;  (diff 7 8 r0 7 8 r1 myexpr)
+                              ;  (diff 8 8 r0 8 8 r1 myexpr)
+                              ;  (diff 8 9 r0 8 9 r1 myexpr)
+                              ;  (diff 9 9 r0 9 9 r1 myexpr)
+                              ;  (diff 9 10 r0 9 10 r1 myexpr)
+                              ;  (diff 10 10 r0 10 10 r1 myexpr)
+                              ;  (diff 10 11 r0 10 11 r1 myexpr)
+                              ;  (diff 11 11 r0 11 11 r1 myexpr)
+                              ;  (diff 11 12 r0 11 12 r1 myexpr)
+                              ;  (diff 12 12 r0 12 12 r1 myexpr)
+                              ;  (diff 12 13 r0 12 13 r1 myexpr)
+                              ;  (diff 13 13 r0 13 13 r1 myexpr)
+                              ;  (diff 13 14 r0 13 14 r1 myexpr)
+                              ;  (diff 14 14 r0 14 14 r1 myexpr)
+                              ;  (diff 14 15 r0 14 15 r1 myexpr)
+                              ;  (diff 15 14 r0 15 14 r1 myexpr)
 ))))
 
 (print-forms sol)
