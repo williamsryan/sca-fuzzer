@@ -116,6 +116,16 @@
     [(IF pred bs) (if (eval-pred pred xstate) (list (eval-bs bs xstate)) EMPTY)]
     [_ EMPTY]))
 
+; (define (eval expr xstate)
+;   (log-debug "[eval]")
+;   (destruct expr
+;     [(IF pred bs)
+;      (let ([pred-result (eval-pred pred xstate)])
+;        (if pred-result
+;            (list (eval-bs bs xstate) (eval-opcode (list-ref xstate 8) xstate))
+;            EMPTY))]
+;     [_ EMPTY]))
+
 ; Evaluation function for predicates.
 (define (eval-pred p x)
   ; (log-debug "[eval-pred]")
@@ -136,7 +146,7 @@
   (match bs ; destruct doesn't work for nested subpatterns. Changed to match instead.
             [(BS b) b]
             ; [(OPCODE (bv value (bitvector _))) (eval-opcode value x)]
-            ; [(OPCODE op) (eval-opcode op x)]
+            [(OPCODE op) (eval-opcode op x)]
             [(REG reg) (eval-reg reg x)]
             ; [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
             ; [INSTR (eval-reg PC x)]
@@ -144,7 +154,7 @@
             ))
 
 (define (eval-opcode opcode xstate)
-  ; (log-debug "[eval-opcode]")
+  (log-debug "[eval-opcode]")
   ; (log-debug (list-ref xstate 8))
   (match (list-ref xstate 8)
     [(list 'OPCODE (bv value (bitvector 16))) value]
