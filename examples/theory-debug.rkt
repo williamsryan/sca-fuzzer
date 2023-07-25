@@ -148,7 +148,7 @@
   (log-debug (list-ref xstate 8))
   (list-ref xstate 8))
   ; (destruct opcode
-  ;   [(OPCODE value) (log-debug value)]
+  ;   [(OPCODE (value (bitvector 16))) (log-debug value)]
   ;   [_ (log-error "Invalid opcode") #f]))
 
 ; Evaluation function for registers.
