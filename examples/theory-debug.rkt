@@ -45,7 +45,7 @@
 (struct BOOL (b))
 (struct BS (bs))                        ; Bitstring value.
 (struct REG (r) #:transparent)          ; Register value.
-; (struct ADDR (a) #:transparent)         ; Address value.
+(struct ADDR (a) #:transparent)         ; Address value.
 
 ; Aux structs.
 (struct INTEGER (value) #:transparent)
@@ -100,12 +100,12 @@
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
                 )]
-  [bs (choose (BS (?? (bitvector (?? integer?))))
-              (SLIDE (?? integer?) (?? integer?) (bs))
+  [bs (choose ;(BS (?? (bitvector (?? integer?))))
+              ; (SLIDE (?? integer?) (?? integer?) (bs))
+              ; (OPCODE (bv (?? integer?) (bitvector 16)))
+              (OPCODE (?? (bitvector 16)))
               (REG (?? integer?))
-              (OPCODE (bv (?? integer?) (bitvector 16)))
-              )]
-  )
+              )])
 
 (define EMPTY (list '()))
 
@@ -136,19 +136,19 @@
   ; (log-debug (type-of bs))
   (match bs ; destruct doesn't work for nested subpatterns. Changed to match instead.
             [(BS b) b]
-            [(OPCODE (bv value (bitvector _))) (eval-opcode value x)]
-            ; [(OPCODE op) (eval-opcode op x)]
+            ; [(OPCODE (bv value (bitvector _))) (eval-opcode value x)]
+            [(OPCODE op) (eval-opcode op x)]
             [(REG reg) (eval-reg reg x)]
-            [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
-            [INSTR (eval-reg PC x)]
+            ; [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
+            ; [INSTR (eval-reg PC x)]
             [_ (log-error "Invalid expression for bitstring observation") #f]
             ))
 
 (define (eval-opcode opcode xstate)
-  (log-debug "[eval-opcode]")
+  ; (log-debug "[eval-opcode]")
   ; (log-debug opcode)
   (match opcode
-    [(OPCODE (bv value (bitvector _))) value]
+    [(OPCODE value) value]
     [_ (log-error "Invalid opcode") #f]))
 
 ; Evaluation function for registers.
@@ -221,6 +221,7 @@
 ;                     false otherwise
 (define (obs-equal expr xstate1 xstate2)
   ; (log-debug "[obs-equal]")
+  ; (log-debug expr)
   ; (log-debug xstate1)
   ; (log-debug xstate2)
   ; (log-debug (listbv-equal (obs expr xstate1) (obs expr xstate2)))
@@ -358,7 +359,8 @@
 
 (define r1 (list r1_0 r1_1))
 
-(define myexpr (cexpr #:depth 1))
+(define myexpr (cexpr #:depth 2))
+(log-debug myexpr)
 
 (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
                                (diff 1 2 r0 1 2 r1 myexpr)
