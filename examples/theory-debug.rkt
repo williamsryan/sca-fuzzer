@@ -219,11 +219,11 @@
 ;             returns true if the two xstates produces same observations
 ;                     false otherwise
 (define (obs-equal expr xstate1 xstate2)
-  ; (log-debug "[obs-equal]")
+  (log-debug "[obs-equal]")
   ; (log-debug expr)
-  ; (log-debug xstate1)
-  ; (log-debug xstate2)
-  ; (log-debug (listbv-equal (obs expr xstate1) (obs expr xstate2)))
+  (log-debug xstate1)
+  (log-debug xstate2)
+  (log-debug (equal? (obs expr xstate1) (obs expr xstate2)))
   ; (listbv-equal (obs expr xstate1) (obs expr xstate2)))
   (equal? (obs expr xstate1) (obs expr xstate2))) ; TODO: check out what happened with our labels from before.
 
@@ -294,10 +294,10 @@
                    (REG (bv 107374182398 (bitvector 64)))	; Register: RDI
                    (REG (bv 940597838044 (bitvector 64)))	; Register: RDX
                    (REG (bv 1971389989324 (bitvector 64)))	; Register: RSI
-                   (REG (bv 6 (bitvector 64)))	; Register: EFLAGS
+                   (REG (bv 61 (bitvector 64)))	; Register: EFLAGS
                    (REG (bv 18446612985909035028 (bitvector 64)))	; PC
                    ; Opcode
-                   (OPCODE (bv 101 (bitvector 16)))
+                   (OPCODE (bv 111 (bitvector 16)))
                    ; Operands
                    (OPERAND (bv 5395273 (bitvector 64)))
                    (OPERAND (bv 5391448 (bitvector 64)))
