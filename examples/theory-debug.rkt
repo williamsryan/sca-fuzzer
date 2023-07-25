@@ -102,7 +102,8 @@
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
-              (OPCODE (bs))
+              (OPCODE (bv (?? integer?) (bitvector 16)))
+              ; (OPCODE (?? integer?))
               (REG (?? integer?))
               )]
   )
@@ -138,7 +139,7 @@
             [(BS b) (log-debug "BS") b]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
             [(REG reg) (eval-reg reg x)]
-            ; [(OPCODE op) (eval-opcode op x)]
+            [(OPCODE op) (eval-opcode op x)]
             [INSTR (eval-reg PC x)]
             [_ (log-error "Invalid expression for bitstring observation")]
             ))
@@ -147,7 +148,7 @@
   (log-debug "[eval-opcode]")
   ; (log-debug opcode)
   (match opcode
-    [op (log-debug op)]
+    [(OPCODE (bv value (bitvector _))) value]
     [_ (log-error "Invalid opcode")]))
   ; (define opcode-value (match opcode
   ;                       [bv bv]
@@ -210,7 +211,8 @@
 ;       returns its observation
 (define (obs expr xstate)
   ; (log-debug "[obs]")
-  (log-debug (eval expr xstate))
+  ; (log-debug expr)
+  ; (log-debug (eval expr xstate))
   (eval expr xstate))
 
 ; obs() takes an expression and a xstate
@@ -303,10 +305,10 @@
                    (REG (bv 107374182398 (bitvector 64)))	; Register: RDI
                    (REG (bv 940597838044 (bitvector 64)))	; Register: RDX
                    (REG (bv 1971389989324 (bitvector 64)))	; Register: RSI
-                   (REG (bv 61 (bitvector 64)))	; Register: EFLAGS
+                   (REG (bv 6 (bitvector 64)))	; Register: EFLAGS
                    (REG (bv 18446612985909035028 (bitvector 64)))	; PC
                    ; Opcode
-                   (OPCODE (bv 111 (bitvector 16)))
+                   (OPCODE (bv 110 (bitvector 16)))
                    ; Operands
                    (OPERAND (bv 5395273 (bitvector 64)))
                    (OPERAND (bv 5391448 (bitvector 64)))
@@ -367,7 +369,7 @@
 
 (define r1 (list r1_0 r1_1))
 
-(define myexpr (cexpr #:depth 1))
+(define myexpr (cexpr #:depth 2))
 
 (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
                                (diff 1 2 r0 1 2 r1 myexpr)
