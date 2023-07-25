@@ -239,6 +239,14 @@
           #f
           (and (bveq (first bvs1) (first bvs2)) (listbv-equal (rest bvs1) (rest bvs2))))))
 
+; Helper function used in our equality check now that the structs are all labeled.
+; (define (compare-objects obj1 obj2)
+;   (or (bitvector? obj1)
+;       (bitvector? obj2)
+;       (and (REG? obj1) (REG? obj2) (equal? (REG-r obj1) (REG-r obj2)))
+;       (and (OPCODE? obj1) (OPCODE? obj2) (equal? (OPCODE-op obj1) (OPCODE-op obj2)))))
+      ; (and (OPERAND? obj1) (OPERAND? obj2) (equal? (OPERAND-bv obj1) (OPERAND-bv obj2)))))
+
 ; Take our grammar expression and archstate as input.
 ; Return a list of the operands for the run step.
 ; (define (obs-opcode xstate)
@@ -254,7 +262,7 @@
   ; (log-debug "[parse-state]")
   (define (process-item item)
     (match item
-      [(REG reg) reg]
+      [(REG reg) reg] ; Get to work with (REG reg).
       [(OPCODE opcode) #f]
       [(OPERAND operand) #f]
       [_ (log-error "Invalid state object") #f]))
