@@ -102,9 +102,8 @@
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
-              (OPCODE (bv (?? integer?) (bitvector 16)))
-              ; (OPCODE (?? integer?))
               (REG (?? integer?))
+              (OPCODE (bv (?? integer?) (bitvector 16)))
               )]
   )
 
@@ -134,12 +133,12 @@
 ; Evaluation function for bit sequences.
 (define (eval-bs bs x)
   ; (log-debug "[eval-bs]")
-  ; (log-debug bs)
+  ; (log-debug (type-of bs))
   (destruct bs
             [(BS b) b]
-            [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
-            [(REG reg) (eval-reg reg x)]
             [(OPCODE op) (eval-opcode op x)]
+            [(REG reg) (eval-reg reg x)]
+            [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
             [INSTR (eval-reg PC x)]
             [_ (log-error "Invalid expression for bitstring observation") #f]
             ))
@@ -148,7 +147,7 @@
   (log-debug "[eval-opcode]")
   ; (log-debug opcode)
   (match opcode
-    [(OPCODE (bv value (bitvector _))) (OPCODE (bv value (bitvector 16)))]
+    [(OPCODE (bv value (bitvector _))) value]
     [_ (log-error "Invalid opcode") #f]))
   ; (define opcode-value (match opcode
   ;                       [bv bv]
