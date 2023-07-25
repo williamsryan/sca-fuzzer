@@ -30,7 +30,7 @@
 
 ; Struct definitions for our contract language.
 (struct IF (pred expr) #:transparent)   ; Represents an if-expression.
-(struct OPCODE (bs) #:transparent)
+(struct OPCODE (op) #:transparent)
 (struct OPERAND (bs) #:transparent)
 (struct OPERAND-TYPE (bs) #:transparent)
 (struct OPERAND-VALUE (bs) #:transparent)
@@ -102,7 +102,7 @@
                 )]
   [bs (choose ;(BS (?? (bitvector (?? integer?))))
               ; (SLIDE (?? integer?) (?? integer?) (bs))
-              (OPCODE (?? (bitvector 16)))  ; TODO: update the structure to expect a concrete value for OPCODE.
+              (OPCODE (?? integer?))  ; TODO: update the structure to expect a concrete value for OPCODE.
               (REG (?? integer?))
               )])
 
@@ -147,8 +147,8 @@
   ; (log-debug "[eval-opcode]")
   ; (log-debug (list-ref xstate 8))
   ; (list-ref xstate 8))
-  (match opcode
-    [(OPCODE (bv value (bitvector 16))) (log-debug value)]
+  (match (list-ref xstate 8)
+    [(list 'OPCODE (bv value (bitvector 16))) value]
     [_ #f ]));(log-error "Invalid opcode") #f]))
 
 ; Evaluation function for registers.
@@ -271,7 +271,7 @@
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
   ; (log-debug expr)
-  (log-debug (parse-state (list-ref r i)))
+  ; (log-debug (parse-state (list-ref r i)))
   (if (equal? i j)
       (if (equal? i_ j_) #f
                          (or (not (empty-obs expr (parse-state (list-ref r_ i_))))
