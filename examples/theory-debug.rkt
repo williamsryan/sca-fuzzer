@@ -230,7 +230,7 @@
 ;                returns true if they are the same
 ;                        false otherwise
 (define (listbv-equal bvs1 bvs2)
-  (log-debug "[listbv-equal]")
+  ; (log-debug "[listbv-equal]")
   ; (log-debug bvs1)
   ; (log-debug bvs2)
   (if (empty? bvs1)
@@ -366,7 +366,7 @@
 
 (define r1 (list r1_0 r1_1))
 
-(define myexpr (cexpr #:depth 2))
+(define myexpr (cexpr #:depth 1))
 ; (log-debug myexpr)
 
 (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
