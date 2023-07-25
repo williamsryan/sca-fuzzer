@@ -134,9 +134,10 @@
 (define (eval-bs bs x)
   ; (log-debug "[eval-bs]")
   ; (log-debug (type-of bs))
-  (destruct bs
+  (match bs ; destruct doesn't work for nested subpatterns. Changed to match instead.
             [(BS b) b]
-            [(OPCODE op) (eval-opcode op x)]
+            [(OPCODE (bv value (bitvector _))) (eval-opcode value x)]
+            ; [(OPCODE op) (eval-opcode op x)]
             [(REG reg) (eval-reg reg x)]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
             [INSTR (eval-reg PC x)]
@@ -149,15 +150,15 @@
   (match opcode
     [(OPCODE (bv value (bitvector _))) value]
     [_ (log-error "Invalid opcode") #f]))
-  ; (define opcode-value (match opcode
-  ;                       [bv bv]
-  ;                       [_ (log-error "Invalid opcode")]))
-  ; (define pc-value (match (list-ref xstate 7)
-  ;                       [(REG bv) bv]
-  ;                       [_ (log-error "Invalid PC")]))
 
-  ; (log-debug opcode-value)
-  ; (bveq opcode-value pc-value))
+; Evaluation function for registers.
+(define (eval-reg reg xstate)
+  ; (log-debug "[eval-reg]")
+  ; (log-debug reg)
+  ; (log-debug (list-ref xstate reg))
+  (cond
+    [(integer? reg) (list-ref xstate reg)]
+    [else (log-error "Invalid register format")]))
 
 ; TODO: update this with our desired constraints for instruction operands.
 ; (define (eval-operands op1 op2 xstate)
@@ -194,17 +195,6 @@
   ; (destruct addr
   ;   [(MEM-LOAD a) (eval-bs a xstate)]
   ;   [(MEM-STORE a _) (eval-bs a xstate)]))
-
-; Evaluation function for registers.
-(define (eval-reg reg xstate)
-  ; (log-debug "[eval-reg]")
-  ; (log-debug reg)
-  ; (log-debug (list-ref xstate reg))
-  (cond
-    [(integer? reg) (list-ref xstate reg)]
-    [else (log-error "Invalid register format")]))
-  ; (log-debug (list-ref xstate reg))
-  ; (list-ref xstate reg))
 
 ; obs() takes an expression and a xstate
 ;       returns its observation
@@ -368,7 +358,7 @@
 
 (define r1 (list r1_0 r1_1))
 
-(define myexpr (cexpr #:depth 2))
+(define myexpr (cexpr #:depth 1))
 
 (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
                                (diff 1 2 r0 1 2 r1 myexpr)
