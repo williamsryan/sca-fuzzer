@@ -102,7 +102,6 @@
                 )]
   [bs (choose ;(BS (?? (bitvector (?? integer?))))
               ; (SLIDE (?? integer?) (?? integer?) (bs))
-              ; (OPCODE (bv (?? integer?) (bitvector 16)))
               (OPCODE (?? (bitvector 16)))
               (REG (?? integer?))
               )])
@@ -146,9 +145,9 @@
 
 (define (eval-opcode opcode xstate)
   (log-debug "[eval-opcode]")
-  (log-debug opcode)
-  (match opcode
-    [(OPCODE (value (bitvector 16))) value]
+  (log-debug (list-ref xstate 8))
+  (destruct opcode
+    [(OPCODE value) (log-debug value)]
     [_ (log-error "Invalid opcode") #f]))
 
 ; Evaluation function for registers.
