@@ -146,9 +146,10 @@
 (define (eval-opcode opcode xstate)
   (log-debug "[eval-opcode]")
   (log-debug (list-ref xstate 8))
-  (destruct opcode
-    [(OPCODE value) (log-debug value)]
-    [_ (log-error "Invalid opcode") #f]))
+  (list-ref xstate 8))
+  ; (destruct opcode
+  ;   [(OPCODE value) (log-debug value)]
+  ;   [_ (log-error "Invalid opcode") #f]))
 
 ; Evaluation function for registers.
 (define (eval-reg reg xstate)
