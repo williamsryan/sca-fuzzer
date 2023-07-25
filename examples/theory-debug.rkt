@@ -136,20 +136,20 @@
   ; (log-debug "[eval-bs]")
   ; (log-debug bs)
   (destruct bs
-            [(BS b) (log-debug "BS") b]
+            [(BS b) b]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
             [(REG reg) (eval-reg reg x)]
             [(OPCODE op) (eval-opcode op x)]
             [INSTR (eval-reg PC x)]
-            [_ (log-error "Invalid expression for bitstring observation")]
+            [_ (log-error "Invalid expression for bitstring observation") #f]
             ))
 
 (define (eval-opcode opcode xstate)
   (log-debug "[eval-opcode]")
   ; (log-debug opcode)
   (match opcode
-    [(OPCODE (bv value (bitvector _))) value]
-    [_ (log-error "Invalid opcode")]))
+    [(OPCODE (bv value (bitvector _))) (OPCODE (bv value (bitvector 16)))]
+    [_ (log-error "Invalid opcode") #f]))
   ; (define opcode-value (match opcode
   ;                       [bv bv]
   ;                       [_ (log-error "Invalid opcode")]))
@@ -201,11 +201,11 @@
   ; (log-debug "[eval-reg]")
   ; (log-debug reg)
   ; (log-debug (list-ref xstate reg))
-  ; (match reg
-  ;   [(list 'REG _) (log-debug "TODO")]
-  ;   [bs (log-error "Invalid register format") (log-error bs)]))
+  (cond
+    [(integer? reg) (list-ref xstate reg)]
+    [else (log-error "Invalid register format")]))
   ; (log-debug (list-ref xstate reg))
-  (list-ref xstate reg))
+  ; (list-ref xstate reg))
 
 ; obs() takes an expression and a xstate
 ;       returns its observation
@@ -308,7 +308,7 @@
                    (REG (bv 6 (bitvector 64)))	; Register: EFLAGS
                    (REG (bv 18446612985909035028 (bitvector 64)))	; PC
                    ; Opcode
-                   (OPCODE (bv 110 (bitvector 16)))
+                   (OPCODE (bv 101 (bitvector 16)))
                    ; Operands
                    (OPERAND (bv 5395273 (bitvector 64)))
                    (OPERAND (bv 5391448 (bitvector 64)))
