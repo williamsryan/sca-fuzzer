@@ -199,7 +199,6 @@
 ;       returns its observation
 (define (obs expr xstate)
   ; (log-debug "[obs]")
-  ; (log-debug expr)
   ; (log-debug (eval expr xstate))
   (eval expr xstate))
 
@@ -223,8 +222,8 @@
   ; (log-debug expr)
   ; (log-debug xstate1)
   ; (log-debug xstate2)
-  (listbv-equal (obs expr xstate1) (obs expr xstate2)))
-  ; (equal? (obs expr xstate1) (obs expr xstate2))) ; TODO: check out what happened with our labels from before.
+  ; (listbv-equal (obs expr xstate1) (obs expr xstate2)))
+  (equal? (obs expr xstate1) (obs expr xstate2)))
 
 ; listbv-equal() takes two observations
 ;                returns true if they are the same
@@ -262,9 +261,9 @@
   ; (log-debug "[parse-state]")
   (define (process-item item)
     (match item
-      [(REG reg) reg] ; Get to work with (REG reg).
-      [(OPCODE opcode) #f]
-      [(OPERAND operand) #f]
+      [(REG reg) (list 'REG reg)]
+      [(OPCODE opcode) (list 'OPCODE opcode)]
+      [(OPERAND operand) (list 'OPERAND operand)]
       [_ (log-error "Invalid state object") #f]))
 
   (map process-item xstate))
@@ -278,7 +277,7 @@
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
   ; (log-debug expr)
-  (log-debug (parse-state (list-ref r i)))
+  ; (log-debug (parse-state (list-ref r i)))
   (if (equal? i j)
       (if (equal? i_ j_) #f
                          (or (not (empty-obs expr (parse-state (list-ref r_ i_))))
@@ -302,7 +301,7 @@
                    (REG (bv 107374182398 (bitvector 64)))	; Register: RDI
                    (REG (bv 940597838044 (bitvector 64)))	; Register: RDX
                    (REG (bv 1971389989324 (bitvector 64)))	; Register: RSI
-                   (REG (bv 60 (bitvector 64)))	; Register: EFLAGS
+                   (REG (bv 6 (bitvector 64)))	; Register: EFLAGS
                    (REG (bv 18446612985909035028 (bitvector 64)))	; PC
                    ; Opcode
                    (OPCODE (bv 111 (bitvector 16)))
