@@ -102,7 +102,8 @@
                 )]
   [bs (choose ;(BS (?? (bitvector (?? integer?))))
               ; (SLIDE (?? integer?) (?? integer?) (bs))
-              (OPCODE (?? integer?))  ; TODO: update the structure to expect a concrete value for OPCODE.
+              ; (OPCODE (?? integer?))  ; TODO: update the structure to expect a concrete value for OPCODE.
+              (OPCODE (?? (bitvector 16)))
               (REG (?? integer?))
               )])
 
