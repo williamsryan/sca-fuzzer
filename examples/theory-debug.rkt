@@ -102,7 +102,7 @@
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
-              (OPCODE (?? (bitvector 16)))  ; TODO: update the structure to expect a concrete value for OPCODE.
+              ; (OPCODE (?? (bitvector 16)))  ; TODO: update the structure to expect a concrete value for OPCODE.
               (REG (?? integer?))
               )])
 
@@ -136,7 +136,7 @@
   (match bs ; destruct doesn't work for nested subpatterns. Changed to match instead.
             [(BS b) b]
             ; [(OPCODE (bv value (bitvector _))) (eval-opcode value x)]
-            [(OPCODE op) (eval-opcode op x)]
+            ; [(OPCODE op) (eval-opcode op x)]
             [(REG reg) (eval-reg reg x)]
             ; [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
             ; [INSTR (eval-reg PC x)]
@@ -219,20 +219,20 @@
 ;             returns true if the two xstates produces same observations
 ;                     false otherwise
 (define (obs-equal expr xstate1 xstate2)
-  (log-debug "[obs-equal]")
+  ; (log-debug "[obs-equal]")
   ; (log-debug expr)
-  (log-debug xstate1)
-  (log-debug xstate2)
-  (log-debug (equal? (obs expr xstate1) (obs expr xstate2)))
-  ; (listbv-equal (obs expr xstate1) (obs expr xstate2)))
-  (equal? (obs expr xstate1) (obs expr xstate2))) ; TODO: check out what happened with our labels from before.
+  ; (log-debug xstate1)
+  ; (log-debug xstate2)
+  (listbv-equal (obs expr xstate1) (obs expr xstate2)))
+  ; (equal? (obs expr xstate1) (obs expr xstate2))) ; TODO: check out what happened with our labels from before.
 
 ; listbv-equal() takes two observations
 ;                returns true if they are the same
 ;                        false otherwise
 (define (listbv-equal bvs1 bvs2)
   (log-debug "[listbv-equal]")
-  ; (log-debug (equal? bvs1 bvs2))
+  ; (log-debug bvs1)
+  ; (log-debug bvs2)
   (if (empty? bvs1)
       (if (empty? bvs2) #t #f)
       (if (empty? bvs2)
@@ -254,9 +254,9 @@
   ; (log-debug "[parse-state]")
   (define (process-item item)
     (match item
-      [(REG reg) (list 'REG reg)]
-      [(OPCODE opcode) (list 'OPCODE opcode)]
-      [(OPERAND operand) (list 'OPERAND operand)]
+      [(REG reg) reg]
+      [(OPCODE opcode) #f]
+      [(OPERAND operand) #f]
       [_ (log-error "Invalid state object") #f]))
 
   (map process-item xstate))
@@ -270,7 +270,7 @@
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
   ; (log-debug expr)
-  ; (log-debug (parse-state (list-ref r i)))
+  (log-debug (parse-state (list-ref r i)))
   (if (equal? i j)
       (if (equal? i_ j_) #f
                          (or (not (empty-obs expr (parse-state (list-ref r_ i_))))
@@ -294,7 +294,7 @@
                    (REG (bv 107374182398 (bitvector 64)))	; Register: RDI
                    (REG (bv 940597838044 (bitvector 64)))	; Register: RDX
                    (REG (bv 1971389989324 (bitvector 64)))	; Register: RSI
-                   (REG (bv 61 (bitvector 64)))	; Register: EFLAGS
+                   (REG (bv 60 (bitvector 64)))	; Register: EFLAGS
                    (REG (bv 18446612985909035028 (bitvector 64)))	; PC
                    ; Opcode
                    (OPCODE (bv 111 (bitvector 16)))
@@ -362,7 +362,7 @@
 ; (log-debug myexpr)
 
 (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
-                               (diff 1 2 r0 1 2 r1 myexpr)
+                              ;  (diff 1 2 r0 1 2 r1 myexpr)
 ))))
 
 (print-forms sol)
