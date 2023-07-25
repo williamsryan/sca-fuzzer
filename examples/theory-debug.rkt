@@ -102,7 +102,7 @@
                 )]
   [bs (choose ;(BS (?? (bitvector (?? integer?))))
               ; (SLIDE (?? integer?) (?? integer?) (bs))
-              (OPCODE (?? (bitvector 16)))
+              (OPCODE (?? (bitvector 16)))  ; TODO: update the structure to expect a concrete value for OPCODE.
               (REG (?? integer?))
               )])
 
@@ -145,11 +145,11 @@
 
 (define (eval-opcode opcode xstate)
   (log-debug "[eval-opcode]")
-  (log-debug (list-ref xstate 8))
-  (list-ref xstate 8))
-  ; (destruct opcode
-  ;   [(OPCODE (value (bitvector 16))) (log-debug value)]
-  ;   [_ (log-error "Invalid opcode") #f]))
+  ; (log-debug (list-ref xstate 8))
+  ; (list-ref xstate 8))
+  (match opcode
+    [(OPCODE (bv value (bitvector 16))) (log-debug value)]
+    [_ (log-error "Invalid opcode") #f]))
 
 ; Evaluation function for registers.
 (define (eval-reg reg xstate)
@@ -360,7 +360,7 @@
 (define r1 (list r1_0 r1_1))
 
 (define myexpr (cexpr #:depth 2))
-(log-debug myexpr)
+; (log-debug myexpr)
 
 (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
                                (diff 1 2 r0 1 2 r1 myexpr)
