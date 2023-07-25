@@ -100,10 +100,9 @@
                 (OR (pred) (pred))
                 (EQ (bs) (bs))
                 )]
-  [bs (choose ;(BS (?? (bitvector (?? integer?))))
-              ; (SLIDE (?? integer?) (?? integer?) (bs))
-              ; (OPCODE (?? integer?))  ; TODO: update the structure to expect a concrete value for OPCODE.
-              (OPCODE (?? (bitvector 16)))
+  [bs (choose (BS (?? (bitvector (?? integer?))))
+              (SLIDE (?? integer?) (?? integer?) (bs))
+              (OPCODE (?? (bitvector 16)))  ; TODO: update the structure to expect a concrete value for OPCODE.
               (REG (?? integer?))
               )])
 
@@ -147,7 +146,6 @@
 (define (eval-opcode opcode xstate)
   ; (log-debug "[eval-opcode]")
   ; (log-debug (list-ref xstate 8))
-  ; (list-ref xstate 8))
   (match (list-ref xstate 8)
     [(list 'OPCODE (bv value (bitvector 16))) value]
     [_ #f ]));(log-error "Invalid opcode") #f]))
