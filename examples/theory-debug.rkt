@@ -210,6 +210,7 @@
 ;       returns its observation
 (define (obs expr xstate)
   ; (log-debug "[obs]")
+  (log-debug (eval expr xstate))
   (eval expr xstate))
 
 ; obs() takes an expression and a xstate
@@ -228,8 +229,7 @@
 ;             returns true if the two xstates produces same observations
 ;                     false otherwise
 (define (obs-equal expr xstate1 xstate2)
-  (log-debug "[obs-equal]")
-  ; (log-debug (type-of xstate1))
+  ; (log-debug "[obs-equal]")
   ; (log-debug xstate1)
   ; (log-debug xstate2)
   ; (log-debug (listbv-equal (obs expr xstate1) (obs expr xstate2)))
