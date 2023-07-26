@@ -155,16 +155,11 @@
             ))
 
 (define (eval-opcode opcode xstate)
-  (log-debug "[eval-opcode]")
-  (log-debug opcode)
+  ; (log-debug "[eval-opcode]")
   ; (log-debug (list-ref xstate 8))
-  (match opcode
-    [(OPCODE (bv value (bitvector 16)))
-      (cons 'OPCODE value)] ; Add OPCODE to the expression as a pair (OPCODE value).
-    [_ EMPTY]))
-  ; (match (list-ref xstate 8)
-  ;   [(list 'OPCODE (bv value (bitvector 16))) value]
-  ;   [_ #f ]));(log-error "Invalid opcode") #f]))
+  (match (list-ref xstate 8)
+    [(list 'OPCODE (bv value (bitvector 16))) value]
+    [_ #f ]));(log-error "Invalid opcode") #f]))
 
 ; Evaluation function for registers.
 (define (eval-reg reg xstate)
