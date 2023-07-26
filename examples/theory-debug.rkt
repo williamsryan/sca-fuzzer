@@ -102,7 +102,7 @@
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
-              (OPCODE (?? (bitvector 16)))  ; TODO: update the structure to expect a concrete value for OPCODE.
+              ; (OPCODE (?? (bitvector 16)))  ; TODO: update the structure to expect a concrete value for OPCODE.
               ; (OPCODE (?? integer?))
               (REG (?? integer?))
               )])
@@ -121,12 +121,10 @@
 ;   ; (log-debug "[eval]")
 ;   ; (log-debug expr)
 ;   (destruct expr
-;     [(IF pred bs) 
-;      (if (eval-pred pred xstate) 
-;          (let* ([bs-value (eval-bs bs xstate)]
-;                 [opcode-value (eval-opcode bs xstate)])   ; Call eval-opcode here
-;            (list (append bs-value (list opcode-value)))
-;            (log-debug opcode-value))  ; Append opcode to bs-value
+;     [(IF pred bs)
+;      (if (eval-pred pred xstate)
+;          (cons (eval-bs bs xstate) ; Use cons to add the result of eval-bs as the first element
+;                (eval-opcode bs xstate)) ; eval-opcode may return an empty list or a list with one element
 ;          EMPTY)]
 ;     [_ EMPTY]))
 
@@ -150,7 +148,7 @@
   (destruct bs ; destruct doesn't work for nested subpatterns. Changed to match instead.
             [(BS b) b]
             ; [(OPCODE (bv value (bitvector _))) (eval-opcode value x)]
-            [(OPCODE op) (eval-opcode op x)]
+            ; [(OPCODE op) (eval-opcode op x)]
             [(REG reg) (eval-reg reg x)]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
             ; [INSTR (eval-reg PC x)]
