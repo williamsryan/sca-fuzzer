@@ -29,7 +29,7 @@
 (define PC 16)  ; R16
 
 ; Struct definitions for our contract language.
-(struct IF (pred expr) #:transparent)   ; Represents an if-expression.
+(struct IF (pred bs1 bs2) #:transparent)   ; Represents an if-expression.
 (struct OPCODE (op) #:transparent)
 (struct OPERAND (bs) #:transparent)
 (struct OPERAND-TYPE (bs) #:transparent)
@@ -92,7 +92,7 @@
 
 ; Grammar for the actual contract.
 (define-grammar (cexpr)
-  [expr (IF (pred) (bs))]
+  [expr (IF (pred) (bs) (bs))] ; TODO: test this as: IF (pred) (bs) (bs) for our new grammar.
   [pred (choose (BOOL (?? boolean?))
                 ; (OPERAND-TYPE ...)
                 (NOT (pred))
@@ -103,7 +103,6 @@
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
               ; (OPCODE (?? (bitvector 16)))  ; TODO: update the structure to expect a concrete value for OPCODE.
-              ; (OPCODE (?? integer?))
               (REG (?? integer?))
               OPCODE
               )])
@@ -115,7 +114,7 @@
   ; (log-debug "[eval]")
   ; (log-debug expr)
   (destruct expr
-    [(IF pred bs) (if (eval-pred pred xstate) (list (eval-bs bs xstate)) EMPTY)]
+    [(IF pred bs _) (if (eval-pred pred xstate) (list (eval-bs bs xstate)) EMPTY)]
     [_ EMPTY]))
 
 ; (define (eval expr xstate)
