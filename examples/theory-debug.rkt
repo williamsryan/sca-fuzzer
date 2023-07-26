@@ -104,7 +104,7 @@
               (SLIDE (?? integer?) (?? integer?) (bs))
               ; (OPCODE (?? (bitvector 16)))  ; TODO: update the structure to expect a concrete value for OPCODE.
               (REG (?? integer?))
-              (OPCODE (??))
+              OPCODE
               )])
 
 (define EMPTY (list '()))
@@ -145,11 +145,10 @@
 (define (eval-bs bs x)
   ; (log-debug "[eval-bs]")
   ; (log-debug (type-of bs))
-  (match bs ; destruct doesn't work for nested subpatterns. Changed to match instead.
+  (destruct bs
             [(BS b) b]
-            ; [(OPCODE op) (eval-opcode x)]
             [(REG reg) (eval-reg reg x)]
-            [(OPCODE _) (log-debug "Asdf") (eval-opcode x)]
+            [OPCODE (eval-opcode x)]
             ; [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
             ; [INSTR (eval-reg PC x)]
             [_ (log-error "Invalid expression for bitstring observation") #f]
@@ -157,11 +156,11 @@
 
 (define (eval-opcode xstate)
   (log-debug "[eval-opcode]")
-  (log-debug (list-ref xstate 8)))
+  ; (log-debug (list-ref xstate 8)))
   ; (list-ref xstate 8))
-  ; (match (list-ref xstate 8)
-  ;   [(list 'OPCODE (bv value (bitvector 16))) value]
-  ;   [_ #f ]));(log-error "Invalid opcode") #f]))
+  (match (list-ref xstate 8)
+    [(list 'OPCODE (bv value (bitvector 16))) (log-debug value)]
+    [_ #f ]));(log-error "Invalid opcode") #f]))
 
 ; Evaluation function for registers.
 (define (eval-reg reg xstate)
