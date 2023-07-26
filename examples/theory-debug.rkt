@@ -102,9 +102,9 @@
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
-              (OPCODE (?? (bitvector 16)))  ; TODO: update the structure to expect a concrete value for OPCODE.
+              ; (OPCODE (?? (bitvector 16)))  ; TODO: update the structure to expect a concrete value for OPCODE.
               (REG (?? integer?))
-              ; OPCODE
+              OPCODE
               )])
 
 (define EMPTY (list '()))
@@ -148,7 +148,8 @@
   (destruct bs
             [(BS b) b]
             [(REG reg) (eval-reg reg x)]
-            [(OPCODE _) (eval-opcode x)]
+            ; [(OPCODE _) (eval-opcode x)]
+            [OPCODE (eval-opcode x)]
             ; [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
             ; [INSTR (eval-reg PC x)]
             [_ (log-error "Invalid expression for bitstring observation") #f]
