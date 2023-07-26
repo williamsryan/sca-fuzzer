@@ -102,9 +102,9 @@
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
-              ; (OPCODE (?? (bitvector 16)))  ; TODO: update the structure to expect a concrete value for OPCODE.
+              (OPCODE (?? (bitvector 16)))  ; TODO: update the structure to expect a concrete value for OPCODE.
               (REG (?? integer?))
-              OPCODE
+              ; OPCODE
               )])
 
 (define EMPTY (list '()))
@@ -148,7 +148,7 @@
   (destruct bs
             [(BS b) b]
             [(REG reg) (eval-reg reg x)]
-            [OPCODE (eval-opcode x)]
+            [(OPCODE _) (eval-opcode x)]
             ; [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
             ; [INSTR (eval-reg PC x)]
             [_ (log-error "Invalid expression for bitstring observation") #f]
@@ -159,7 +159,7 @@
   ; (log-debug (list-ref xstate 8)))
   ; (list-ref xstate 8))
   (match (list-ref xstate 8)
-    [(list 'OPCODE (bv value (bitvector 16))) (log-debug value)]
+    [(list 'OPCODE (bv value (bitvector 16))) value]
     [_ #f ]));(log-error "Invalid opcode") #f]))
 
 ; Evaluation function for registers.
@@ -173,10 +173,10 @@
   ; TODO: also return the OPCODE corresponding to this register state.
   (cond
     [(integer? reg) (list-ref xstate reg)]
-    [(list? reg) ; Handle the list (REG, OPCODE)
-     (let ([reg-value (list-ref xstate (first reg))]
-           [opcode-value (eval-opcode (second reg) xstate)])
-       (list reg-value opcode-value))]
+    ; [(list? reg) ; Handle the list (REG, OPCODE)
+    ;  (let ([reg-value (list-ref xstate (first reg))]
+    ;        [opcode-value (eval-opcode (second reg) xstate)])
+    ;    (list reg-value opcode-value))]
     [else (log-error "Invalid register format") #f]))
 
 ; TODO: update this with our desired constraints for instruction operands.
@@ -324,7 +324,7 @@
                    (REG (bv 60 (bitvector 64)))	; Register: EFLAGS
                    (REG (bv 18446612985909035028 (bitvector 64)))	; PC
                    ; Opcode
-                   (OPCODE (bv 111 (bitvector 16)))
+                   (OPCODE (bv 110 (bitvector 16)))
                    ; Operands
                    (OPERAND (bv 5395273 (bitvector 64)))
                    (OPERAND (bv 5391448 (bitvector 64)))
