@@ -118,13 +118,16 @@
     [_ EMPTY]))
 
 ; (define (eval expr xstate)
-;   (log-debug "[eval]")
+;   ; (log-debug "[eval]")
+;   ; (log-debug expr)
 ;   (destruct expr
-;     [(IF pred bs)
-;      (let ([pred-result (eval-pred pred xstate)])
-;        (if pred-result
-;            (list (eval-bs bs xstate) (eval-opcode (list-ref xstate 8) xstate))
-;            EMPTY))]
+;     [(IF pred bs) 
+;      (if (eval-pred pred xstate) 
+;          (let* ([bs-value (eval-bs bs xstate)]
+;                 [opcode-value (eval-opcode bs xstate)])   ; Call eval-opcode here
+;            (list (append bs-value (list opcode-value)))
+;            (log-debug opcode-value))  ; Append opcode to bs-value
+;          EMPTY)]
 ;     [_ EMPTY]))
 
 ; Evaluation function for predicates.
@@ -155,11 +158,12 @@
             ))
 
 (define (eval-opcode opcode xstate)
-  ; (log-debug "[eval-opcode]")
+  (log-debug "[eval-opcode]")
   ; (log-debug (list-ref xstate 8))
-  (match (list-ref xstate 8)
-    [(list 'OPCODE (bv value (bitvector 16))) value]
-    [_ #f ]));(log-error "Invalid opcode") #f]))
+  (list-ref xstate 8))
+  ; (match (list-ref xstate 8)
+  ;   [(list 'OPCODE (bv value (bitvector 16))) value]
+  ;   [_ #f ]));(log-error "Invalid opcode") #f]))
 
 ; Evaluation function for registers.
 (define (eval-reg reg xstate)
