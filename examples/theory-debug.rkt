@@ -104,7 +104,7 @@
               (SLIDE (?? integer?) (?? integer?) (bs))
               ; (OPCODE (?? (bitvector 16)))  ; TODO: update the structure to expect a concrete value for OPCODE.
               (REG (?? integer?))
-              OPCODE
+              (OPCODE (??))
               )])
 
 (define EMPTY (list '()))
@@ -147,9 +147,9 @@
   ; (log-debug (type-of bs))
   (match bs ; destruct doesn't work for nested subpatterns. Changed to match instead.
             [(BS b) b]
-            ; [(OPCODE op) (eval-opcode op x)]
+            ; [(OPCODE op) (eval-opcode x)]
             [(REG reg) (eval-reg reg x)]
-            [OPCODE (eval-opcode x)]
+            [(OPCODE _) (log-debug "Asdf") (eval-opcode x)]
             ; [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
             ; [INSTR (eval-reg PC x)]
             [_ (log-error "Invalid expression for bitstring observation") #f]
@@ -173,7 +173,7 @@
 
   ; TODO: also return the OPCODE corresponding to this register state.
   (cond
-    [(integer? reg) (list (list-ref xstate reg))]
+    [(integer? reg) (list-ref xstate reg)]
     [(list? reg) ; Handle the list (REG, OPCODE)
      (let ([reg-value (list-ref xstate (first reg))]
            [opcode-value (eval-opcode (second reg) xstate)])
