@@ -156,8 +156,8 @@
 
 (define (eval-opcode opcode xstate)
   (log-debug "[eval-opcode]")
-  ; (log-debug (list-ref xstate 8))
   (log-debug opcode)
+  ; (log-debug (list-ref xstate 8))
   (match opcode
     [(OPCODE (bv value (bitvector 16)))
       (cons 'OPCODE value)] ; Add OPCODE to the expression as a pair (OPCODE value).
@@ -381,7 +381,7 @@
 
 (define r1 (list r1_0 r1_1))
 
-(define myexpr (cexpr #:depth 2))
+(define myexpr (cexpr #:depth 1))
 ; (log-debug myexpr)
 
 (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
