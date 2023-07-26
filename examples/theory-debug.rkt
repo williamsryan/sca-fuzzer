@@ -104,7 +104,8 @@
               (SLIDE (?? integer?) (?? integer?) (bs))
               ; (OPCODE (?? (bitvector 16)))  ; TODO: update the structure to expect a concrete value for OPCODE.
               ; (OPCODE (?? integer?))
-              (REG (?? integer?))
+              ; (REG (?? integer?))
+              (REG (list (?? integer?) (?? integer?))) ; Register followed by optional OPCODE. Here or as predicate better?
               )])
 
 (define EMPTY (list '()))
@@ -145,11 +146,11 @@
 (define (eval-bs bs x)
   ; (log-debug "[eval-bs]")
   ; (log-debug (type-of bs))
-  (destruct bs ; destruct doesn't work for nested subpatterns. Changed to match instead.
+  (match bs ; destruct doesn't work for nested subpatterns. Changed to match instead.
             [(BS b) b]
             ; [(OPCODE (bv value (bitvector _))) (eval-opcode value x)]
-            ; [(OPCODE op) (eval-opcode op x)]
-            [(REG reg) (eval-reg reg x)]
+            [(OPCODE op) (eval-opcode op x)]
+            [(REG (list reg op)) (eval-reg (list reg op) x)]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
             ; [INSTR (eval-reg PC x)]
             [_ (log-error "Invalid expression for bitstring observation") #f]
@@ -158,19 +159,27 @@
 (define (eval-opcode opcode xstate)
   (log-debug "[eval-opcode]")
   ; (log-debug (list-ref xstate 8))
-  (list-ref xstate 8))
-  ; (match (list-ref xstate 8)
-  ;   [(list 'OPCODE (bv value (bitvector 16))) value]
-  ;   [_ #f ]));(log-error "Invalid opcode") #f]))
+  ; (list-ref xstate 8))
+  (match (list-ref xstate 8)
+    [(list 'OPCODE (bv value (bitvector 16))) value]
+    [_ #f ]));(log-error "Invalid opcode") #f]))
 
 ; Evaluation function for registers.
 (define (eval-reg reg xstate)
   ; (log-debug "[eval-reg]")
   ; (log-debug reg)
-  ; (log-debug (list-ref xstate reg))
+  ; (cond
+  ;   [(integer? reg) (list-ref xstate reg)]
+  ;   [else (log-error "Invalid register format") #f]))
+
+  ; TODO: also return the OPCODE corresponding to this register state.
   (cond
-    [(integer? reg) (list-ref xstate reg)]
-    [else (log-error "Invalid register format")]))
+    [(integer? reg) (list (list-ref xstate reg))]
+    [(list? reg) ; Handle the list (REG, OPCODE)
+     (let ([reg-value (list-ref xstate (first reg))]
+           [opcode-value (eval-opcode (second reg) xstate)])
+       (list reg-value opcode-value))]
+    [else (log-error "Invalid register format") #f]))
 
 ; TODO: update this with our desired constraints for instruction operands.
 ; (define (eval-operands op1 op2 xstate)
