@@ -389,11 +389,21 @@
 (define myexpr (cexpr #:depth 1))
 ; (log-debug myexpr)
 
-(define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
-                              ;  (diff 1 2 r0 1 2 r1 myexpr)
-))))
+; (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
+;                               ;  (diff 1 2 r0 1 2 r1 myexpr)
+; ))))
 
-(print-forms sol)
+; (print-forms sol)
+
+(log-debug "TEST")
+
+(define (opcode-present? xstate)
+  (log-debug xstate)
+  (not (eq? (member 'OPCODE xstate) #f))
+)
+
+(log-debug (opcode-present? r0_0))
+(log-debug "END TEST")
 
 ; NOTES.
 
