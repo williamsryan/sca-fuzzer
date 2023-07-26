@@ -102,7 +102,8 @@
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
-              ; (OPCODE (?? (bitvector 16)))  ; TODO: update the structure to expect a concrete value for OPCODE.
+              (OPCODE (?? (bitvector 16)))  ; TODO: update the structure to expect a concrete value for OPCODE.
+              ; (OPCODE (?? integer?))
               (REG (?? integer?))
               )])
 
@@ -146,7 +147,7 @@
   (destruct bs ; destruct doesn't work for nested subpatterns. Changed to match instead.
             [(BS b) b]
             ; [(OPCODE (bv value (bitvector _))) (eval-opcode value x)]
-            ; [(OPCODE op) (eval-opcode op x)]
+            [(OPCODE op) (eval-opcode op x)]
             [(REG reg) (eval-reg reg x)]
             [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
             ; [INSTR (eval-reg PC x)]
@@ -156,9 +157,14 @@
 (define (eval-opcode opcode xstate)
   (log-debug "[eval-opcode]")
   ; (log-debug (list-ref xstate 8))
-  (match (list-ref xstate 8)
-    [(list 'OPCODE (bv value (bitvector 16))) value]
-    [_ #f ]));(log-error "Invalid opcode") #f]))
+  (log-debug opcode)
+  (match opcode
+    [(OPCODE (bv value (bitvector 16)))
+      (cons 'OPCODE value)] ; Add OPCODE to the expression as a pair (OPCODE value).
+    [_ EMPTY]))
+  ; (match (list-ref xstate 8)
+  ;   [(list 'OPCODE (bv value (bitvector 16))) value]
+  ;   [_ #f ]));(log-error "Invalid opcode") #f]))
 
 ; Evaluation function for registers.
 (define (eval-reg reg xstate)
@@ -375,7 +381,7 @@
 
 (define r1 (list r1_0 r1_1))
 
-(define myexpr (cexpr #:depth 1))
+(define myexpr (cexpr #:depth 2))
 ; (log-debug myexpr)
 
 (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
