@@ -143,12 +143,12 @@
 (define (eval-bs bs x)
   ; (log-debug "[eval-bs]")
   ; (log-debug (type-of bs))
-  (match bs ; destruct doesn't work for nested subpatterns. Changed to match instead.
+  (destruct bs ; destruct doesn't work for nested subpatterns. Changed to match instead.
             [(BS b) b]
             ; [(OPCODE (bv value (bitvector _))) (eval-opcode value x)]
-            [(OPCODE op) (eval-opcode op x)]
+            ; [(OPCODE op) (eval-opcode op x)]
             [(REG reg) (eval-reg reg x)]
-            ; [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
+            [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
             ; [INSTR (eval-reg PC x)]
             [_ (log-error "Invalid expression for bitstring observation") #f]
             ))
