@@ -396,7 +396,9 @@
 
 (log-debug "TEST")
 (define opcodes (parse-state r0_0 'OPCODE))
+(define regs (parse-state r0_0 'REG))
 (log-debug (first opcodes))
+(log-debug regs)
 (log-debug "END TEST")
 
 ; NOTES.
