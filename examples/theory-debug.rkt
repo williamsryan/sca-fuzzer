@@ -161,7 +161,7 @@
     ((log-debug "Valid xstate for OPCODE")
     (log-debug (first xstate))
     (match (first xstate)
-      [(bv op (bitvector 16)) (log-debug op)]
+      [(bv op (bitvector 16)) op] ; Return the opcode value (or whole struct?).
       [_ (log-error "Invalid opcode") #f]))))
 
 ; Evaluation function for registers.
@@ -314,7 +314,7 @@
                              (and (not (empty-obs expr (parse-state (list-ref r i) 'REG)))
                                   (not (empty-obs expr (parse-state (list-ref r_ i_) 'REG)))
                                   (not (obs-equal expr (parse-state (list-ref r i) 'REG) (parse-state (list-ref r_ i_) 'REG)))
-                                  (obs-equal expr (parse-state (list-ref r i) 'OPCODE) (parse-state (list-ref r_ i_) 'OPCODE))
+                                  ; (obs-equal expr (parse-state (list-ref r i) 'OPCODE) (parse-state (list-ref r_ i_) 'OPCODE))
                                   )))))
 
 ; ------------- END-CORE ------------------ ;
