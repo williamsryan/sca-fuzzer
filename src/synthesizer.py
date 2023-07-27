@@ -93,7 +93,7 @@ class Synthesizer:
                 regs += indentation + f"; Operands\n"
                 regs += indentation + operand_bv + "))"
 
-            return f"; Instruction: {instrs[xid-1]}\n(define {xstate_name} (list\t ;Registers\n{indentation}{regs}\n\n"
+            return f"; Instruction: {instrs[xid-1]}\n(define {xstate_name} (list\t ; Registers\n{indentation}{regs}\n\n"
 
         with open(self.work_dir + "/" + self.filename, "a") as f:   
             xstates = ''
