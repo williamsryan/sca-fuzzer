@@ -297,20 +297,20 @@
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
   ; (log-debug expr)
-  ; (log-debug (parse-state (list-ref r i)))
+  ; (log-debug (parse-state (list-ref r i) 'REG))
   (if (equal? i j)
       (if (equal? i_ j_) #f
-                         (or (not (empty-obs expr (parse-state (list-ref r_ i_))))
+                         (or (not (empty-obs expr (parse-state (list-ref r_ i_) 'REG)))
                              (diff j j r (+ i_ 1) j_ r_ expr)))
-      (if (equal? i_ j_) (or (not (empty-obs expr (parse-state (list-ref r i))))
+      (if (equal? i_ j_) (or (not (empty-obs expr (parse-state (list-ref r i) 'REG)))
                              (diff (+ i 1) j r j_ j_ r_ expr))
-                         (or (and (empty-obs expr (parse-state (list-ref r i)))
+                         (or (and (empty-obs expr (parse-state (list-ref r i) 'REG))
                                   (diff (+ i 1) j r i_ j_ r_ expr))
-                             (and (empty-obs expr (parse-state (list-ref r_ i_)))
+                             (and (empty-obs expr (parse-state (list-ref r_ i_) 'REG))
                                   (diff i j r (+ i_ 1) j_ r_ expr))
-                             (and (not (empty-obs expr (parse-state (list-ref r i))))
-                                  (not (empty-obs expr (parse-state (list-ref r_ i_))))
-                                  (not (obs-equal expr (parse-state (list-ref r i)) (parse-state (list-ref r_ i_)))))))))
+                             (and (not (empty-obs expr (parse-state (list-ref r i) 'REG)))
+                                  (not (empty-obs expr (parse-state (list-ref r_ i_) 'REG)))
+                                  (not (obs-equal expr (parse-state (list-ref r i) 'REG) (parse-state (list-ref r_ i_) 'REG))))))))
 
 ; ------------- END-CORE ------------------ ;
 ; Instruction: ADD RSI, RDX
@@ -388,18 +388,18 @@
 (define myexpr (cexpr #:depth 1))
 ; (log-debug myexpr)
 
-; (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
-;                               ;  (diff 1 2 r0 1 2 r1 myexpr)
-; ))))
+(define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
+                              ;  (diff 1 2 r0 1 2 r1 myexpr)
+))))
 
-; (print-forms sol)
+(print-forms sol)
 
-(log-debug "TEST")
-(define opcodes (parse-state r0_0 'OPCODE))
-(define regs (parse-state r0_0 'REG))
-(log-debug (first opcodes))
-(log-debug regs)
-(log-debug "END TEST")
+; (log-debug "TEST")
+; (define opcodes (parse-state r0_0 'OPCODE))
+; (define regs (parse-state r0_0 'REG))
+; (printf "OPCODE: ~a\n" (first opcodes))
+; (printf "REGs: ~a\n" regs)
+; (log-debug "END TEST")
 
 ; NOTES.
 
