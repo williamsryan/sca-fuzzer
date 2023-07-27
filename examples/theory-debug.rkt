@@ -311,7 +311,9 @@
                                   (diff i j r (+ i_ 1) j_ r_ expr))
                              (and (not (empty-obs expr (parse-state (list-ref r i) 'REG)))
                                   (not (empty-obs expr (parse-state (list-ref r_ i_) 'REG)))
-                                  (not (obs-equal expr (parse-state (list-ref r i) 'REG) (parse-state (list-ref r_ i_) 'REG))))))))
+                                  (not (obs-equal expr (parse-state (list-ref r i) 'REG) (parse-state (list-ref r_ i_) 'REG)))
+                                  ; (obs-equal expr (parse-state (list-ref r i) 'OPCODE) (parse-state (list-ref r_ i_) 'REG))
+                                  )))))
 
 ; ------------- END-CORE ------------------ ;
 ; Instruction: ADD RSI, RDX
