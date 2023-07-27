@@ -161,7 +161,7 @@
     ((log-debug "Valid xstate for OPCODE")
     (log-debug (first xstate))
     (match (first xstate)
-      [(list 'OPCODE (bv value (bitvector 16))) value]
+      [(bv op (bitvector 16)) (log-debug op)]
       [_ (log-error "Invalid opcode") #f]))))
 
 ; Evaluation function for registers.
