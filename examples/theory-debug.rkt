@@ -315,11 +315,12 @@
                                   (not (empty-obs expr (parse-state (list-ref r_ i_) 'REG)))
                                   (not (obs-equal expr (parse-state (list-ref r i) 'REG) (parse-state (list-ref r_ i_) 'REG)))
                                   ; (obs-equal expr (parse-state (list-ref r i) 'OPCODE) (parse-state (list-ref r_ i_) 'OPCODE))
+                                  ; (and (parse-state (list-ref r i) 'OPCODE) (parse-state (list-ref r_ i_) 'OPCODE))
                                   )))))
 
 ; ------------- END-CORE ------------------ ;
 ; Instruction: ADD RSI, RDX
-(define r0_0 (list	 ;Registers
+(define r0_0 (list	 ; Registers
                    (REG (bv 721554522859 (bitvector 64)))	; Register: RAX
                    (REG (bv 455266533482 (bitvector 64)))	; Register: RBX
                    (REG (bv 730144440490 (bitvector 64)))	; Register: RCX
@@ -336,7 +337,7 @@
 ))
 
 ; Instruction: IMUL EBX, EBX
-(define r0_1 (list	 ;Registers
+(define r0_1 (list	 ; Registers
                    (REG (bv 721554522859 (bitvector 64)))	; Register: RAX
                    (REG (bv 455266533482 (bitvector 64)))	; Register: RBX
                    (REG (bv 730144440490 (bitvector 64)))	; Register: RCX
@@ -355,7 +356,7 @@
 (define r0 (list r0_0 r0_1))
 
 ; Instruction: ADD RSI, RDX
-(define r1_0 (list	 ;Registers
+(define r1_0 (list	 ; Registers
                    (REG (bv 721554522859 (bitvector 64)))	; Register: RAX
                    (REG (bv 455266533482 (bitvector 64)))	; Register: RBX
                    (REG (bv 730144440490 (bitvector 64)))	; Register: RCX
@@ -372,7 +373,7 @@
 ))
 
 ; Instruction: IMUL EBX, EBX
-(define r1_1 (list	 ;Registers
+(define r1_1 (list	 ; Registers
                    (REG (bv 721554522859 (bitvector 64)))	; Register: RAX
                    (REG (bv 455266533482 (bitvector 64)))	; Register: RBX
                    (REG (bv 730144440490 (bitvector 64)))	; Register: RCX
@@ -398,6 +399,8 @@
 ))))
 
 (print-forms sol)
+
+(log-debug (and (parse-state r0_0 'OPCODE) (parse-state r1_0 'OPCODE)))
 
 ; (log-debug "TEST")
 ; (define opcodes (parse-state r0_0 'OPCODE))
