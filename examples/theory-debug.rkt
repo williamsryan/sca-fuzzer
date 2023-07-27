@@ -396,7 +396,7 @@
 
 (log-debug "TEST")
 (define opcodes (parse-state r0_0 'OPCODE))
-(log-debug opcodes)
+(log-debug (first opcodes))
 (log-debug "END TEST")
 
 ; NOTES.
