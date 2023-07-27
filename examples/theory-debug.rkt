@@ -391,7 +391,7 @@
 
 (define r1 (list r1_0 r1_1))
 
-(define myexpr (cexpr #:depth 1))
+(define myexpr (cexpr #:depth 2))
 ; (log-debug myexpr)
 
 (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
@@ -400,7 +400,7 @@
 
 (print-forms sol)
 
-(log-debug (and (parse-state r0_0 'OPCODE) (parse-state r1_0 'OPCODE)))
+; (log-debug (obs-equal myexpr (parse-state r0_0 'OPCODE) (parse-state r1_0 'OPCODE)))
 
 ; (log-debug "TEST")
 ; (define opcodes (parse-state r0_0 'OPCODE))
