@@ -239,10 +239,10 @@
 ;             returns true if the two xstates produces same observations
 ;                     false otherwise
 (define (obs-equal expr xstate1 xstate2)
-  ; (log-debug "[obs-equal]")
+  (log-debug "[obs-equal]")
   ; (log-debug expr)
-  ; (log-debug xstate1)
-  ; (log-debug xstate2)
+  (log-debug xstate1)
+  (log-debug xstate2)
   ; (listbv-equal (obs expr xstate1) (obs expr xstate2)))
   (equal? (obs expr xstate1) (obs expr xstate2)))
 
@@ -312,7 +312,7 @@
                              (and (not (empty-obs expr (parse-state (list-ref r i) 'REG)))
                                   (not (empty-obs expr (parse-state (list-ref r_ i_) 'REG)))
                                   (not (obs-equal expr (parse-state (list-ref r i) 'REG) (parse-state (list-ref r_ i_) 'REG)))
-                                  ; (obs-equal expr (parse-state (list-ref r i) 'OPCODE) (parse-state (list-ref r_ i_) 'REG))
+                                  (obs-equal expr (parse-state (list-ref r i) 'OPCODE) (parse-state (list-ref r_ i_) 'OPCODE))
                                   )))))
 
 ; ------------- END-CORE ------------------ ;
