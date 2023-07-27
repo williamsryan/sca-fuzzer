@@ -157,11 +157,12 @@
 (define (eval-opcode opcode xstate)
   ; (log-debug "[eval-opcode]")
   ; For now just check if the xstate has more than one object; if so, return false.
-  (if (> (length xstate) 1) #f (log-debug "Valid xstate for OPCODE"))
-  ; (log-debug (list-ref xstate 8))
-  (match (list-ref xstate 8)
-    [(list 'OPCODE (bv value (bitvector 16))) value]
-    [_ (log-error "Invalid opcode") #f]))
+  (if (> (length xstate) 1) #f
+    ((log-debug "Valid xstate for OPCODE")
+    (log-debug (first xstate))
+    (match (first xstate)
+      [(list 'OPCODE (bv value (bitvector 16))) value]
+      [_ (log-error "Invalid opcode") #f]))))
 
 ; Evaluation function for registers.
 (define (eval-reg reg xstate)
@@ -239,10 +240,11 @@
 ;             returns true if the two xstates produces same observations
 ;                     false otherwise
 (define (obs-equal expr xstate1 xstate2)
-  (log-debug "[obs-equal]")
+  ; (log-debug "[obs-equal]")
   ; (log-debug expr)
-  (log-debug xstate1)
-  (log-debug xstate2)
+  ; (log-debug xstate1)
+  ; (log-debug xstate2)
+  ; (log-debug (equal? (obs expr xstate1) (obs expr xstate2)))
   ; (listbv-equal (obs expr xstate1) (obs expr xstate2)))
   (equal? (obs expr xstate1) (obs expr xstate2)))
 
