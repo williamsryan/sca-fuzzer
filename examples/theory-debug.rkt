@@ -102,8 +102,8 @@
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
-              (OPCODE (?? (bitvector 16)))  ; TODO: update the structure to expect a concrete value for OPCODE.
               (REG (?? integer?))
+              (OPCODE (?? (bitvector 16)))  ; TODO: update the structure to expect a concrete value for OPCODE.
               ; OPCODE
               )])
 
@@ -148,16 +148,17 @@
   (destruct bs
             [(BS b) b]
             [(REG reg) (eval-reg reg x)]
-            [(OPCODE _) (eval-opcode x)]
+            [(OPCODE op) (eval-opcode op x)]
             ; [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
             ; [INSTR (eval-reg PC x)]
             [_ (log-error "Invalid expression for bitstring observation") #f]
             ))
 
-(define (eval-opcode xstate)
-  (log-debug "[eval-opcode]")
-  ; (log-debug (list-ref xstate 8)))
-  ; (list-ref xstate 8))
+(define (eval-opcode opcode xstate)
+  ; (log-debug "[eval-opcode]")
+  ; For now just check if the xstate has more than one object; if so, return false.
+  (if (> (length xstate) 1) #f (log-debug "Valid xstate for OPCODE"))
+  ; (log-debug (list-ref xstate 8))
   (match (list-ref xstate 8)
     [(list 'OPCODE (bv value (bitvector 16))) value]
     [_ (log-error "Invalid opcode") #f]))
