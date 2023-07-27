@@ -29,7 +29,7 @@
 (define PC 16)  ; R16
 
 ; Struct definitions for our contract language.
-(struct IF (pred bs1 bs2) #:transparent)   ; Represents an if-expression.
+(struct IF (pred bs) #:transparent)   ; Represents an if-expression.
 (struct OPCODE (op) #:transparent)
 (struct OPERAND (bs) #:transparent)
 (struct OPERAND-TYPE (bs) #:transparent)
@@ -92,7 +92,7 @@
 
 ; Grammar for the actual contract.
 (define-grammar (cexpr)
-  [expr (IF (pred) (bs) (bs))] ; TODO: test this as: IF (pred) (bs) (bs) for our new grammar.
+  [expr (IF (pred) (bs))] ; TODO: IF (pred) (bs) (bs) or make one a list?
   [pred (choose (BOOL (?? boolean?))
                 ; (OPERAND-TYPE ...)
                 (NOT (pred))
@@ -102,9 +102,9 @@
                 )]
   [bs (choose (BS (?? (bitvector (?? integer?))))
               (SLIDE (?? integer?) (?? integer?) (bs))
-              ; (OPCODE (?? (bitvector 16)))  ; TODO: update the structure to expect a concrete value for OPCODE.
+              (OPCODE (?? (bitvector 16)))  ; TODO: update the structure to expect a concrete value for OPCODE.
               (REG (?? integer?))
-              OPCODE
+              ; OPCODE
               )])
 
 (define EMPTY (list '()))
@@ -114,7 +114,7 @@
   ; (log-debug "[eval]")
   ; (log-debug expr)
   (destruct expr
-    [(IF pred bs _) (if (eval-pred pred xstate) (list (eval-bs bs xstate)) EMPTY)]
+    [(IF pred bs) (if (eval-pred pred xstate) (list (eval-bs bs xstate)) EMPTY)]
     [_ EMPTY]))
 
 ; (define (eval expr xstate)
@@ -148,8 +148,7 @@
   (destruct bs
             [(BS b) b]
             [(REG reg) (eval-reg reg x)]
-            ; [(OPCODE _) (eval-opcode x)]
-            [OPCODE (eval-opcode x)]
+            [(OPCODE _) (eval-opcode x)]
             ; [(SLIDE i1 i2 b) (extract i2 i1 (eval-bs b x))]
             ; [INSTR (eval-reg PC x)]
             [_ (log-error "Invalid expression for bitstring observation") #f]
@@ -161,7 +160,7 @@
   ; (list-ref xstate 8))
   (match (list-ref xstate 8)
     [(list 'OPCODE (bv value (bitvector 16))) value]
-    [_ #f ]));(log-error "Invalid opcode") #f]))
+    [_ (log-error "Invalid opcode") #f]))
 
 ; Evaluation function for registers.
 (define (eval-reg reg xstate)
@@ -277,17 +276,17 @@
   ;   [_
   ;    (println "Invalid expression for opcode observation")]))
 
-; Extract the list of register values from the xstate.
-(define (parse-state xstate)
+; Extract the list of labeled values from the xstate.
+(define (parse-state xstate label)
   ; (log-debug "[parse-state]")
   (define (process-item item)
     (match item
-      [(REG reg) (list 'REG reg)]
-      [(OPCODE opcode) (list 'OPCODE opcode)]
-      [(OPERAND operand) (list 'OPERAND operand)]
+      [(REG reg) (if (eq? label 'REG) reg #f)]
+      [(OPCODE opcode) (if (eq? label 'OPCODE) opcode #f)]
+      [(OPERAND operand) (if (eq? label 'OPERAND) operand #f)]
       [_ (log-error "Invalid state object") #f]))
 
-  (map process-item xstate))
+  (filter-map (lambda (item) (process-item item)) xstate))
 
 ; diff() takes the following arguments:
 ;              i,j,i_,j_  : natural numbers such that i <= j and i_ <= j_
@@ -325,7 +324,7 @@
                    (REG (bv 60 (bitvector 64)))	; Register: EFLAGS
                    (REG (bv 18446612985909035028 (bitvector 64)))	; PC
                    ; Opcode
-                   (OPCODE (bv 110 (bitvector 16)))
+                   (OPCODE (bv 111 (bitvector 16)))
                    ; Operands
                    (OPERAND (bv 5395273 (bitvector 64)))
                    (OPERAND (bv 5391448 (bitvector 64)))
@@ -389,11 +388,16 @@
 (define myexpr (cexpr #:depth 1))
 ; (log-debug myexpr)
 
-(define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
-                              ;  (diff 1 2 r0 1 2 r1 myexpr)
-))))
+; (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
+;                               ;  (diff 1 2 r0 1 2 r1 myexpr)
+; ))))
 
-(print-forms sol)
+; (print-forms sol)
+
+(log-debug "TEST")
+(define opcodes (parse-state r0_0 'OPCODE))
+(log-debug opcodes)
+(log-debug "END TEST")
 
 ; NOTES.
 
