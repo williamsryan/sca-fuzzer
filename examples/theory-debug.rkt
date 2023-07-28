@@ -157,7 +157,7 @@
 ; TODO: this is where an issue is. Make the returned format match eval-reg (expression).
 (define (eval-opcode opcode xstate)
   ; (log-debug "[eval-opcode]")
-  ; (log-debug opcode)
+  (log-debug (type-of opcode))
   ; For now just check if the xstate has more than one object; if so, return false.
   (if (> (length xstate) 1) #f
     (;(log-debug "Valid xstate for OPCODE")
@@ -169,7 +169,7 @@
 ; Evaluation function for registers.
 (define (eval-reg reg xstate)
   ; (log-debug "[eval-reg]")
-  ; (log-debug reg)
+  ; (log-debug (type-of reg))
   ; (cond
   ;   [(integer? reg) (list-ref xstate reg)]
   ;   [else (log-error "Invalid register format") #f]))
@@ -396,29 +396,29 @@
 (define myexpr (cexpr #:depth 1))
 ; (log-debug myexpr)
 
-; (define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
-;                               ;  (diff 1 2 r0 1 2 r1 myexpr)
-; ))))
+(define sol (solve (assert (or (diff 0 1 r0 0 1 r1 myexpr)
+                              ;  (diff 1 2 r0 1 2 r1 myexpr)
+))))
 
-; (print-forms sol)
+(print-forms sol)
 
 ; (log-debug (obs-equal myexpr (parse-state r0_0 'OPCODE) (parse-state r1_0 'OPCODE)))
 
-(log-debug "TEST")
-(define opcode0 (parse-state r0_0 'OPCODE))
-(define regs0 (parse-state r0_0 'REG))
-(define opcode1 (parse-state r1_0 'OPCODE))
-(define regs1 (parse-state r1_0 'REG))
+; (log-debug "TEST")
+; (define opcode0 (parse-state r0_0 'OPCODE))
+; (define regs0 (parse-state r0_0 'REG))
+; (define opcode1 (parse-state r1_0 'OPCODE))
+; (define regs1 (parse-state r1_0 'REG))
 
-(printf "OPCODE0: ~a\n" (first opcode0))
-(printf "REGs0: ~a\n" regs0)
-(printf "OPCODE1: ~a\n" (first opcode1))
-(printf "REGs1: ~a\n" regs1)
+; (printf "OPCODE0: ~a\n" (first opcode0))
+; (printf "REGs0: ~a\n" regs0)
+; (printf "OPCODE1: ~a\n" (first opcode1))
+; (printf "REGs1: ~a\n" regs1)
 
-(printf "opcodes equal? ~a\n" (obs-equal myexpr opcode0 opcode1))
-(printf "regs equal? ~a\n" (obs-equal myexpr regs0 regs1))
+; (printf "opcodes equal? ~a\n" (obs-equal myexpr opcode0 opcode1))
+; (printf "regs equal? ~a\n" (obs-equal myexpr regs0 regs1))
 
-(log-debug "END TEST")
+; (log-debug "END TEST")
 
 ; NOTES.
 
