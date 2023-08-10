@@ -158,6 +158,7 @@
 (define (eval-opcode opcode xstate)
   ; (log-debug "[eval-opcode]")
   (log-debug (type-of opcode))
+  (log-debug opcode)
   ; For now just check if the xstate has more than one object; if so, return false.
   (if (> (length xstate) 1) #f
     (;(log-debug "Valid xstate for OPCODE")
