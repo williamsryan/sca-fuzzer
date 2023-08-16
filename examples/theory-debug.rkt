@@ -169,8 +169,8 @@
 
 ; Evaluation function for registers.
 (define (eval-reg reg xstate)
-  (log-debug "[eval-reg]")
-  (log-debug (type-of reg))
+  ; (log-debug "[eval-reg]")
+  ; (log-debug (type-of reg))
   ; (cond
   ;   [(integer? reg) (list-ref xstate reg)]
   ;   [else (log-error "Invalid register format") #f]))
