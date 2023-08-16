@@ -156,9 +156,9 @@
 
 ; TODO: this is where an issue is. Make the returned format match eval-reg (expression).
 (define (eval-opcode opcode xstate)
-  ; (log-debug "[eval-opcode]")
+  (log-debug "[eval-opcode]")
   (log-debug (type-of opcode))
-  (log-debug opcode)
+  ; (log-debug (length xstate))
   ; For now just check if the xstate has more than one object; if so, return false.
   (if (> (length xstate) 1) #f
     (;(log-debug "Valid xstate for OPCODE")
@@ -169,8 +169,8 @@
 
 ; Evaluation function for registers.
 (define (eval-reg reg xstate)
-  ; (log-debug "[eval-reg]")
-  ; (log-debug (type-of reg))
+  (log-debug "[eval-reg]")
+  (log-debug (type-of reg))
   ; (cond
   ;   [(integer? reg) (list-ref xstate reg)]
   ;   [else (log-error "Invalid register format") #f]))
@@ -303,7 +303,7 @@
 ;                false otherwise
 (define (diff i j r i_ j_ r_ expr)
   ; (log-debug expr)
-  ; (log-debug (parse-state (list-ref r i) 'REG))
+  ; (log-debug (parse-state (list-ref r i) 'OPCODE))
   (if (equal? i j)
       (if (equal? i_ j_) #f
                          (or (not (empty-obs expr (parse-state (list-ref r_ i_) 'REG)))
